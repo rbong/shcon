@@ -1,0 +1,3 @@
+ _ESUCCESS = 0,
+ _EUNKNOWN = 1,
+ _ESTROVERFLOW = 2,
