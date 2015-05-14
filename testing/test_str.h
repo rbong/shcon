@@ -1,9 +1,7 @@
+#include <errno.h>
+
 #include <str.h>
+#include <err.h>
 
-int test_str_cat     (void);
+int test_str_cat     (int);
 int test_str_cat_len (void);
-
-#ifndef MM_TEST_STR
-#define MM_TEST_STR
-#include <test_str.c>
-#endif

@@ -2,7 +2,7 @@
 
 #define ERROR_AT_LINE(status, ...) \
     (error_at_line (status, 0, __FILE__, __LINE__, __VA_ARGS__))
-#define SYS_ERROR_AT_LINE(status, errnum) \
+#define ERROR_AT_LINE_SYS(status, errnum) \
     (error_at_line (status, errnum, __FILE__, __LINE__, "System"))
 #define ERROR_PRINT(status) \
     (error_at_line (status, 0, __FILE__, __LINE__, \

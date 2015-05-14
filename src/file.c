@@ -16,7 +16,7 @@ int file_touch (char* file_name)
 
     if (fp == NULL)
     {
-        SYS_ERROR_AT_LINE (0, errno);
+        ERROR_AT_LINE_SYS (0, errno);
         error_set (_EFOPEN);
         return -1;
     }
@@ -25,7 +25,7 @@ int file_touch (char* file_name)
 
     if (ret == EOF)
     {
-        SYS_ERROR_AT_LINE (0, errno);
+        ERROR_AT_LINE_SYS (0, errno);
         error_set (_EFCLOSE);
         return -1;
     }

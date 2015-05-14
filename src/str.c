@@ -8,17 +8,17 @@ int str_cat (int nstr, char* dest, char** src)
 
     if (dest == NULL || src == NULL)
     {
-        set_error (_EPTRNULL);
+        error_set (_EPTRNULL);
         return -1;
     }
-    len = str_cat_ln (nstr, src);
+    len = str_cat_len (nstr, src);
     if (len < 0)
     {
         return len;
     }
-    if (size (dest) < len)
+    if (sizeof (dest) < len)
     {
-        set_error (_EPTROVERFLOW);
+        error_set (_EPTROVERFLOW);
         return -1;
     }
 
@@ -40,16 +40,16 @@ int str_cat_len (int nstr, char** src)
 
     if (src == NULL)
     {
-        set_error (_EPTRNULL);
+        error_set (_EPTRNULL);
         return -1;
     }
 
     for (i = 0; i < nstr; i++)
     {
-        s = str [i];
+        s = src [i];
         if (s == NULL)
         {
-            set_error (_EPTRNULL);
+            error_set (_EPTRNULL);
             return -1;
         }
         len += strlen (s);
