@@ -1,9 +1,11 @@
+#include <test_error.h>
+
 // todo- split up this function
 int test_error_table (void)
 {
     int i;
     int ret  = 0;
-    int size = sizeof (error_table) / sizeof (error_info_t) - 1;
+    int size = ERROR_MAX;
 
     // confirm the table is allocated
     if (size < 1)

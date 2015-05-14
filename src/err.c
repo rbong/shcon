@@ -1,3 +1,14 @@
+#include <err.h>
+
+const error_info_t error_table [] =
+{
+#include <data/error_table.h>
+    { 0, "\0" }
+};
+
+int       error_number = _ESUCCESS;
+const int ERROR_MAX    = sizeof (error_table) / sizeof (error_info_t) - 1;
+
 void error_set (int code)
 {
     error_number = code;
