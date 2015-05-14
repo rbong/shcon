@@ -44,17 +44,37 @@ void shm_t_new (shm_t* shm)
 
 int shm_assign_path (shm_t* shm, char* root, char* subscription)
 {
-    int ret;
+    int   ret;
+    char* as [2];
+
+    if (shm == NULL || shm->path == NULL || subscription == NULL)
+    {
+        set_error (_EPTRNULL);
+        return -1;
+    }
 
     if (root == NULL)
     {
         root = shm_root;
     }
+    as [0] = root;
+    as [1] = subscription;
 
-    shm->path = malloc (str_cat_ln (root, subscription));
-    ret       = str_cat (shm->path, root, subscription);
-    /* check_error ((ret == -1), "shm_assign_path (): str_cat ()", EXIT_ON_ERROR); */
+    ret = str_cat_ln (2, as);
+    if (ret < 0)
+    {
+        return ret;
+    }
+    // todo- move this maybe, shift blame
+    shm->path = malloc (str_cat_ln (2, as));
+    if (shm->path == NULL)
+    {
+        SYS_ERROR_AT_LINE (0, errno);
+        error_set (_EALLOC);
+        return -1;
+    }
 
+    // todo- fill in file function
     nc_create_file (shm->path);
 }
 

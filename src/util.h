@@ -1,4 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-int nc_create_file (char*);
+#ifndef MM_UTIL
+#define MM_UTIL
+#include <util.c>
+#endif

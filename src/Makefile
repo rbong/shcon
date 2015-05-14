@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -Wall -O3 -g
+CFLAGS = -Wall -O3
 INC    = -I. -I../include
 DEPS   = shm.c str.c util.c err.c
 SRCS   = $(DEPS:.h=.c) main.c
@@ -15,4 +15,4 @@ $(MAIN): $(OBJS)
 	$(CC) $(CFLAGS) $(INC) -o $(MAIN) $(OBJS)
 
 clean:
-	rm $(OBJS) $(MAIN)
+	rm -f $(OBJS) $(MAIN)

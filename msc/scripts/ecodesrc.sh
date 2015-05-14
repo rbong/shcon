@@ -3,7 +3,7 @@
 INC=../../include
 SRC=../../src
 ret=0
-cd ${0%/*}
+cd $(dirname ${BASH_SOURCE[0]})
 (sed 's/{.*\(\<.\+\>\),.\+/\1/g' < $INC/data/error_table.h) > /tmp/codes
 while read line; do
     grep -q -r $line $SRC

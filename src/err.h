@@ -1,7 +1,9 @@
 #include <error.h>
 
-#define ERROR_AT_LINE(status, errnum, ...) \
-    (error_at_line (status, errnum, __FILE__, __LINE__, __VA_ARGS__))
+#define ERROR_AT_LINE(status, ...) \
+    (error_at_line (status, 0, __FILE__, __LINE__, __VA_ARGS__))
+#define SYS_ERROR_AT_LINE(status, errnum) \
+    (error_at_line (status, errnum, __FILE__, __LINE__, "System"))
 #define ERROR_PRINT(status) \
     (error_at_line (status, 0, __FILE__, __LINE__, \
      "%s", error_get_msg (error_number)))

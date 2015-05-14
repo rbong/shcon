@@ -3,8 +3,7 @@
 #include <err.h>
 int main ()
 {
-    error_set (_ESUCCESS);
-    ERROR_PRINT (0);
+    ERROR_AT_LINE (0, 1, "");
     test_error_table ();
     return 0;
 }
