@@ -1,4 +1,4 @@
-// sort these out
+// todo- sort these out
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -10,29 +10,10 @@
 #include <err.h>
 #include <str.h>
 
-// temporary value for shmget
+// todo- temporary value for shmget
 #define segsize 100
 
-// move me to  the main file
-int main (int argc, char** argv)
-{
-    shm_t shm;
-
-    shm_t_new (&shm);
-
-    shm_assign_path (&shm, NULL, "mysub");
-
-    // delete me
-    printf ("%s\n", shm.path);
-
-    shm_generate_key_func (&shm);
-/*    check_error ((shm.key == -1), "main (): shm_generate_key_func ()"
-                 EXIT_ERROR | USE_ERRNO);*/
-
-    // segsize is temporary value
-    // shm_id = shmget (shm_key, segsize, 
-}
-
+// todo- allocate pointers, create complimentary freeing function
 void shm_t_new (shm_t* shm)
 {
     shm->proj_id =  proj_id_def;
@@ -42,6 +23,7 @@ void shm_t_new (shm_t* shm)
     shm->path    =  NULL;
 }
 
+// todo- break me up
 int shm_assign_path (shm_t* shm, char* root, char* subscription)
 {
     int   ret;

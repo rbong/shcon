@@ -1,5 +1,7 @@
 #include <err.h>
 
+// todo- rename error_ to err_
+
 const error_info_t error_table [] =
 {
 #include <data/error_table.h>
@@ -21,4 +23,11 @@ char* error_get_msg (int code)
         return error_table [_EUNKNOWN].msg;
     }
     return error_table [code].msg;
+}
+
+void err_reset (void)
+{
+    error_number = 0;
+    errno = 0;
+    return;
 }

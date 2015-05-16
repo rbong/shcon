@@ -1,4 +1,5 @@
 #include <error.h>
+#include <errno.h>
 
 #define ERROR_AT_LINE(status, ...) \
     (error_at_line (status, 0, __FILE__, __LINE__, __VA_ARGS__))
@@ -30,3 +31,4 @@ extern const int ERROR_MAX;
 
 void      error_set     (int);
 char*     error_get_msg (int);
+void      err_reset     (void);

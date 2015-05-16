@@ -1,45 +1,98 @@
 #include <test_str.h>
 
-// todo- move the string production to a str function
-int test_str_cat (int n)
+// todo- split up this function
+int test_str_cat (void)
 {
-    int    i  = 0;
-    char*  s  = NULL;
-    char** as = NULL;
+    int          i         =    1;
+    int          ret       =    0;
+    int          ret_b     =    0;
+    char         dest [13] =   "";
+    const char*  src  [4]  = { "foo", "bar", "qaz", "nux" };
+    const char*  res  [4]  = { "foo", "foobar", "foobarqaz", "foobarqaznux" };
 
-    as = malloc ((n + 1) * sizeof (char*));
-    
-    if (as == NULL)
+    if (str_cat (1, dest, NULL) >= 0 || str_cat (1, NULL, (char**) src) >= 0)
     {
-        ERROR_AT_LINE_SYS (0, errno);
-        return -1;
-    }
-
-    for (i = 0; i < n; i++)
-    {
-        as [i] = malloc (2);
-        if (as [i] == NULL)
+        ERROR_AT_LINE (0, "str_cat () does not report NULL pointers.");
+        if (error_number != _ESUCCESS)
         {
-            ERROR_AT_LINE_SYS (0, errno);
+            ERROR_AT_LINE (0, "Note: error_number is set.");
+            // reset error code
+            error_set (_ESUCCESS);
+        }
+        ret = -1;
+    }
+    errno = 0;
+
+    for (i = 1; i <= 4; i++)
+    {
+        dest [0] = '\0';
+
+        ret_b = str_cat (i, dest, (char**)  src);
+
+        if (ret_b < 0)
+        {
+            ERROR_PRINT (0);
+            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
+            return ret_b;
+        }
+        if (dest [0] == '\0')
+        {
+            ERROR_AT_LINE (0, "str_cat () did not modify dest.");
+            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
             return -1;
         }
-        strcpy (as [i], " ");
+        if (strcmp (res [i-1], dest) != 0)
+        {
+            ERROR_AT_LINE (0, "str_cat () returns non-matching string.");
+            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
+            return -1;
+        }
     }
 
-    s = malloc (n + 1);
-
-    if (s == NULL)
+    if (ret_b < 0)
     {
-        ERROR_AT_LINE_SYS (0, errno);
-        return -1;
+        ret = -1;
     }
-
-    
-
-    return 0;
+    return ret;
 }
 
+// todo- split up this function
 int test_str_cat_len (void)
 {
-    return 0;
+    int         i       =    1;
+    int         ret     =    0;
+    int         ret_b   =    0;
+    const char* src [4] = { "foo", "bar", "qaz", "nux" };
+    int         res [4] = {  4,     7,     10,    13   };
+
+    ret = str_cat_len (1, NULL);
+    if (ret >= 0)
+    {
+        ERROR_AT_LINE (0, "str_cat_len () does not report NULL pointers.");
+        if (error_number != _ESUCCESS)
+        {
+            ERROR_AT_LINE (0, "Note: error_number is set.");
+            // reset error code
+            error_set (_ESUCCESS);
+        }
+        ret = -1;
+    }
+
+    for (i = 1; i <= 4; i++)
+    {
+        ret_b = str_cat_len (i, (char**) src);
+        if (ret_b != res [i-1])
+        {
+            ERROR_AT_LINE (0, "str_cat_len () returns improper length.");
+            ERROR_AT_LINE (0, "Note: expected %d, got %d.", res [i-1], ret_b);
+            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
+            return -1;
+        }
+    }
+
+    if (ret_b < 0)
+    {
+        ret = -1;
+    }
+    return ret;
 }

@@ -1,14 +1,20 @@
 #include <file.h>
 
-// todo- add better error checking
+// todo- determine if shm actually needs an untouched file, skip unreadale files and see if shm needs readable files
 int file_touch (char* file_name)
 {
-    int ret  = 0;
-    FILE* fp = NULL;
+    int   ret = 0;
+    FILE* fp  = NULL;
 
     if (file_name == NULL)
     {
         error_set (_EPTRNULL);
+        return -1;
+    }
+
+    if (file_name [0] == '\0')
+    {
+        // todo- return an error for this
         return -1;
     }
 

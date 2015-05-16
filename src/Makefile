@@ -1,8 +1,8 @@
 CC     = gcc
 CFLAGS = -Wall -O3
 INC    = -I. -I../include
-DEPS   = shm.c str.c util.c err.c
-SRCS   = $(DEPS:.h=.c) main.c
+DEPS   = *.h
+SRCS   = $(DEPS:.h=.c)
 OBJS   = $(SRCS:.c=.o)
 MAIN   = mm
 

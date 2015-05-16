@@ -1,6 +1,4 @@
 #include <err.h>
+#include <stdio.h>
 
-#ifndef MM_FILE
-#define MM_FILE
-#include <file.c>
-#endif
+int file_touch (char*);
