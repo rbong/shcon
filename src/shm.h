@@ -1,3 +1,14 @@
+// todo- sort these out
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdint.h>
+
+#include <err.h>
+#include <str.h>
+
 #ifndef MM_SHM
 #define MM_SHM
 enum shm_flags_enum {
@@ -20,14 +31,10 @@ typedef struct shm_t {
 } shm_t;
 
 void  shm_generate_key_ftok (shm_t*);
-void  shm_t_new             (shm_t*);
-int   shm_assign_path       (shm_t*, char*, char*);
 
 void (*shm_generate_key_func) (shm_t*) = shm_generate_key_ftok;
-
-int shm_flags_def =  SHM_USR_R | SHM_USR_W | SHM_GRP_R | SHM_GRP_W | IPC_CREAT;
-
-// move me to a global file
-int8_t proj_id_def     = 'M';
-char*  shm_root        = "/tmp/";
 #endif
+
+void  shm_generate_key_ftok (shm_t*);
+void  shm_t_new             (shm_t*);
+int   shm_assign_path       (shm_t*, char*, char*);

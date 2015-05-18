@@ -7,17 +7,17 @@ int test_str_cat (void)
     int          ret       =    0;
     int          ret_b     =    0;
     char         dest [13] =   "";
-    const char*  src  [4]  = { "foo", "bar", "qaz", "nux" };
-    const char*  res  [4]  = { "foo", "foobar", "foobarqaz", "foobarqaznux" };
+    const char*  src  [4]  = { "foo", "bar", "baz", "qux" };
+    const char*  res  [4]  = { "foo", "foobar", "foobarbaz", "foobarbazqux" };
 
     if (str_cat (1, dest, NULL) >= 0 || str_cat (1, NULL, (char**) src) >= 0)
     {
-        ERROR_AT_LINE (0, "str_cat () does not report NULL pointers.");
-        if (error_number != _ESUCCESS)
+        ERR_AT_LINE (0, "str_cat () does not report NULL pointers.");
+        if (err_number != _ESUCCESS)
         {
-            ERROR_AT_LINE (0, "Note: error_number is set.");
+            ERR_AT_LINE (0, "Note: err_number is set.");
             // reset error code
-            error_set (_ESUCCESS);
+            err_set (_ESUCCESS);
         }
         ret = -1;
     }
@@ -31,20 +31,20 @@ int test_str_cat (void)
 
         if (ret_b < 0)
         {
-            ERROR_PRINT (0);
-            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
+            ERR_PRINT (0);
+            ERR_AT_LINE (0, "Note: current test case is %d.", i);
             return ret_b;
         }
         if (dest [0] == '\0')
         {
-            ERROR_AT_LINE (0, "str_cat () did not modify dest.");
-            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
+            ERR_AT_LINE (0, "str_cat () did not modify dest.");
+            ERR_AT_LINE (0, "Note: current test case is %d.", i);
             return -1;
         }
         if (strcmp (res [i-1], dest) != 0)
         {
-            ERROR_AT_LINE (0, "str_cat () returns non-matching string.");
-            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
+            ERR_AT_LINE (0, "str_cat () returns non-matching string.");
+            ERR_AT_LINE (0, "Note: current test case is %d.", i);
             return -1;
         }
     }
@@ -68,12 +68,12 @@ int test_str_cat_len (void)
     ret = str_cat_len (1, NULL);
     if (ret >= 0)
     {
-        ERROR_AT_LINE (0, "str_cat_len () does not report NULL pointers.");
-        if (error_number != _ESUCCESS)
+        ERR_AT_LINE (0, "str_cat_len () does not report NULL pointers.");
+        if (err_number != _ESUCCESS)
         {
-            ERROR_AT_LINE (0, "Note: error_number is set.");
+            ERR_AT_LINE (0, "Note: err_number is set.");
             // reset error code
-            error_set (_ESUCCESS);
+            err_set (_ESUCCESS);
         }
         ret = -1;
     }
@@ -83,9 +83,9 @@ int test_str_cat_len (void)
         ret_b = str_cat_len (i, (char**) src);
         if (ret_b != res [i-1])
         {
-            ERROR_AT_LINE (0, "str_cat_len () returns improper length.");
-            ERROR_AT_LINE (0, "Note: expected %d, got %d.", res [i-1], ret_b);
-            ERROR_AT_LINE (0, "Note: current test case is %d.", i);
+            ERR_AT_LINE (0, "str_cat_len () returns improper length.");
+            ERR_AT_LINE (0, "Note: expected %d, got %d.", res [i-1], ret_b);
+            ERR_AT_LINE (0, "Note: current test case is %d.", i);
             return -1;
         }
     }

@@ -8,13 +8,23 @@ int file_touch (char* file_name)
 
     if (file_name == NULL)
     {
-        error_set (_EPTRNULL);
+        err_set (_EPTRNULL);
         return -1;
     }
 
     if (file_name [0] == '\0')
     {
-        // todo- return an error for this
+        err_set (_ESTREMPTY);
+        return -1;
+    }
+
+    switch (file_exists (file_name))
+    {
+    case 0:
+        break;
+    case 1:
+        return 0;
+    case -1:
         return -1;
     }
 
@@ -22,8 +32,8 @@ int file_touch (char* file_name)
 
     if (fp == NULL)
     {
-        ERROR_AT_LINE_SYS (0, errno);
-        error_set (_EFOPEN);
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_EFOPEN);
         return -1;
     }
 
@@ -31,10 +41,44 @@ int file_touch (char* file_name)
 
     if (ret == EOF)
     {
-        ERROR_AT_LINE_SYS (0, errno);
-        error_set (_EFCLOSE);
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_EFCLOSE);
         return -1;
     }
 
-    return 0;
+    return ret;
+}
+
+// todo- test
+int file_exists (char* file_name)
+{
+    err_reset ();
+
+    if (file_name == NULL)
+    {
+        err_set (_EPTRNULL);
+        return -1;
+    }
+
+    if (file_name [0] == '\0')
+    {
+        err_set (_ESTREMPTY);
+        return -1;
+    }
+
+    ret = access (file_name, F_OK);
+    switch (errno)
+    {
+    case 0:
+        return 1;
+        break;
+    case ENOENT:
+        err_reset ();
+        return 0;
+        break;
+    default:
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_EACCESS);
+        return -1;
+    }
 }

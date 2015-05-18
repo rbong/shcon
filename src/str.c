@@ -12,7 +12,7 @@ int str_cat (int nstr, char* dest, char** src)
 
     if (dest == NULL || src == NULL)
     {
-        error_set (_EPTRNULL);
+        err_set (_EPTRNULL);
         return -1;
     }
 
@@ -34,7 +34,7 @@ int str_cat_len (int nstr, char** src)
 
     if (src == NULL)
     {
-        error_set (_EPTRNULL);
+        err_set (_EPTRNULL);
         return -1;
     }
 
@@ -43,7 +43,7 @@ int str_cat_len (int nstr, char** src)
         s = src [i];
         if (s == NULL)
         {
-            error_set (_EPTRNULL);
+            err_set (_EPTRNULL);
             return -1;
         }
         len += strlen (s);

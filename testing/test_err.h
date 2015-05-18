@@ -4,4 +4,4 @@
 
 #include <err.h>
 
-int test_error_table (void);
+int test_err_table (void);
