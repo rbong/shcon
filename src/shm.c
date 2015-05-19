@@ -11,10 +11,12 @@ char* shm_root    = "/tmp/";
 
 int (*shm_generate_key_func) (shm_t*) = shm_generate_key_ftok;
 
-// todo- allocate pointers, create complimentary freeing function
-int shm_t_new (shm_t** shm, char* root, char* subscription, int proj_id, int flags, int (*generate_key_func) (shm_t*))
+int shm_t_new (shm_t** shm, char* root, char* subscription, int proj_id,
+               int flags, int (*generate_key_func) (shm_t*))
 {
     int ret = 0;
+
+    err_reset ();
 
     if (shm == NULL || root == NULL || subscription == NULL ||
         generate_key_func == NULL)
@@ -76,6 +78,8 @@ int shm_assign_path (shm_t* shm, char* root, char* subscription)
     int   ret;
     char* as [2];
 
+    err_reset ();
+
     if (shm == NULL)
     {
         err_set (_EPTRNULL);
@@ -110,6 +114,13 @@ int shm_assign_path (shm_t* shm, char* root, char* subscription)
         return -1;
     }
 
+    ret = str_cat (2, shm->path, as);
+
+    if (ret < 0)
+    {
+        return ret;
+    }
+
     ret = file_touch (shm->path);
 
     if (ret < 0)
@@ -117,13 +128,13 @@ int shm_assign_path (shm_t* shm, char* root, char* subscription)
         return ret;
     }
 
-    ret = str_cat (2, shm->path, as);
-
     return ret;
 }
 
 int shm_generate_key_ftok (shm_t* shm)
 {
+    err_reset ();
+
     if (shm == NULL || shm->path == NULL)
     {
         err_set (_EPTRNULL);
@@ -144,6 +155,8 @@ int shm_generate_key_ftok (shm_t* shm)
 
 int shm_generate_id (shm_t* shm)
 {
+    err_reset ();
+
     if (shm == NULL)
     {
         err_set (_EPTRNULL);
@@ -158,6 +171,8 @@ int shm_generate_id (shm_t* shm)
 int shm_t_del (shm_t** shm)
 {
     int ret = 0;
+
+    err_reset ();
 
     if (shm == NULL)
     {

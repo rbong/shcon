@@ -5,6 +5,8 @@ int str_cat (int nstr, char* dest, char** src)
     int i;
     int nbyte = 0;
 
+    err_reset ();
+
     if (nstr <= 0)
     {
         return 0;
@@ -31,6 +33,8 @@ int str_cat_len (int nstr, char** src)
     int i;
     int len = 1;
     char* s;
+
+    err_reset ();
 
     if (src == NULL)
     {

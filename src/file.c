@@ -6,6 +6,8 @@ int file_touch (char* file_name)
     int   ret = 0;
     FILE* fp  = NULL;
 
+    err_reset ();
+
     if (file_name == NULL)
     {
         err_set (_EPTRNULL);
@@ -46,7 +48,6 @@ int file_touch (char* file_name)
     return ret;
 }
 
-// todo- test
 int file_exists (char* file_name)
 {
     err_reset ();

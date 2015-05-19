@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -Wall -O3
+CFLAGS = -Wall -g
 INC    = -I. -I../include
 DEPS   = util.h str.h file.h shm.h err.h
 SRCS   = $(DEPS:.h=.c) mm.c

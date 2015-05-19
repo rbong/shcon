@@ -4,10 +4,11 @@
 #define ERR_AT_LINE(status, ...) \
     (error_at_line (status, 0, __FILE__, __LINE__, __VA_ARGS__))
 #define ERR_AT_LINE_SYS(status, errnum) \
-    (error_at_line (status, errnum, __FILE__, __LINE__, "System"))
+    (error_at_line (status, errnum, __FILE__, __LINE__, \
+     "%s(): System", __func__))
 #define ERR_PRINT(status) \
     (error_at_line (status, 0, __FILE__, __LINE__, \
-     "%s", err_get_msg (err_number)))
+     "%s(): %s", __func__, err_get_msg (err_number)))
 
 #ifndef MM_ERR
 #define MM_ERR

@@ -1,16 +1,30 @@
 // todo- add comments for function operation
 #include <stdio.h>
 
+#include <err.h>
 #include <shm.h>
 
 int main (int argc, char** argv)
 {
-    shm_t* shm;
+    int    ret = 0;
+    shm_t* shm = NULL;
 
-    shm_t_new (&shm, shm_root, "test", shm_proj_id_def,
-               shm_flags_def, shm_generate_key_ftok);
+    ret = shm_t_new (&shm, shm_root, "test", shm_proj_id_def,
+                     shm_flags_def, shm_generate_key_ftok);
 
-    shm_t_del (&shm);
+    if (ret < 0)
+    {
+        ERR_PRINT (0);
+        return 1;
+    }
+
+    ret = shm_t_del (&shm);
+
+    if (ret < 0)
+    {
+        ERR_PRINT (0);
+        return 1;
+    }
 
     return 0;
 }
