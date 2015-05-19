@@ -2,14 +2,112 @@
 
 // todo- find better intermediate return value names
 
+int has_file_touch  = 0;
+int has_file_exists = 0;
+
+int test_file_touch_null  (void);
+int test_file_touch_empty (void);
+int test_file_touch_write (char*, const char*);
+int test_file_touch_read  (char*, const char*);
+
+int test_file (void)
+{
+    int ret   = 0;
+    int ret_b = 0;
+
+    // it is difficult to test file exists without similar code
+    printf ("Assuming file_exists () succeeds.\n");
+    has_file_exists = 1;
+
+    printf ("Testing file_touch ()...\n");
+    ret_b = test_file_touch ();
+    if (ret_b >= 0)
+    {
+        has_file_touch = 1;
+        printf ("Testing file_touch () succeeded.\n");
+    }
+    else
+    {
+        ret = -1;
+        printf ("Testing file_touch () failed.\n");
+    }
+
+    printf ("\n");
+
+    return ret;
+}
+
 // todo- split up this function, use more constants
 int test_file_touch (void)
 {
-    int   ret       =  0;
-    int   ret_b     =  0;
-    FILE* fp        =  NULL;
-    char* file_name = "/tmp/foobar";
-    char  buf [8]   = "";
+    int   ret         =  0;
+    int   ret_b       =  0;
+    char* file_name   = "/tmp/foobar";
+    const char* test_string = "foobar";
+
+    err_reset ();
+
+    ret = test_file_touch_null ();
+
+    ret_b = test_file_touch_empty ();
+
+    if (ret_b < 0)
+    {
+        ret = ret_b;
+    }
+
+    if (has_file_exists)
+    {
+        ret_b = file_exists (file_name);
+
+        if (ret_b < 0)
+        {
+            ERR_AT_LINE (0, "file_exists () failed.");
+            ERR_PRINT (0);
+            return ret_b;
+        }
+        else if (ret_b > 0)
+        {
+            ret_b = unlink (file_name);
+            if (ret_b < 0)
+            {
+                ERR_AT_LINE (0, "No access to test file.");
+                ERR_AT_LINE_SYS (0, errno);
+                return ret_b;
+            }
+        }
+    }
+    else
+    {
+        ERR_AT_LINE (0, "Note: could not test if test file exists.");
+    }
+
+    ret_b = test_file_touch_write (file_name, test_string);
+
+    if (ret_b < 0)
+    {
+        return ret_b;
+    }
+
+    ret_b = test_file_touch_read (file_name, test_string);
+
+    if (ret_b < 0)
+    {
+        return ret_b;
+    }
+
+    // todo- test restricted files once behaviour is decided
+
+    if (ret_b < 0)
+    {
+        ret = -1;
+    }
+    return ret;
+}
+
+int test_file_touch_null (void)
+{
+    int ret = 0;
 
     err_reset ();
 
@@ -25,8 +123,20 @@ int test_file_touch (void)
         err_reset ();
         ret = -1;
     }
+    else
+    {
+        ret = 0;
+    }
+
+    return ret;
+}
+
+int test_file_touch_empty (void)
+{
+    int ret = 0;
 
     err_reset ();
+
     ret = file_touch ("");
     if (ret >= 0)
     {
@@ -39,93 +149,93 @@ int test_file_touch (void)
         err_reset ();
         ret = -1;
     }
-
-    err_reset ();
-    ret_b = access (file_name, F_OK);
-    // todo- run this through gdb to ensure this is the correct code
-    switch (errno)
+    else
     {
-    case 0:
-        ret_b = unlink (file_name);
-        if (ret_b < 0)
-        {
-            ERR_AT_LINE_SYS (0, errno);
-            ERR_AT_LINE (0, "No access to test file.");
-            return ret_b;
-        }
-        break;
-    case ENOENT:
-        err_reset ();
-        break;
-    default:
-        ERR_AT_LINE_SYS (0, errno);
-        ERR_AT_LINE (0, "access () failed.");
+        ret = 0;
+    }
+
+    return ret;
+}
+
+int test_file_touch_write (char* file_name, const char* test_string)
+{
+    int   ret = 0;
+    FILE* fp  = NULL;
+
+    ret = file_touch (file_name);
+
+    if (ret < 0)
+    {
         return -1;
-        break;
     }
-    ret_b = 0;
-    err_reset ();
 
-    ret_b = file_touch (file_name);
-
-    if (ret_b < 0)
+    if (ret < 0)
     {
-        ERR_PRINT (0);
         ERR_AT_LINE (0, "file_touch () failed.");
-        return ret_b;
+        ERR_PRINT (0);
+        return ret;
     }
 
-    ret_b = access (file_name, F_OK);
-    if (ret_b < 0)
+    ret = access (file_name, F_OK);
+    if (ret < 0)
     {
-        ERR_AT_LINE_SYS (0, errno);
         ERR_AT_LINE (0, "file_touch () did not create a file.");
-        return ret_b;
+        ERR_AT_LINE_SYS (0, errno);
+        return ret;
     }
 
     fp = fopen (file_name, "w");
 
     if (fp == NULL)
     {
-        ERR_AT_LINE_SYS (0, errno);
         ERR_AT_LINE (0, "Could not open file created by file_touch ().");
+        ERR_AT_LINE_SYS (0, errno);
         return -1;
     }
 
-    ret_b = fprintf (fp, "foobar");
+    ret = fprintf (fp, test_string);
 
-    if (ret_b < 0)
+    if (ret < 0)
     {
-        ERR_AT_LINE_SYS (0, errno);
         ERR_AT_LINE (0, "fprintf () failed.");
-        return ret_b;
+        ERR_AT_LINE_SYS (0, errno);
+        return ret;
     }
 
-    ret_b = fclose (fp);
+    ret = fclose (fp);
 
-    if (ret_b < 0)
+    if (ret < 0)
     {
-        ERR_AT_LINE_SYS (0, errno);
         ERR_AT_LINE (0, "fclose () failed.");
-        return ret_b;
-    }
-
-    ret_b = file_touch (file_name);
-
-    if (ret_b < 0)
-    {
-        ERR_PRINT (0);
-        ERR_AT_LINE (0, "file_touch () failed.");
-        return ret_b;
-    }
-
-    ret_b = access (file_name, R_OK | W_OK);
-
-    if (ret_b < 0)
-    {
         ERR_AT_LINE_SYS (0, errno);
+        return ret;
+    }
+
+    return ret;
+}
+
+int test_file_touch_read (char* file_name, const char* test_string)
+{
+    int   ret     = 0;
+    FILE* fp      = 0;
+    char  buf [8] = "";
+
+    ret = file_touch (file_name);
+
+    if (ret < 0)
+    {
+        ERR_AT_LINE (0, "file_touch () failed.");
+        ERR_PRINT (0);
+        return ret;
+    }
+
+    ret = access (file_name, R_OK | W_OK);
+
+    if (ret < 0)
+    {
         ERR_AT_LINE (0, "file_touch () destroyed file.");
-        return ret_b;
+        ERR_AT_LINE_SYS (0, errno);
+        return ret;
     }
 
     fp = NULL;
@@ -133,43 +243,37 @@ int test_file_touch (void)
 
     if (fp == NULL)
     {
-        ERR_AT_LINE_SYS (0, errno);
         ERR_AT_LINE (0, "Could not read file touched by file_touch ().");
+        ERR_AT_LINE_SYS (0, errno);
         return -1;
     }
 
-    ret_b = fread (buf, 1, 7, fp);
+    ret = fread (buf, 1, 7, fp);
 
-    if (ret_b < 0 && ferror (fp) < 0)
+    if (ret < 0 && ferror (fp) < 0)
     {
-        ERR_AT_LINE_SYS (0, errno);
         ERR_AT_LINE (0, "fread () or ferror () failed.");
-        fclose (fp);
-        return ret_b;
-    }
-
-    ret_b = fclose (fp);
-
-    if (ret_b < 0)
-    {
         ERR_AT_LINE_SYS (0, errno);
-        ERR_AT_LINE (0, "fclose () failed.");
+        fclose (fp);
+        return ret;
     }
 
-    ret_b = strcmp (buf, "foobar");
+    ret = fclose (fp);
 
-    if (ret_b != 0)
+    if (ret < 0)
+    {
+        ERR_AT_LINE (0, "fclose () failed.");
+        ERR_AT_LINE_SYS (0, errno);
+    }
+
+    ret = strcmp (buf, test_string);
+
+    if (ret != 0)
     {
         ERR_AT_LINE (0, "file_touch () destroyed file contents.");
         ERR_AT_LINE (0, "Note: new contents are \"%s\".", buf);
         return -1;
     }
 
-    // todo- test restricted files once behaviour is decided
-
-    if (ret_b < 0)
-    {
-        ret = -1;
-    }
     return ret;
 }

@@ -18,14 +18,11 @@ int file_touch (char* file_name)
         return -1;
     }
 
-    switch (file_exists (file_name))
+    ret = file_exists (file_name);
+
+    if (ret != 0)
     {
-    case 0:
-        break;
-    case 1:
-        return 0;
-    case -1:
-        return -1;
+        return ret;
     }
 
     fp = fopen (file_name, "a+");
@@ -52,6 +49,8 @@ int file_touch (char* file_name)
 // todo- test
 int file_exists (char* file_name)
 {
+    int ret = 0;
+
     err_reset ();
 
     if (file_name == NULL)

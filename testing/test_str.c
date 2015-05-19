@@ -1,6 +1,47 @@
+// todo- test empty strings
 #include <test_str.h>
 
-// todo- split up this function
+int has_str_cat     = 0;
+int has_str_cat_len = 0;
+
+int test_str (void)
+{
+    int ret   = 0;
+    int ret_b = 0;
+
+    printf ("Testing str_cat ()...\n");
+    ret_b = test_str_cat ();
+    if (ret_b >= 0)
+    {
+        has_str_cat = 1;
+        printf ("Testing str_cat () succeeded.\n");
+    }
+    else
+    {
+        ret = -1;
+        printf ("Testing str_cat () failed.\n");
+    }
+
+    printf ("\n");
+
+    printf ("Testing str_cat_len ()...\n");
+    ret_b = test_str_cat_len ();
+    if (ret_b >= 0)
+    {
+        has_str_cat_len = 1;
+        printf ("Testing str_cat_len () succeeded.\n");
+    }
+    else
+    {
+        ret = -1;
+        printf ("Testing str_cat_len () failed.\n");
+    }
+
+    printf ("\n");
+
+    return ret;
+}
+
 int test_str_cat (void)
 {
     int          i         =    1;
@@ -9,6 +50,8 @@ int test_str_cat (void)
     char         dest [13] =   "";
     const char*  src  [4]  = { "foo", "bar", "baz", "qux" };
     const char*  res  [4]  = { "foo", "foobar", "foobarbaz", "foobarbazqux" };
+
+    err_reset ();
 
     if (str_cat (1, dest, NULL) >= 0 || str_cat (1, NULL, (char**) src) >= 0)
     {
@@ -21,7 +64,7 @@ int test_str_cat (void)
         }
         ret = -1;
     }
-    errno = 0;
+    err_reset ();
 
     for (i = 1; i <= 4; i++)
     {
@@ -56,7 +99,6 @@ int test_str_cat (void)
     return ret;
 }
 
-// todo- split up this function
 int test_str_cat_len (void)
 {
     int         i       =    1;
@@ -64,6 +106,8 @@ int test_str_cat_len (void)
     int         ret_b   =    0;
     const char* src [4] = { "foo", "bar", "qaz", "nux" };
     int         res [4] = {  4,     7,     10,    13   };
+
+    err_reset ();
 
     ret = str_cat_len (1, NULL);
     if (ret >= 0)
@@ -77,6 +121,11 @@ int test_str_cat_len (void)
         }
         ret = -1;
     }
+    else
+    {
+        ret = 0;
+    }
+    err_reset ();
 
     for (i = 1; i <= 4; i++)
     {
