@@ -49,8 +49,6 @@ int file_touch (char* file_name)
 // todo- test
 int file_exists (char* file_name)
 {
-    int ret = 0;
-
     err_reset ();
 
     if (file_name == NULL)
@@ -65,7 +63,7 @@ int file_exists (char* file_name)
         return -1;
     }
 
-    ret = access (file_name, F_OK);
+    access (file_name, F_OK);
     switch (errno)
     {
     case 0:

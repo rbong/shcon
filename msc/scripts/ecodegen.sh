@@ -1,5 +1,4 @@
 #!/bin/bash
-# todo- get the directory thing right, use better sed expression
 INC=../../include
 cd $(dirname ${BASH_SOURCE[0]})
 i=0

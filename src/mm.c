@@ -1,22 +1,17 @@
 // todo- add comments for function operation
-#include <mm.h>
+#include <stdio.h>
+
+#include <shm.h>
 
 int main (int argc, char** argv)
 {
-    shm_t shm;
+    shm_t* shm;
 
-    shm_t_new (&shm);
+    shm_t_new (&shm, shm_root, "test", shm_proj_id_def,
+               shm_flags_def, shm_generate_key_ftok);
 
-    shm_assign_path (&shm, NULL, "mysub");
+    shm_t_del (&shm);
 
-    // todo- delete me
-    printf ("%s\n", shm.path);
-
-    shm_generate_key_func (&shm);
-/*    check_error ((shm.key == -1), "main (): shm_generate_key_func ()"
-                 EXIT_ERROR | USE_ERRNO);*/
-
-    // todo- segsize is temporary value
-    // shm_id = shmget (shm_key, segsize, 
+    return 0;
 }
 

@@ -19,6 +19,8 @@ int test_file (void)
     printf ("Assuming file_exists () succeeds.\n");
     has_file_exists = 1;
 
+    printf ("\n");
+
     printf ("Testing file_touch ()...\n");
     ret_b = test_file_touch ();
     if (ret_b >= 0)

@@ -8,6 +8,7 @@
 
 #include <err.h>
 #include <str.h>
+#include <file.h>
 
 #ifndef MM_SHM
 #define MM_SHM
@@ -23,18 +24,25 @@ enum shm_flags_enum {
 };
 
 typedef struct shm_t {
-    char*  path;
-    int    flags;
-    int    id;
-    int8_t proj_id;
-    key_t  key;
+    char* path;
+    int   flags;
+    int   id;
+    int   proj_id;
+    key_t key;
 } shm_t;
 
-void  shm_generate_key_ftok (shm_t*);
+int  shm_generate_key_ftok (shm_t*);
 
-void (*shm_generate_key_func) (shm_t*) = shm_generate_key_ftok;
+extern int (*shm_generate_key_func) (shm_t*);
+
+extern int   shm_flags_def;
+extern int   shm_proj_id_def;
+extern char* shm_root;
 #endif
 
-void  shm_generate_key_ftok (shm_t*);
-void  shm_t_new             (shm_t*);
+int   shm_t_new             (shm_t**, char*, char*, int,
+                             int, int (*) (shm_t*));
+int   shm_generate_key_ftok (shm_t*);
 int   shm_assign_path       (shm_t*, char*, char*);
+int   shm_generate_id       (shm_t*);
+int   shm_t_del             (shm_t**);

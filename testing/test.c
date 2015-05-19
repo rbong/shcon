@@ -34,7 +34,5 @@ int main ()
         ret = 1;
     }
 
-    printf ("Done.\n");
-
     return ret;
 }
