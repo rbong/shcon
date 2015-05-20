@@ -3,11 +3,10 @@
 // todo- temporary value for shmget
 #define segsize 100
 
-int  shm_flags_def   =  SHM_USR_R | SHM_USR_W | SHM_GRP_R |
+int   shm_flags_def   =  SHM_USR_R | SHM_USR_W | SHM_GRP_R |
                         SHM_GRP_W | IPC_CREAT;
-int  shm_proj_id_def = 'M';
-// todo- make get function
-char* shm_root    = "/tmp/";
+int   shm_proj_id_def = 'M';
+char* shm_root        = "/tmp/";
 
 int (*shm_generate_key_func) (shm_t*) = shm_generate_key_ftok;
 
@@ -37,11 +36,12 @@ int shm_t_new (shm_t** shm, char* root, char* subscription, int proj_id,
         }
     }
 
-    (*shm)->proj_id =  proj_id;
-    (*shm)->id      =  0;
-    (*shm)->flags   =  flags;
-    (*shm)->key     =  0;
-    (*shm)->path    =  NULL;
+    (*shm)->proj_id = proj_id;
+    (*shm)->seg     = NULL;
+    (*shm)->id      = 0;
+    (*shm)->flags   = flags;
+    (*shm)->key     = 0;
+    (*shm)->path    = NULL;
 
     ret = shm_assign_path (*shm, root, subscription);
 
@@ -63,6 +63,13 @@ int shm_t_new (shm_t** shm, char* root, char* subscription, int proj_id,
     }
 
     ret = shm_generate_id (*shm);
+
+    if (ret < 0)
+    {
+        return -1;
+    }
+
+    ret = shm_attach_seg (*shm);
 
     if (ret < 0)
     {
@@ -168,6 +175,26 @@ int shm_generate_id (shm_t* shm)
     return shm->id;
 }
 
+int shm_attach_seg (shm_t* shm)
+{
+    if (shm == NULL)
+    {
+        err_set (_EPTRNULL);
+        return -1;
+    }
+
+    shm->seg = shmat (shm->id, 0, 0);
+
+    if (shm->seg < 0)
+    {
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_ESYSTEM);
+        return -1;
+    }
+
+    return 0;
+}
+
 int shm_t_del (shm_t** shm)
 {
     int ret = 0;
@@ -193,4 +220,43 @@ int shm_t_del (shm_t** shm)
     free (*shm);
 
     return ret;
+}
+
+int shm_write (shm_t* shm, char* buf, int nbytes)
+{
+    if (shm == NULL || buf == NULL || shm->seg == NULL)
+    {
+        err_set (_EPTRNULL);
+    }
+
+    if (strlen (buf) > nbytes)
+    {
+        // todo- print warning
+    }
+
+    strncpy (shm->seg, buf, nbytes);
+
+    if (shm->seg == NULL)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+int shm_read (shm_t* shm, char* buf, int nbytes)
+{
+    if (shm == NULL || buf == NULL || shm->seg == NULL)
+    {
+        err_set (_EPTRNULL);
+    }
+
+    strncpy (buf, shm->seg, nbytes);
+
+    if (buf == NULL)
+    {
+        return -1;
+    }
+
+    return 0;
 }

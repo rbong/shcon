@@ -25,6 +25,7 @@ enum shm_flags_enum {
 
 typedef struct shm_t {
     char* path;
+    char* seg;
     int   flags;
     int   id;
     int   proj_id;
@@ -45,4 +46,7 @@ int   shm_t_new             (shm_t**, char*, char*, int,
 int   shm_generate_key_ftok (shm_t*);
 int   shm_assign_path       (shm_t*, char*, char*);
 int   shm_generate_id       (shm_t*);
+int   shm_attach_seg        (shm_t*);
 int   shm_t_del             (shm_t**);
+int   shm_write             (shm_t*, char*, int);
+int   shm_read              (shm_t*, char*, int);

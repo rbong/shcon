@@ -1,4 +1,4 @@
-// todo- use err_reset on every function
+// todo- overhaul error framework
 #include <err.h>
 
 const err_info_t err_table [] =
