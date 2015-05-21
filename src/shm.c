@@ -13,14 +13,14 @@ shm_t* shm_t_new (void)
     }
 
     shm->ipc  = NULL;
-    shm->seg  = NULL;
-    shm->id   = 0;
     shm->size = 0;
+    shm->id   = 0;
+    shm->seg  = NULL;
 
     return shm;
 }
 
-int shm_t_set (shm_t** shm, ipc_t* ipc, size_t size, int id, void* seg)
+int shm_t_set (shm_t** shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
 {
     int res = 0;
     int ret = 0;
@@ -41,39 +41,38 @@ int shm_t_set (shm_t** shm, ipc_t* ipc, size_t size, int id, void* seg)
         }
     }
 
-    if (ipc != NULL)
+    if (_ipc != NULL)
     {
-        (*shm)->ipc = ipc;
+        (*shm)->ipc = _ipc;
     }
 
-    if (size == 0)
+    if (_size == 0)
     {
         // todo- get real max
         (*shm)->size = 1028;
     }
-    else if (size > 0)
+    else if (_size > 0)
     {
-        (*shm)->size = size;
+        (*shm)->size = _size;
     }
 
-    if (id == 0)
+    if (_id == 0)
     {
         res = shm_gen_id ((*shm));
-        
         if (res < 0)
         {
             ret = res;
             return ret;
         }
     }
-    else if (id > 0)
+    else if (_id > 0)
     {
-        (*shm)->id = id;
+        (*shm)->id = _id;
     }
 
-    if (seg != NULL)
+    if (_seg != NULL)
     {
-        (*shm)->seg = seg;
+        (*shm)->seg = _seg;
     }
 
     if (res < 0)
@@ -84,27 +83,27 @@ int shm_t_set (shm_t** shm, ipc_t* ipc, size_t size, int id, void* seg)
     return ret;
 }
 
-int shm_t_set_from_path (shm_t** shm, char* root, char* sub)
+int shm_t_from_path (shm_t** shm, char* root, char* sub)
 {
     int res = 0;
     int ret = 0;
 
-    ipc_t* ipc = NULL;
+    ipc_t* _ipc = NULL;
 
-    res = ipc_t_set_from_path (&ipc, root, sub);
+    res = ipc_t_from_path (&_ipc, root, sub);
 
     if (res < 0)
     {
         ret = res;
         return ret;
     }
-    if (ipc == NULL)
+    if (_ipc == NULL)
     {
         err_set (_EBADFUNC);
         return -1;
     }
 
-    res = shm_t_set (shm, ipc, 0, 0, NULL);
+    res = shm_t_set (shm, _ipc, 0, 0, NULL);
 
     if (res < 0)
     {

@@ -10,80 +10,80 @@ key_t (*ipc_gen_key) (char*, int) = ipc_gen_key_ftok;
 
 ipc_t* ipc_t_new (void)
 {
-    ipc_t* ipc = NULL;
+    ipc_t* _ipc = NULL;
 
-    ipc = malloc (sizeof (ipc_t));
+    _ipc = malloc (sizeof (ipc_t));
 
-    if (ipc == NULL)
+    if (_ipc == NULL)
     {
         err_set (_EALLOC);
         return NULL;
     }
 
-    ipc->path    = NULL;
-    ipc->flags   = 0;
-    ipc->proj_id = 0;
-    ipc->key     = 0;
+    _ipc->path    = NULL;
+    _ipc->flags   = 0;
+    _ipc->proj_id = 0;
+    _ipc->key     = 0;
 
-    return ipc;
+    return _ipc;
 }
 
-int ipc_t_set (ipc_t** ipc, int flags, int proj_id, char* path, key_t key)
+int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
 {
     int res = 0;
     int ret = 0;
 
-    if (ipc == NULL)
+    if (_ipc == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    if ((*ipc) == NULL)
+    if ((*_ipc) == NULL)
     {
-        (*ipc) = ipc_t_new ();
+        (*_ipc) = ipc_t_new ();
 
-        if ((*ipc) == NULL)
+        if ((*_ipc) == NULL)
         {
             return -1;
         }
     }
 
-    if (flags == 0)
+    if (_flags == 0)
     {
-        (*ipc)->flags = ipc_flags;
+        (*_ipc)->flags = ipc_flags;
     }
-    else if (flags > 0)
+    else if (_flags > 0)
     {
-        (*ipc)->flags = flags;
-    }
-
-    if (proj_id == 0)
-    {
-        (*ipc)->proj_id = ipc_proj_id;
-    }
-    else if (proj_id > 0)
-    {
-        (*ipc)->proj_id = proj_id;
+        (*_ipc)->flags = _flags;
     }
 
-    if (path != NULL)
+    if (_proj_id == 0)
     {
-        (*ipc)->path = path;
+        (*_ipc)->proj_id = ipc_proj_id;
+    }
+    else if (_proj_id > 0)
+    {
+        (*_ipc)->proj_id = _proj_id;
     }
 
-    if (key == 0)
+    if (_path != NULL)
     {
-        (*ipc)->key = ipc_gen_key ((*ipc)->path, (*ipc)->proj_id);
+        (*_ipc)->path = _path;
+    }
+
+    if (_key == 0)
+    {
+        (*_ipc)->key = ipc_gen_key ((*_ipc)->path, (*_ipc)->proj_id);
 
         if (res < 0)
         {
             ret = res;
         }
     }
-    else if (key > 0)
+    else if (_key > 0)
     {
-        (*ipc)->key = key;
+        (*_ipc)->key = _key;
     }
 
 
@@ -95,39 +95,39 @@ int ipc_t_set (ipc_t** ipc, int flags, int proj_id, char* path, key_t key)
     return ret;
 }
 
-int ipc_t_set_from_path (ipc_t** ipc, char* root, char* sub)
+int ipc_t_from_path (ipc_t** _ipc, char* root, char* sub)
 {
-    char* path = NULL;
+    char* _path = NULL;
 
-    path = ipc_gen_path (root, sub);
+    _path = ipc_gen_path (root, sub);
 
-    if (path == NULL)
+    if (_path == NULL)
     {
         return -1;
     }
 
-    return ipc_t_set (ipc, 0, 0, path, 0);
+    return ipc_t_set (_ipc, 0, 0, _path, 0);
 }
 
-void ipc_t_del (ipc_t* ipc)
+void ipc_t_del (ipc_t* _ipc)
 {
-    if (ipc == NULL)
+    if (_ipc == NULL)
     {
         return;
     }
 
-    if (ipc->path != NULL)
+    if (_ipc->path != NULL)
     {
-        free (ipc->path);
+        free (_ipc->path);
     }
 
-    free (ipc);
+    free (_ipc);
 }
 
 char* ipc_gen_path (char* root, char* sub)
 {
     int   ret    = NULL;
-    char* path   = NULL;
+    char* _path   = NULL;
     char* as [2] = { NULL, NULL };
 
     err_reset ();
@@ -158,57 +158,57 @@ char* ipc_gen_path (char* root, char* sub)
         return NULL;
     }
 
-    path = malloc (ret);
+    _path = malloc (ret);
 
-    if (path == NULL)
+    if (_path == NULL)
     {
         ERR_AT_LINE_SYS (0, errno);
         err_set (_EALLOC);
         return NULL;
     }
 
-    ret = str_cat (2, path, as);
+    ret = str_cat (2, _path, as);
 
     if (ret < 0)
     {
         return NULL;
     }
-    if (path == NULL)
+    if (_path == NULL)
     {
         err_set (_EBADFUNC);
         return NULL;
     }
 
-    ret = file_touch (path);
+    ret = file_touch (_path);
 
     if (ret < 0)
     {
-        free (path);
+        free (_path);
         return NULL;
     }
 
-    return path;
+    return _path;
 }
 
-key_t ipc_gen_key_ftok (char* path, int proj_id)
+key_t ipc_gen_key_ftok (char* _path, int _proj_id)
 {
     key_t key = 0;
 
     err_reset ();
 
-    if (path == NULL)
+    if (_path == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    if (proj_id <= 0)
+    if (_proj_id <= 0)
     {
         err_set (_EBADVAL);
         return -1;
     }
 
-    key = ftok (path, proj_id);
+    key = ftok (_path, _proj_id);
 
     if (key < 0)
     {

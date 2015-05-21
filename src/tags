@@ -1,0 +1,114 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ERR_AT_LINE	err.h	4;"	kind:d
+ERR_AT_LINE_SYS	err.h	6;"	kind:d
+ERR_MAX	err.c	/^const int ERR_MAX    = sizeof (err_table) \/ sizeof (err_info_t) - 1;$/;"	kind:v
+ERR_PRINT	err.h	9;"	kind:d
+IPC_FLAGS	ipc.h	/^enum IPC_FLAGS {$/;"	kind:g
+IPC_GRP_R	ipc.h	/^    IPC_GRP_R =  040,$/;"	kind:e	enum:IPC_FLAGS
+IPC_GRP_W	ipc.h	/^    IPC_GRP_W =  020,$/;"	kind:e	enum:IPC_FLAGS
+IPC_OTH_R	ipc.h	/^    IPC_OTH_R =   04,$/;"	kind:e	enum:IPC_FLAGS
+IPC_OTH_W	ipc.h	/^    IPC_OTH_W =   02,$/;"	kind:e	enum:IPC_FLAGS
+IPC_USR_R	ipc.h	/^    IPC_USR_R = 0400,$/;"	kind:e	enum:IPC_FLAGS
+IPC_USR_W	ipc.h	/^    IPC_USR_W = 0200,$/;"	kind:e	enum:IPC_FLAGS
+MM_ERR	err.h	14;"	kind:d
+MM_IPC	ipc.h	9;"	kind:d
+MM_SEM	sem.h	9;"	kind:d
+MM_SHM	shm.h	14;"	kind:d
+code	err.h	/^    int   code;$/;"	kind:m	struct:err_info_t	access:public
+err_codes	err.h	/^enum err_codes$/;"	kind:g
+err_get_msg	err.c	/^char* err_get_msg (int code)$/;"	kind:f	signature:(int code)
+err_get_msg	err.h	/^char*     err_get_msg (int);$/;"	kind:p	signature:(int)
+err_info_t	err.h	/^typedef struct err_info_t$/;"	kind:s
+err_info_t	err.h	/^} err_info_t;$/;"	kind:t	typeref:struct:err_info_t
+err_info_t::code	err.h	/^    int   code;$/;"	kind:m	struct:err_info_t	access:public
+err_info_t::msg	err.h	/^    char* msg;$/;"	kind:m	struct:err_info_t	access:public
+err_number	err.c	/^int       err_number = _ESUCCESS;$/;"	kind:v
+err_reset	err.c	/^void err_reset (void)$/;"	kind:f	signature:(void)
+err_reset	err.h	/^void      err_reset     (void);$/;"	kind:p	signature:(void)
+err_set	err.c	/^void err_set (int code)$/;"	kind:f	signature:(int code)
+err_set	err.h	/^void      err_set     (int);$/;"	kind:p	signature:(int)
+err_table	err.c	/^const err_info_t err_table [] =$/;"	kind:v
+file_exists	file.c	/^int file_exists (char* file_name)$/;"	kind:f	signature:(char* file_name)
+file_exists	file.h	/^int file_exists (char*);$/;"	kind:p	signature:(char*)
+file_touch	file.c	/^int file_touch (char* file_name)$/;"	kind:f	signature:(char* file_name)
+file_touch	file.h	/^int file_touch (char*);$/;"	kind:p	signature:(char*)
+flags	ipc.h	/^    int   flags;$/;"	kind:m	struct:ipc_t	access:public
+id	sem.h	/^    int    id;$/;"	kind:m	struct:sem_t	access:public
+id	shm.h	/^    int    id;$/;"	kind:m	struct:shm_t	access:public
+ipc	sem.h	/^    ipc_t* ipc;$/;"	kind:m	struct:sem_t	access:public
+ipc	shm.h	/^    ipc_t* ipc;$/;"	kind:m	struct:shm_t	access:public
+ipc_flags	ipc.c	/^int   ipc_flags   = IPC_USR_R | IPC_USR_W | IPC_GRP_R |$/;"	kind:v
+ipc_gen_key	ipc.c	/^key_t (*ipc_gen_key) (char*, int) = ipc_gen_key_ftok;$/;"	kind:v
+ipc_gen_key_ftok	ipc.c	/^key_t ipc_gen_key_ftok (char* _path, int _proj_id)$/;"	kind:f	signature:(char* _path, int _proj_id)
+ipc_gen_key_ftok	ipc.h	/^key_t  ipc_gen_key_ftok (char*, int);$/;"	kind:p	signature:(char*, int)
+ipc_gen_path	ipc.c	/^char* ipc_gen_path (char* root, char* sub)$/;"	kind:f	signature:(char* root, char* sub)
+ipc_gen_path	ipc.h	/^char*  ipc_gen_path     (char*, char*);$/;"	kind:p	signature:(char*, char*)
+ipc_proj_id	ipc.c	/^int   ipc_proj_id = 'M';$/;"	kind:v
+ipc_root	ipc.c	/^char* ipc_root    = "\/tmp\/";$/;"	kind:v
+ipc_sub	ipc.c	/^char* ipc_sub     = "mm";$/;"	kind:v
+ipc_t	ipc.h	/^typedef struct ipc_t$/;"	kind:s
+ipc_t	ipc.h	/^} ipc_t;$/;"	kind:t	typeref:struct:ipc_t
+ipc_t::flags	ipc.h	/^    int   flags;$/;"	kind:m	struct:ipc_t	access:public
+ipc_t::key	ipc.h	/^    key_t key;$/;"	kind:m	struct:ipc_t	access:public
+ipc_t::path	ipc.h	/^    char* path;$/;"	kind:m	struct:ipc_t	access:public
+ipc_t::proj_id	ipc.h	/^    int   proj_id;$/;"	kind:m	struct:ipc_t	access:public
+ipc_t_del	ipc.c	/^void ipc_t_del (ipc_t* _ipc)$/;"	kind:f	signature:(ipc_t* _ipc)
+ipc_t_del	ipc.h	/^void   ipc_t_del        (ipc_t*);$/;"	kind:p	signature:(ipc_t*)
+ipc_t_from_path	ipc.c	/^int ipc_t_from_path (ipc_t** _ipc, char* root, char* sub)$/;"	kind:f	signature:(ipc_t** _ipc, char* root, char* sub)
+ipc_t_from_path	ipc.h	/^int    ipc_t_from_path  (ipc_t**, char*, char*);$/;"	kind:p	signature:(ipc_t**, char*, char*)
+ipc_t_new	ipc.c	/^ipc_t* ipc_t_new (void)$/;"	kind:f	signature:(void)
+ipc_t_new	ipc.h	/^ipc_t* ipc_t_new        (void);$/;"	kind:p	signature:(void)
+ipc_t_set	ipc.c	/^int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)$/;"	kind:f	signature:(ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
+ipc_t_set	ipc.h	/^int    ipc_t_set        (ipc_t**, int, int, char*, key_t);$/;"	kind:p	signature:(ipc_t**, int, int, char*, key_t)
+key	ipc.h	/^    key_t key;$/;"	kind:m	struct:ipc_t	access:public
+len	sem.h	/^    int    len;$/;"	kind:m	struct:sem_t	access:public
+main	mm.c	/^int main (int argc, char** argv)$/;"	kind:f	signature:(int argc, char** argv)
+msg	err.h	/^    char* msg;$/;"	kind:m	struct:err_info_t	access:public
+path	ipc.h	/^    char* path;$/;"	kind:m	struct:ipc_t	access:public
+proj_id	ipc.h	/^    int   proj_id;$/;"	kind:m	struct:ipc_t	access:public
+seg	shm.h	/^    void*  seg;$/;"	kind:m	struct:shm_t	access:public
+sem_gen_id	sem.c	/^int sem_gen_id (sem_t* sem)$/;"	kind:f	signature:(sem_t* sem)
+sem_len	sem.c	/^int sem_len = 1;$/;"	kind:v
+sem_t	sem.h	/^typedef struct sem_t$/;"	kind:s
+sem_t	sem.h	/^} sem_t;$/;"	kind:t	typeref:struct:sem_t
+sem_t::id	sem.h	/^    int    id;$/;"	kind:m	struct:sem_t	access:public
+sem_t::ipc	sem.h	/^    ipc_t* ipc;$/;"	kind:m	struct:sem_t	access:public
+sem_t::len	sem.h	/^    int    len;$/;"	kind:m	struct:sem_t	access:public
+sem_t_del	sem.c	/^int sem_t_del (sem_t* sem)$/;"	kind:f	signature:(sem_t* sem)
+sem_t_del	sem.h	/^int    sem_t_del (sem_t*);$/;"	kind:p	signature:(sem_t*)
+sem_t_new	sem.c	/^sem_t* sem_t_new (void)$/;"	kind:f	signature:(void)
+sem_t_new	sem.h	/^sem_t* sem_t_new (void);$/;"	kind:p	signature:(void)
+sem_t_set	sem.c	/^int sem_t_set (sem_t** sem, ipc_t* _ipc, int _len, int _id)$/;"	kind:f	signature:(sem_t** sem, ipc_t* _ipc, int _len, int _id)
+sem_t_set	sem.h	/^int    sem_t_set (sem_t**, ipc_t*, int, int);$/;"	kind:p	signature:(sem_t**, ipc_t*, int, int)
+shm_attach_seg	shm.c	/^int shm_attach_seg (shm_t* shm)$/;"	kind:f	signature:(shm_t* shm)
+shm_attach_seg	shm.h	/^int    shm_attach_seg  (shm_t*);$/;"	kind:p	signature:(shm_t*)
+shm_gen_id	shm.c	/^int shm_gen_id (shm_t* shm)$/;"	kind:f	signature:(shm_t* shm)
+shm_gen_id	shm.h	/^int    shm_gen_id      (shm_t*);$/;"	kind:p	signature:(shm_t*)
+shm_read	shm.c	/^int shm_read (shm_t* shm, char* buf, int nbytes)$/;"	kind:f	signature:(shm_t* shm, char* buf, int nbytes)
+shm_read	shm.h	/^int    shm_read        (shm_t*, char*, int);$/;"	kind:p	signature:(shm_t*, char*, int)
+shm_t	shm.h	/^typedef struct shm_t$/;"	kind:s
+shm_t	shm.h	/^} shm_t;$/;"	kind:t	typeref:struct:shm_t
+shm_t::id	shm.h	/^    int    id;$/;"	kind:m	struct:shm_t	access:public
+shm_t::ipc	shm.h	/^    ipc_t* ipc;$/;"	kind:m	struct:shm_t	access:public
+shm_t::seg	shm.h	/^    void*  seg;$/;"	kind:m	struct:shm_t	access:public
+shm_t::size	shm.h	/^    size_t size;$/;"	kind:m	struct:shm_t	access:public
+shm_t_del	shm.c	/^void shm_t_del (shm_t** shm)$/;"	kind:f	signature:(shm_t** shm)
+shm_t_del	shm.h	/^void   shm_t_del       (shm_t**);$/;"	kind:p	signature:(shm_t**)
+shm_t_from_path	shm.c	/^int shm_t_from_path (shm_t** shm, char* root, char* sub)$/;"	kind:f	signature:(shm_t** shm, char* root, char* sub)
+shm_t_from_path	shm.h	/^int    shm_t_from_path (shm_t**, char*, char*);$/;"	kind:p	signature:(shm_t**, char*, char*)
+shm_t_new	shm.c	/^shm_t* shm_t_new (void)$/;"	kind:f	signature:(void)
+shm_t_new	shm.h	/^shm_t* shm_t_new       (void);$/;"	kind:p	signature:(void)
+shm_t_set	shm.c	/^int shm_t_set (shm_t** shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)$/;"	kind:f	signature:(shm_t** shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
+shm_t_set	shm.h	/^int    shm_t_set       (shm_t**, ipc_t*, size_t, int, void*);$/;"	kind:p	signature:(shm_t**, ipc_t*, size_t, int, void*)
+shm_write	shm.c	/^int shm_write (shm_t* shm, char* buf, int nbytes)$/;"	kind:f	signature:(shm_t* shm, char* buf, int nbytes)
+shm_write	shm.h	/^int    shm_write       (shm_t*, char*, int);$/;"	kind:p	signature:(shm_t*, char*, int)
+size	shm.h	/^    size_t size;$/;"	kind:m	struct:shm_t	access:public
+str_cat	str.c	/^int str_cat (int nstr, char* dest, char** src)$/;"	kind:f	signature:(int nstr, char* dest, char** src)
+str_cat	str.h	/^int str_cat     (int, char*, char**);$/;"	kind:p	signature:(int, char*, char**)
+str_cat_len	str.c	/^int str_cat_len (int nstr, char** src)$/;"	kind:f	signature:(int nstr, char** src)
+str_cat_len	str.h	/^int str_cat_len (int, char**);$/;"	kind:p	signature:(int, char**)

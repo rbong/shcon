@@ -1,9 +1,8 @@
-// todo- add comments for function operation
 #include <stdio.h>
 #include <unistd.h>
 
-#include <err.h>
 #include <shm.h>
+#include <err.h>
 
 int main (int argc, char** argv)
 {

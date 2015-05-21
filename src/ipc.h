@@ -27,16 +27,12 @@ typedef struct ipc_t
     key_t key;
 } ipc_t;
 
-extern int   ipc_flags_def;
-extern int   ipc_proj_id_def;
-extern char* ipc_root;
-
 extern key_t (*ipc_gen_key) (char*, int);
 #endif
 
-ipc_t* ipc_t_new           (void);
-int    ipc_t_set           (ipc_t**, int, int, char*, key_t);
-int    ipc_t_set_from_path (ipc_t**, char*, char*);
-void   ipc_t_del           (ipc_t* ipc);
-char*  ipc_gen_path        (char*, char*);
-key_t  ipc_gen_key_ftok    (char* path, int proj_id);
+ipc_t* ipc_t_new        (void);
+int    ipc_t_set        (ipc_t**, int, int, char*, key_t);
+int    ipc_t_from_path  (ipc_t**, char*, char*);
+void   ipc_t_del        (ipc_t*);
+char*  ipc_gen_path     (char*, char*);
+key_t  ipc_gen_key_ftok (char*, int);
