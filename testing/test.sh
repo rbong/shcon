@@ -8,4 +8,4 @@ if [ $? -eq 0 ]; then
 fi
 printf "Done searching for error codes.\n\n"
 ./test-mm
-printf "Done."
+printf "Done.\n"

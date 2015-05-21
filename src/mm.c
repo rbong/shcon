@@ -8,10 +8,8 @@ int main (int argc, char** argv)
 {
     int    ret = 0;
     shm_t* shm = NULL;
-    char   buf [100];
 
-    ret = shm_t_new (&shm, shm_root, "test", shm_proj_id_def,
-                     shm_flags_def, shm_generate_key_ftok);
+    ret = shm_t_set_from_path (&shm, NULL, "test");
 
     if (ret < 0)
     {
@@ -35,13 +33,7 @@ int main (int argc, char** argv)
         return 1;
     }
 
-    ret = shm_t_del (&shm);
-
-    if (ret < 0)
-    {
-        ERR_PRINT (0);
-        return 1;
-    }
+    shm_t_del (&shm);
 
     return 0;
 }

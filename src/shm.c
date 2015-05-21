@@ -1,176 +1,155 @@
 #include <shm.h>
 
-// todo- temporary value for shmget
-#define segsize 100
-
-int   shm_flags_def   =  SHM_USR_R | SHM_USR_W | SHM_GRP_R |
-                        SHM_GRP_W | IPC_CREAT;
-int   shm_proj_id_def = 'M';
-char* shm_root        = "/tmp/";
-
-int (*shm_generate_key_func) (shm_t*) = shm_generate_key_ftok;
-
-int shm_t_new (shm_t** shm, char* root, char* subscription, int proj_id,
-               int flags, int (*generate_key_func) (shm_t*))
+shm_t* shm_t_new (void)
 {
+    shm_t* shm = NULL;
+
+    shm = malloc (sizeof (shm_t));
+
+    if (shm == NULL)
+    {
+        err_set (_EALLOC);
+        return NULL;
+    }
+
+    shm->ipc  = NULL;
+    shm->seg  = NULL;
+    shm->id   = 0;
+    shm->size = 0;
+
+    return shm;
+}
+
+int shm_t_set (shm_t** shm, ipc_t* ipc, size_t size, int id, void* seg)
+{
+    int res = 0;
     int ret = 0;
 
-    err_reset ();
-
-    if (shm == NULL || root == NULL || subscription == NULL ||
-        generate_key_func == NULL)
+    if (shm == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    if (*shm == NULL)
+    if ((*shm) == NULL)
     {
-        *shm = malloc (sizeof (shm_t));
+        (*shm) = shm_t_new ();
 
-        if (*shm == NULL)
+        if ((*shm) == NULL)
         {
-            ERR_AT_LINE_SYS (0, errno);
-            err_set (_EALLOC);
             return -1;
         }
     }
 
-    (*shm)->proj_id = proj_id;
-    (*shm)->seg     = NULL;
-    (*shm)->id      = 0;
-    (*shm)->flags   = flags;
-    (*shm)->key     = 0;
-    (*shm)->path    = NULL;
-
-    ret = shm_assign_path (*shm, root, subscription);
-
-    if (ret < 0)
+    if (ipc != NULL)
     {
-        return ret;
+        (*shm)->ipc = ipc;
     }
 
-    ret = generate_key_func (*shm);
-
-    if (ret < 0)
+    if (size == 0)
     {
+        // todo- get real max
+        (*shm)->size = 1028;
+    }
+    else if (size > 0)
+    {
+        (*shm)->size = size;
+    }
+
+    if (id == 0)
+    {
+        res = shm_gen_id ((*shm));
+        
+        if (res < 0)
+        {
+            ret = res;
+            return ret;
+        }
+    }
+    else if (id > 0)
+    {
+        (*shm)->id = id;
+    }
+
+    if (seg != NULL)
+    {
+        (*shm)->seg = seg;
+    }
+
+    if (res < 0)
+    {
+        ret = res;
+    }
+
+    return ret;
+}
+
+int shm_t_set_from_path (shm_t** shm, char* root, char* sub)
+{
+    int res = 0;
+    int ret = 0;
+
+    ipc_t* ipc = NULL;
+
+    res = ipc_t_set_from_path (&ipc, root, sub);
+
+    if (res < 0)
+    {
+        ret = res;
         return ret;
     }
-    if ((*shm)->key <= 0)
+    if (ipc == NULL)
     {
         err_set (_EBADFUNC);
         return -1;
     }
 
-    ret = shm_generate_id (*shm);
+    res = shm_t_set (shm, ipc, 0, 0, NULL);
 
-    if (ret < 0)
+    if (res < 0)
     {
-        return -1;
+        ret = res;
+        return ret;
     }
 
-    ret = shm_attach_seg (*shm);
+    res = shm_attach_seg (*shm);
 
-    if (ret < 0)
+    if (res < 0)
     {
-        return -1;
+        ret = res;
     }
 
     return ret;
 }
 
-// todo- break me up
-int shm_assign_path (shm_t* shm, char* root, char* subscription)
+void shm_t_del (shm_t** shm)
 {
-    int   ret;
-    char* as [2];
-
-    err_reset ();
-
-    if (shm == NULL)
+    if (shm == NULL || *shm == NULL)
     {
-        err_set (_EPTRNULL);
-        return -1;
+        return;
     }
 
-    if (subscription == NULL || subscription [0] == '\0')
+    if ((*shm)->ipc != NULL)
     {
-        return 0;
+        ipc_t_del (((*shm)->ipc));
     }
 
-    if (root == NULL || root [0] == '\0')
-    {
-        root = shm_root;
-    }
+    // todo- maybe something for seg
 
-    as [0] = root;
-    as [1] = subscription;
-    ret = str_cat_len (2, as);
-
-    if (ret < 0)
-    {
-        return ret;
-    }
-
-    shm->path = malloc (ret);
-
-    if (shm->path == NULL)
-    {
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_EALLOC);
-        return -1;
-    }
-
-    ret = str_cat (2, shm->path, as);
-
-    if (ret < 0)
-    {
-        return ret;
-    }
-
-    ret = file_touch (shm->path);
-
-    if (ret < 0)
-    {
-        return ret;
-    }
-
-    return ret;
+    free (*shm);
 }
 
-int shm_generate_key_ftok (shm_t* shm)
+int shm_gen_id (shm_t* shm)
 {
     err_reset ();
 
-    if (shm == NULL || shm->path == NULL)
+    if (shm == NULL || shm->ipc == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    shm->key = ftok (shm->path, shm->proj_id);
-
-    if (shm->key < 0)
-    {
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_ESYSTEM);
-        return -1;
-    }
-
-    return 0;
-}
-
-int shm_generate_id (shm_t* shm)
-{
-    err_reset ();
-
-    if (shm == NULL)
-    {
-        err_set (_EPTRNULL);
-        return -1;
-    }
-
-    shm->id = shmget (shm->key, segsize, shm->flags);
+    shm->id = shmget (shm->ipc->key, shm->size, shm->ipc->flags);
 
     return shm->id;
 }
@@ -193,33 +172,6 @@ int shm_attach_seg (shm_t* shm)
     }
 
     return 0;
-}
-
-int shm_t_del (shm_t** shm)
-{
-    int ret = 0;
-
-    err_reset ();
-
-    if (shm == NULL)
-    {
-        err_set (_EPTRNULL);
-        return -1;
-    }
-
-    if (*shm == NULL)
-    {
-        return 0;
-    }
-
-    if ((*shm)->path != NULL)
-    {
-        free ((*shm)->path);
-    }
-
-    free (*shm);
-
-    return ret;
 }
 
 int shm_write (shm_t* shm, char* buf, int nbytes)
