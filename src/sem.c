@@ -1,6 +1,9 @@
+// todo- sort out return values
 #include <sem.h>
 
-int sem_len = 1;
+int           sem_len        = 2;
+struct sembuf sem_lock_buf   = { 1, -1, SEM_UNDO };
+struct sembuf sem_unlock_buf = { 1, +1, IPC_NOWAIT };
 
 // todo- keep the return values the same, but make struct an arg to safely
 // detect when allocated memory is not being captured. do this for all _new
@@ -16,14 +19,15 @@ sem_t* sem_t_new (void)
         return NULL;
     }
 
-    sem->ipc = NULL;
-    sem->len = 0;
-    sem->id  = 0;
+    sem->ipc    = NULL;
+    sem->len    = 0;
+    sem->id     = 0;
+    sem->locked = 0;
 
     return sem;
 }
 
-int sem_t_set (sem_t** sem, ipc_t* _ipc, int _len, int _id)
+int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
 {
     int res = 0;
     int ret = 0;
@@ -48,14 +52,7 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _len, int _id)
         (*sem)->ipc = _ipc;
     }
 
-    if (_len == 0)
-    {
-        (*sem)->len = sem_len;
-    }
-    else if (_len > 0)
-    {
-        (*sem)->len = _len;
-    }
+    (*sem)->len = sem_len;
 
     if (_id == 0)
     {
@@ -72,6 +69,27 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _len, int _id)
 
 
     // todo- remove newlines from related error statements
+    if (res < 0)
+    {
+        ret = res;
+    }
+    return ret;
+}
+
+// todo- check consistency
+int sem_t_from_ipc (sem_t** _sem, ipc_t* _ipc)
+{
+    int res = 0;
+    int ret = 0;
+
+    if (_ipc == NULL)
+    {
+        err_set (_EPTRNULL);
+        return -1;
+    }
+
+    res = sem_t_set (_sem, _ipc, 0);
+
     if (res < 0)
     {
         ret = res;
@@ -118,44 +136,62 @@ int sem_gen_id (sem_t* sem)
     return 0;
 }
 
+// todo- test race conditions, read more one semop
 int sem_lock (sem_t* sem)
 {
-    int res            = 0;
-    int ret            = 0;
-    struct sembuf lock = { 0 };
-
     if (sem == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    // todo- make this its own file if it gets too complex
-    res = semctl (sem->id, 0, GETVAL, 0);
-    if (res <= 0)
+    if (sem->locked)
     {
-        // todo- make warning
-        return 0;
+        return 1;
     }
 
-    lock.sem_num = 0;
-    lock.sem_op  = -1;
-    lock.sem_flg = IPC_NOWAIT;
-
-    res = semop (sem->id, &lock, sem->len);
-    if (res < 0)
+    if (semop (sem->id, &sem_lock_buf, sem->len) < 0)
     {
-        ret = res;
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_ESYSTEM);
+        return -1;
     }
 
-    return ret;
+    sem->locked = 1;
+
+    return 0;
 }
 
+// todo- use this format, do not have intermediate values
 int sem_unlock (sem_t* sem)
 {
-    int res            = 0;
-    int ret            = 0;
-    struct sembuf lock = { 0 };
+    if (sem == NULL)
+    {
+        err_set (_EPTRNULL);
+        return -1;
+    }
+
+    if (!(sem->locked))
+    {
+        return 1;
+    }
+
+    if (semop (sem->id, &sem_unlock_buf, sem->len) < 0)
+    {
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_ESYSTEM);
+        return -1;
+    }
+
+    sem->locked = 0;
+
+    return 0;
+}
+
+int sem_add_conn (sem_t*sem)
+{
+    int           res =   0;
+    struct sembuf add = { 0 };
 
     if (sem == NULL)
     {
@@ -163,24 +199,15 @@ int sem_unlock (sem_t* sem)
         return -1;
     }
 
-    // todo- make this its own file if it gets too complex
-    res = semctl (sem->id, 0, GETVAL, 0);
-    if (res >= 1)
-    {
-        // todo- make warning
-        return 0;
-    }
+    add.sem_num = 0;
+    add.sem_op  = 1;
+    add.sem_flg = IPC_NOWAIT | SEM_UNDO;
 
-    lock.sem_num = 0;
-    lock.sem_op  = 1;
-    lock.sem_flg = IPC_NOWAIT;
-
-
-    res = semop (sem->id, &lock, sem->len);
+    res = semop (sem->id, &add, sem->len);
     if (res < 0)
     {
-        ret = res;
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_ESYSTEM);
     }
-
-    return ret;
+    return res;
 }

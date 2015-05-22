@@ -97,9 +97,19 @@ int shm_t_from_path (shm_t** shm, char* root, char* sub)
         ret = res;
         return ret;
     }
+
+    ret = shm_t_from_ipc (shm, _ipc);
+    return ret;
+}
+
+int shm_t_from_ipc (shm_t** shm, ipc_t* _ipc)
+{
+    int res = 0;
+    int ret = 0;
+
     if (_ipc == NULL)
     {
-        err_set (_EBADFUNC);
+        err_set (_EPTRNULL);
         return -1;
     }
 
