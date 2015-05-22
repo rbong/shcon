@@ -32,7 +32,7 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
     int res = 0;
     int ret = 0;
 
-    if ((*sem) == NULL)
+    if (sem == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
@@ -56,10 +56,10 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
 
     if (_id == 0)
     {
-        (*sem)->id = sem_gen_id ((*sem));
-        if ((*sem)->id < 0)
+        res = sem_gen_id ((*sem));
+        if (res < 0)
         {
-            return (*sem)->id;
+            return res;
         }
     }
     else if (_id > 0)
@@ -76,7 +76,7 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
     return ret;
 }
 
-// todo- check consistency
+// todo- check consistency between similar structure functions
 int sem_t_from_ipc (sem_t** _sem, ipc_t* _ipc)
 {
     int res = 0;
@@ -97,6 +97,7 @@ int sem_t_from_ipc (sem_t** _sem, ipc_t* _ipc)
     return ret;
 }
 
+// todo- make delete functions accept double pointers to set values to NULL
 void sem_t_del (sem_t* sem)
 {
     if (sem == NULL)
@@ -117,10 +118,41 @@ void sem_t_del (sem_t* sem)
 // todo- determine if this should allocate or not
 int sem_gen_id (sem_t* sem)
 {
+    int         ret    = 0;
+    int         _flags = 0;
+    union semun sem_ops;
+
     if (sem == NULL || sem->ipc == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
+    }
+
+    // create new semaphore if it doesn't exist
+    _flags = sem->ipc->flags | IPC_CREAT | IPC_EXCL;
+    sem->id = semget (sem->ipc->key, sem->len, _flags);
+    if (sem->id < 0)
+    {
+        switch (errno)
+        {
+            case EEXIST:
+                err_reset ();
+                break;
+            default:
+                ERR_AT_LINE_SYS (0, errno);
+                err_set (_ESYSTEM);
+                ret = sem->id;
+                return ret;
+        }
+    }
+    else
+    {
+        // todo- add enums to indicate what semaphore you're on
+        sem_ops.val = 0;
+        ret = semctl (sem->id, 0, SETVAL, sem_ops);
+        sem_ops.val = 1;
+        ret = semctl (sem->id, 1, SETVAL, sem_ops);
+        return ret;
     }
 
     sem->id = semget (sem->ipc->key, sem->len, sem->ipc->flags);
@@ -136,7 +168,7 @@ int sem_gen_id (sem_t* sem)
     return 0;
 }
 
-// todo- test race conditions, read more one semop
+// todo- test race conditions, read more on semop
 int sem_lock (sem_t* sem)
 {
     if (sem == NULL)

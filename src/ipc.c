@@ -1,7 +1,6 @@
 #include <ipc.h>
 
-int   ipc_flags   = IPC_USR_R | IPC_USR_W | IPC_GRP_R |
-                    IPC_GRP_W | IPC_CREAT;
+int   ipc_flags   = IPC_USR_R | IPC_USR_W | IPC_GRP_R | IPC_GRP_W;
 int   ipc_proj_id = 'M';
 char* ipc_root    = "/tmp/";
 char* ipc_sub     = "mm";
@@ -55,7 +54,8 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
     }
     else if (_flags > 0)
     {
-        (*_ipc)->flags = _flags;
+        // IPC_EXCL and IPC_CREAT should only be used to check if the semaphore exists
+        (*_ipc)->flags = _flags & (~IPC_EXCL) & (~IPC_CREAT);
     }
 
     if (_proj_id == 0)

@@ -17,6 +17,13 @@ typedef struct sem_t
 } sem_t;
 
 extern int sem_len;
+
+union semun
+{
+    int              val;
+    struct semid_ds* buf;
+    unsigned short*  array;
+} semun;
 #endif
 /* --- END OF GUARD BLOCK --- */
 

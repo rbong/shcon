@@ -150,6 +150,8 @@ void shm_t_del (shm_t** shm)
 
 int shm_gen_id (shm_t* shm)
 {
+    int ret    = 0;
+    int _flags = 0;
     err_reset ();
 
     if (shm == NULL || shm->ipc == NULL)
@@ -158,7 +160,39 @@ int shm_gen_id (shm_t* shm)
         return -1;
     }
 
+    _flags = shm->ipc->flags | IPC_CREAT | IPC_EXCL;
+    shm->id = shmget (shm->ipc->key, shm->size, _flags);
+    if (shm->id < 0)
+    {
+        switch (errno)
+        {
+            case EEXIST:
+                err_reset ();
+                break;
+            default:
+                ERR_AT_LINE_SYS (0, errno);
+                err_set (_ESYSTEM);
+                ret = shm->id;
+                return ret;
+        }
+    }
+    else
+    {
+        // do whatever you need to do on a new shm
+        return ret;
+    }
+
     shm->id = shmget (shm->ipc->key, shm->size, shm->ipc->flags);
+
+    if (shm->id < 0)
+    {
+        ERR_AT_LINE_SYS (0, errno);
+        // todo- make a new error
+        err_set (_ESYSTEM);
+        return -1;
+    }
+
+    return 0;
 
     return shm->id;
 }
