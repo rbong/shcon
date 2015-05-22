@@ -1,6 +1,8 @@
 // todo- sort out return values
 #include <sem.h>
 
+int sem_add_conn (sem_t*);
+
 int           sem_len        = 2;
 struct sembuf sem_lock_buf   = { 1, -1, SEM_UNDO };
 struct sembuf sem_unlock_buf = { 1, +1, IPC_NOWAIT };
@@ -115,7 +117,7 @@ void sem_t_del (sem_t* sem)
     return;
 }
 
-// todo- determine if this should allocate or not
+// todo- determine if this should allocate or not, split this up
 int sem_gen_id (sem_t* sem)
 {
     int         ret    = 0;
@@ -150,8 +152,30 @@ int sem_gen_id (sem_t* sem)
         // todo- add enums to indicate what semaphore you're on
         sem_ops.val = 0;
         ret = semctl (sem->id, 0, SETVAL, sem_ops);
+        if (ret < 0)
+        {
+            ERR_AT_LINE_SYS (0, errno);
+            err_set (_ESYSTEM);
+            return ret;
+        }
+
         sem_ops.val = 1;
         ret = semctl (sem->id, 1, SETVAL, sem_ops);
+        if (ret < 0)
+        {
+            ERR_AT_LINE_SYS (0, errno);
+            err_set (_ESYSTEM);
+            return ret;
+        }
+
+        ret = sem_add_conn (sem);
+        if (ret < 0)
+        {
+            ERR_AT_LINE_SYS (0, errno);
+            err_set (_ESYSTEM);
+            return ret;
+        }
+
         return ret;
     }
 
@@ -163,6 +187,14 @@ int sem_gen_id (sem_t* sem)
         // todo- make a new error
         err_set (_ESYSTEM);
         return -1;
+    }
+
+    ret = sem_add_conn (sem);
+    if (ret < 0)
+    {
+        ERR_AT_LINE_SYS (0, errno);
+        err_set (_ESYSTEM);
+        return ret;
     }
 
     return 0;
@@ -182,7 +214,7 @@ int sem_lock (sem_t* sem)
         return 1;
     }
 
-    if (semop (sem->id, &sem_lock_buf, sem->len) < 0)
+    if (semop (sem->id, &sem_lock_buf, 1) < 0)
     {
         ERR_AT_LINE_SYS (0, errno);
         err_set (_ESYSTEM);
@@ -194,7 +226,6 @@ int sem_lock (sem_t* sem)
     return 0;
 }
 
-// todo- use this format, do not have intermediate values
 int sem_unlock (sem_t* sem)
 {
     if (sem == NULL)
@@ -208,7 +239,7 @@ int sem_unlock (sem_t* sem)
         return 1;
     }
 
-    if (semop (sem->id, &sem_unlock_buf, sem->len) < 0)
+    if (semop (sem->id, &sem_unlock_buf, 1) < 0)
     {
         ERR_AT_LINE_SYS (0, errno);
         err_set (_ESYSTEM);
@@ -220,7 +251,8 @@ int sem_unlock (sem_t* sem)
     return 0;
 }
 
-int sem_add_conn (sem_t*sem)
+// do not use this external to sem
+int sem_add_conn (sem_t* sem)
 {
     int           res =   0;
     struct sembuf add = { 0 };
@@ -235,7 +267,7 @@ int sem_add_conn (sem_t*sem)
     add.sem_op  = 1;
     add.sem_flg = IPC_NOWAIT | SEM_UNDO;
 
-    res = semop (sem->id, &add, sem->len);
+    res = semop (sem->id, &add, 1);
     if (res < 0)
     {
         ERR_AT_LINE_SYS (0, errno);
