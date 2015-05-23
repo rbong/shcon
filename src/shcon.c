@@ -57,17 +57,17 @@ void shcon_t_del (shcon_t** _shcon)
 
     if ((*_shcon)->ipc != NULL)
     {
-        free ((*_shcon)->ipc);
+        ipc_t_del ((*_shcon)->ipc);
     }
 
     if ((*_shcon)->shm != NULL)
     {
-        free ((*_shcon)->shm);
+        shm_t_del (&((*_shcon)->shm));
     }
 
     if ((*_shcon)->sem != NULL)
     {
-        free ((*_shcon)->sem);
+        sem_t_del (((*_shcon)->sem));
     }
 
     return;
