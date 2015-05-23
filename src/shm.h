@@ -30,4 +30,4 @@ void   shm_t_del       (shm_t**);
 int    shm_gen_id      (shm_t*);
 int    shm_attach_seg  (shm_t*);
 int    shm_write       (shm_t*, char*, int);
-int    shm_read        (shm_t*, char*, int);
+int    shm_read        (shm_t*, char*, int, int);

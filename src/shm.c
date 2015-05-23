@@ -217,17 +217,17 @@ int shm_attach_seg (shm_t* shm)
     return 0;
 }
 
-int shm_write (shm_t* shm, char* buf, int nbytes)
+int shm_write (shm_t* shm, void* buf, int nbytes)
 {
     if (shm == NULL || buf == NULL || shm->seg == NULL)
     {
         err_set (_EPTRNULL);
     }
 
-    if (strlen (buf) > nbytes)
+    /* if (strlen (buf) > nbytes)
     {
         // todo- print warning
-    }
+    } */
 
     strncpy (shm->seg, buf, nbytes);
 
@@ -239,8 +239,13 @@ int shm_write (shm_t* shm, char* buf, int nbytes)
     return 0;
 }
 
-int shm_read (shm_t* shm, char* buf, int nbytes)
+int shm_read (shm_t* shm, void* buf, int noff, int nbytes)
 {
+    // todo- check that noff does not exceed the maximumm size of the shm
+    // todo- urgent- APPEND MESSAGES TO THE SHM
+    // todo- urgent- make an init message on all shm, check for it and init semaphore/shm by clearing everything and setting the semaphore if it is not present
+    // todo- urgent- make a version indicator on all init messages, have it set by makefile
+    // todo- urgent- make msgs void, not char
     if (shm == NULL || buf == NULL || shm->seg == NULL)
     {
         err_set (_EPTRNULL);
