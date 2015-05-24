@@ -24,6 +24,22 @@ int shcon_t_from_path (shcon_t** _shcon, char* root, char* sub)
 {
     int res = 0;
 
+    if (_shcon == NULL)
+    {
+        err_set (_EPTRNULL);
+        return -1;
+    }
+
+    if (*_shcon == NULL)
+    {
+        *_shcon = shcon_t_new ();
+        if (_shcon == NULL)
+        {
+            err_set (_EALLOC);
+            return -1;
+        }
+    }
+
     res = ipc_t_from_path (&((*_shcon)->ipc), root, sub);
 
     if (res < 0)

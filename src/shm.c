@@ -229,7 +229,7 @@ int shm_write (shm_t* shm, void* buf, int nbytes)
         // todo- print warning
     } */
 
-    strncpy (shm->seg, buf, nbytes);
+    memcpy (shm->seg, buf, nbytes);
 
     if (shm->seg == NULL)
     {
@@ -251,7 +251,7 @@ int shm_read (shm_t* shm, void* buf, int noff, int nbytes)
         err_set (_EPTRNULL);
     }
 
-    strncpy (buf, shm->seg, nbytes);
+    memcpy (buf, shm->seg, nbytes);
 
     if (buf == NULL)
     {

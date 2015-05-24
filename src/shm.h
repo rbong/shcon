@@ -9,6 +9,7 @@
 #include <err.h>
 #include <str.h>
 #include <file.h>
+#include <msg.h>
 
 #ifndef MM_SHM
 #define MM_SHM
@@ -29,5 +30,5 @@ int    shm_t_from_ipc  (shm_t**, ipc_t*);
 void   shm_t_del       (shm_t**);
 int    shm_gen_id      (shm_t*);
 int    shm_attach_seg  (shm_t*);
-int    shm_write       (shm_t*, char*, int);
-int    shm_read        (shm_t*, char*, int, int);
+int    shm_write       (shm_t*, void*, int);
+int    shm_read        (shm_t*, void*, int, int);

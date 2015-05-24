@@ -1,28 +1,24 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <shcon.h>
+#include <shm.h>
 #include <err.h>
 
 int main (int argc, char** argv)
 {
-    int      ret = 0;
-    shcon_t* shcon = NULL;
-    char     buf [100];
+    int ret = 0;
+    char* s = NULL;
+    shm_t* shm = shm_t_new ();
 
-    ret = shcon_t_from_path (&shcon, NULL, "test");
 
-    if (ret < 0)
+    shm_t_from_path (&shm, NULL, argv [1]);
+
+    if (argv [2] [0] == 'w')
     {
-        ERR_PRINT (0);
-        return 1;
-    }
-
-    if (argv [1] [0] == 'w')
-    {
+        s = malloc (100);
         do
         {
-            if (fgets (buf, 100, stdin) == NULL)
+            if (fgets (s, 100, stdin) == NULL)
             {
                 ret = -1;
                 ERR_AT_LINE_SYS (0, errno);
@@ -30,26 +26,26 @@ int main (int argc, char** argv)
                 break;
             }
 
-            ret = shm_write (shcon->shm, buf, 100);
+            shm_write (shm, &s, sizeof (char *));
 
             if (ret < 0)
             {
                 break;
             }
-        } while (buf != NULL && buf [0] != '\n');
+        } while (1);
     }
-    else if (argv [1] [0] == 'r')
+    else if (argv [2] [0] == 'r')
     {
         do
         {
-            ret = shm_read (shcon->shm, buf, 100);
-            if (buf [0] != '\0')
+            shm_read (shm, &s, 0, sizeof (char*));
+            if (s != NULL && *s != '\0')
             {
-                printf ("%s", buf);
-                shm_write (shcon->shm, "\0", 1);
+                printf ("%s", s);
+                s [0] = '\0';
             }
             sleep (1);
-        } while (buf != NULL && buf [0] != '\n');
+        } while (1);
     }
 
     if (ret < 0)
@@ -57,8 +53,6 @@ int main (int argc, char** argv)
         ERR_PRINT (0);
         return 1;
     }
-
-    shcon_t_del (shcon);
 
     return 0;
 }
