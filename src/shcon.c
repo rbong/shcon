@@ -95,6 +95,7 @@ int shcon_send_msg (shcon_t* shcon, msg_t* msg)
     unsigned long long len = 0;
     int ret = 0;
     int res = 0;
+    void* vmsg = NULL;
 
     // todo- clean up NULL checks for values that are passed to functions that check for NULL, write functions for checking all possible NULLs in structures
     if (shcon == NULL || msg == NULL || msg->cmd == NULL || msg->data == NULL)
@@ -110,17 +111,17 @@ int shcon_send_msg (shcon_t* shcon, msg_t* msg)
     }
 
     // todo- write funtion that checks that message _len variables are >= to string lengths, and check before locking earlier in this function
-    // todo- split this up
-    res = shm_write (shcon->shm, &(msg->date), sizeof (msg->date));
-    len += sizeof (msg->data);
-    res = shm_write (shcon->shm, &(msg->cmd_len), sizeof (msg->cmd_len));
-    len += sizeof (msg->cmd_len);
-    res = shm_write (shcon->shm, &(msg->data_len), sizeof (msg->data_len));
-    len += sizeof (msg->data_len);
-    res = shm_write (shcon->shm, msg->cmd, msg->cmd_len);
-    len += msg->cmd_len;
-    res = shm_write (shcon->shm, msg->data, msg->data_len);
-    len += msg->data_len;
+    vmsg = msg_get_bin (msg);
+    if (vmsg == NULL)
+    {
+        return -1;
+    }
+
+    res = shm_write (shcon->shm, vmsg, msg_get_bin_len (msg));
+    if (res < 0)
+    {
+        return res;
+    }
 
     // todo- remove extraneous calls to err_reset because of situations like this
     res = sem_unlock (shcon->sem);

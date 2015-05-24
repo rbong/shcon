@@ -47,6 +47,7 @@ void* msg_get_bin (msg_t* msg)
         return NULL;
     }
 
+    // todo- split this up
     memcpy (v + len, &(msg->version), sizeof (msg->version));
     len += sizeof (msg->version);
     memcpy (v + len, &(msg->date), sizeof (msg->date));
