@@ -20,7 +20,6 @@ typedef struct err_info_t
 
 enum err_codes
 {
-// todo- proper include directories
 #include <data/err_codes.h>
 };
 

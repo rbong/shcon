@@ -1,6 +1,5 @@
 #include <shcon.h>
 
-// todo- set all local variable names to have underscores in ipc.c and sem.c
 shcon_t* shcon_t_new (void)
 {
     shcon_t* _shcon = NULL;

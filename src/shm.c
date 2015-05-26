@@ -5,7 +5,6 @@ shm_t* shm_t_new (void)
     shm_t* shm = NULL;
 
     shm = malloc (sizeof (shm_t));
-
     if (shm == NULL)
     {
         err_set (_EALLOC);
@@ -178,7 +177,7 @@ int shm_gen_id (shm_t* shm)
     }
     else
     {
-        // do whatever you need to do on a new shm
+        // todo- do whatever you need to do on a new shm
         return ret;
     }
 
@@ -224,11 +223,6 @@ int shm_write (shm_t* shm, void* buf, int nbytes)
         err_set (_EPTRNULL);
     }
 
-    /* if (strlen (buf) > nbytes)
-    {
-        // todo- print warning
-    } */
-
     memcpy (shm->seg, buf, nbytes);
 
     if (shm->seg == NULL)
@@ -241,7 +235,7 @@ int shm_write (shm_t* shm, void* buf, int nbytes)
 
 int shm_read (shm_t* shm, void* buf, int nbytes)
 {
-    // todo- urgent- APPEND MESSAGES TO THE SHM
+    // todo- urgent- overhaul this, APPEND MESSAGES TO THE SHM
     // todo- urgent- make an init message on all shm, check for it and init semaphore/shm by clearing everything and setting the semaphore if it is not present
     // todo- urgent- make a version indicator on all init messages, have it set by makefile
     // todo- urgent- make msgs void, not char

@@ -1,7 +1,5 @@
 #include <test_file.h>
 
-// todo- find better intermediate return value names
-
 int has_file_touch  = 0;
 int has_file_exists = 0;
 

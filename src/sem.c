@@ -1,4 +1,3 @@
-// todo- sort out return values
 #include <sem.h>
 
 int sem_add_conn (sem_t*);
@@ -7,26 +6,27 @@ int           sem_len        = 2;
 struct sembuf sem_lock_buf   = { 1, -1, SEM_UNDO };
 struct sembuf sem_unlock_buf = { 1, +1, IPC_NOWAIT };
 
-// todo- keep the return values the same, but make struct an arg to safely
-// detect when allocated memory is not being captured. do this for all _new
-sem_t* sem_t_new (void)
+int sem_t_new (sem_t** sem)
 {
-    sem_t* sem = NULL;
-
-    sem = malloc (sizeof (sem_t));
-
     if (sem == NULL)
     {
-        err_set (_EALLOC);
-        return NULL;
+        err_set (_EPTRNULL);
+        return -1;
     }
 
-    sem->ipc    = NULL;
-    sem->len    = 0;
-    sem->id     = 0;
-    sem->locked = 0;
+    (*sem) = malloc (sizeof (sem_t));
+    if ((*sem) == NULL)
+    {
+        err_set (_EALLOC);
+        return -1;
+    }
 
-    return sem;
+    (*sem)->ipc    = NULL;
+    (*sem)->len    = 0;
+    (*sem)->id     = 0;
+    (*sem)->locked = 0;
+
+    return 0;
 }
 
 int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
@@ -42,10 +42,10 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
 
     if ((*sem) == NULL)
     {
-        (*sem) = sem_t_new ();
-        if ((*sem) == NULL)
+        res = sem_t_new (sem);
+        if (res < 0)
         {
-            return -1;
+            return res;
         }
     }
 
@@ -70,7 +70,6 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
     }
 
 
-    // todo- remove newlines from related error statements
     if (res < 0)
     {
         ret = res;
@@ -78,7 +77,6 @@ int sem_t_set (sem_t** sem, ipc_t* _ipc, int _id)
     return ret;
 }
 
-// todo- check consistency between similar structure functions
 int sem_t_from_ipc (sem_t** _sem, ipc_t* _ipc)
 {
     int res = 0;
@@ -99,7 +97,6 @@ int sem_t_from_ipc (sem_t** _sem, ipc_t* _ipc)
     return ret;
 }
 
-// todo- make delete functions accept double pointers to set values to NULL
 void sem_t_del (sem_t* sem)
 {
     if (sem == NULL)

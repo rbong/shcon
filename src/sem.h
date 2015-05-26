@@ -27,7 +27,7 @@ union semun
 #endif
 /* --- END OF GUARD BLOCK --- */
 
-sem_t* sem_t_new      (void);
+int    sem_t_new      (sem_t**);
 int    sem_t_set      (sem_t**, ipc_t*, int);
 int    sem_t_from_ipc (sem_t**, ipc_t*);
 void   sem_t_del      (sem_t*);

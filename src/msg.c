@@ -1,6 +1,7 @@
 #include <msg.h>
 
-// todo- check if all _t_new values for NULL
+static const msg_hdr_t msg_hdr_empty = { 0 };
+
 msg_t* msg_t_new (void)
 {
     msg_t* msg;
@@ -13,12 +14,10 @@ msg_t* msg_t_new (void)
         return NULL;
     }
 
-    msg->version  = 0;
-    msg->date     = 0;
-    msg->cmd_len  = 0;
-    msg->data_len = 0;
-    msg->data     = NULL;
-    msg->cmd      = NULL;
+    // todo- test if this is empty
+    msg->hdr  = msg_hdr_empty;
+    msg->data = NULL;
+    msg->cmd  = NULL;
 
     return msg;
 }
@@ -47,19 +46,12 @@ void* msg_get_bin (msg_t* msg)
         return NULL;
     }
 
-    // todo- split this up
-    memcpy (v + len, &(msg->version), sizeof (msg->version));
-    len += sizeof (msg->version);
-    memcpy (v + len, &(msg->date), sizeof (msg->date));
-    len += sizeof (msg->date);
-    memcpy (v + len, &(msg->cmd_len), sizeof (msg->cmd_len));
-    len += sizeof (msg->cmd_len);
-    memcpy (v + len, &(msg->data_len), sizeof (msg->data_len));
-    len += sizeof (msg->data_len);
-    memcpy (v + len, msg->cmd, msg->cmd_len);
-    len += msg->cmd_len;
-    memcpy (v + len, msg->data, msg->data_len);
-    len += msg->data_len;
+    memcpy (v + len, &(msg->hdr), sizeof (msg_hdr_t));
+    len += sizeof (msg_hdr_t);
+    memcpy (v + len, msg->cmd, msg->hdr.cmd_len);
+    len += msg->hdr.cmd_len;
+    memcpy (v + len, msg->data, msg->hdr.data_len);
+    len += msg->hdr.data_len;
 
     return v;
 }
@@ -74,9 +66,7 @@ int msg_get_bin_len (msg_t* msg)
         return -1;
     }
     
-    res += sizeof (msg->version) + sizeof (msg->date) +
-        sizeof (msg->cmd_len) + sizeof (msg->data_len);
-    res += msg->cmd_len + msg->data_len;
+    res += sizeof (msg_hdr_t) + msg->hdr.cmd_len + msg->hdr.data_len;
 
     return res;
 }
