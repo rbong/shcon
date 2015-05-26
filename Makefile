@@ -5,19 +5,17 @@ INC    = -I./src -I./test -I./include
 CFLAGS = -Wall -g $(INC)
 # FILE VARIABLES
 DEPS   = $(wildcard src/*.c) $(wildcard test/*.c)
-OBJS   = $(SRCS:.h=.o)
 OBJS   = $(DEPS:.c=.o)
+# BINARY VARIABLES
+BINS   = test/test-mm src/mm
 
-all: mm test-mm
+all: $(BINS)
 
 %.o: %.c $(DEPS)
 	$(CC) $(INC) -c -o $@ $< $(CFLAGS)
 
-test-mm: $(DEPS)
-	$(CC) $(CFLAGS) $(INC) -o testing/test-mm $(MAIN) $(OBJS)
-
-mm: $(DEPS)
-	$(CC) $(CFLAGS) $(INC) -o src/mm $(MAIN) $(OBJS)
+$(BINS): $(OBJS)
+	$(CC) $(CFLAGS) $(INC) $(MAIN) $(OBJS) -o $@
 
 clean:
 	rm -f $(OBJS) src/mm test/test-mm
