@@ -1,7 +1,8 @@
+add comments for function operation and file purposes
+comment all sections of code
 start adding maximums
 on memory copying statements, check everything can fit
 create function to recursively create directories
-add comments for function operation and file purposes
 write test functions
 write test programs
 store temporary err_num value when recoverable so it is not overwrote
