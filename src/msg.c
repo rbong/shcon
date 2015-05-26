@@ -4,27 +4,36 @@ static const msg_hdr_t msg_hdr_empty = { 0 };
 
 msg_t* msg_t_new (void)
 {
-    msg_t* _msg;
+    /* int tmp = 0; */
+    msg_t* ret = NULL;
 
-    _msg = malloc (sizeof (msg_t));
-    if (_msg == NULL)
+    ret = malloc (sizeof (msg_t));
+    if (ret == NULL)
     {
         ERR_SYS (errno);
         ERR_PRINT (_EALLOC);
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
     // todo- test if this is empty
-    _msg->hdr  = msg_hdr_empty;
-    _msg->data = NULL;
-    _msg->cmd  = NULL;
-    return _msg;
+    ret->hdr  = msg_hdr_empty;
+    ret->data = NULL;
+    ret->cmd  = NULL;
+    /* if (tmp < 0) */
+    /* { */
+    /*     ret = tmp; */
+    /* } */
+    return ret;
 }
 
 // todo- create generic set function
 
 void msg_t_del (msg_t** _msg)
 {
+    /* int tmp = 0; */
+    /* int ret = 0; */
+
     if (_msg == NULL || (*_msg) == NULL)
     {
         return;
@@ -43,52 +52,69 @@ void msg_t_del (msg_t** _msg)
     free ((*_msg));
     *(_msg) = NULL;
 
+    /* if (tmp < 0) */
+    /* { */
+    /*     ret = tmp; */
+    /* } */
     return;
 }
 
 void* msg_to_bin (msg_t* _msg)
 {
     int   tmp = 0;
+    void* ret = NULL;
     int   len = 0;
-    void* v   = NULL;
 
     if (_msg == NULL || _msg->cmd == NULL || _msg->data == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
     tmp = msg_to_bin_len (_msg);
     if (tmp < 0)
     {
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
-    v = malloc (tmp);
-    if (v == NULL)
+    ret = malloc (tmp);
+    if (ret == NULL)
     {
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
-    memcpy (v + len, &(_msg->hdr), sizeof (msg_hdr_t));
+    memcpy (ret + len, &(_msg->hdr), sizeof (msg_hdr_t));
     len += sizeof (msg_hdr_t);
-    memcpy (v + len, _msg->cmd, _msg->hdr.cmd_len);
+    memcpy (ret + len, _msg->cmd, _msg->hdr.cmd_len);
     len += _msg->hdr.cmd_len;
-    memcpy (v + len, _msg->data, _msg->hdr.data_len);
+    memcpy (ret + len, _msg->data, _msg->hdr.data_len);
     len += _msg->hdr.data_len;
-    return v;
+    if (tmp < 0)
+    {
+        ret = NULL;
+    }
+    return ret;
 }
 
 int msg_to_bin_len (msg_t* _msg)
 {
-    int tmp = 0;
+    /* int tmp = 0; */
+    int ret = 0;
 
     if (_msg == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return -1;
+        ret = -1;
+        return ret;
     }
     
-    tmp += sizeof (msg_hdr_t) + _msg->hdr.cmd_len + _msg->hdr.data_len;
-    return tmp;
+    ret = sizeof (msg_hdr_t) + _msg->hdr.cmd_len + _msg->hdr.data_len;
+    /* if (tmp < 0) */
+    /* { */
+    /*     ret = tmp; */
+    /* } */
+    return ret;
 }

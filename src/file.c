@@ -3,41 +3,47 @@
 // todo- determine if shm actually needs an untouched file, skip unreadale files and see if shm needs readable files
 int file_touch (char* _file_name)
 {
+    int   tmp = 0;
     int   ret = 0;
-    FILE* fp  = NULL;
+    FILE* _fp  = NULL;
 
     if (_file_name == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
     if (_file_name [0] == '\0')
     {
         ERR_PRINT (_ESTREMPTY);
-        return -1;
-    }
-
-    ret = file_exists (_file_name);
-    if (ret != 0)
-    {
+        ret = -1;
         return ret;
     }
 
-    fp = fopen (_file_name, "a+");
-    if (fp == NULL)
+    tmp = file_exists (_file_name);
+    if (tmp != 0)
+    {
+        ret = tmp;
+        return ret;
+    }
+
+    _fp = fopen (_file_name, "a+");
+    if (_fp == NULL)
     {
         ERR_SYS (errno);
         ERR_PRINT (_EFOPEN);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
-    ret = fclose (fp);
-    if (ret == EOF)
+    tmp = fclose (_fp);
+    if (tmp == EOF)
     {
         ERR_SYS (errno);
         ERR_PRINT (_EFCLOSE);
-        return -1;
+        ret = tmp;
+        return ret;
     }
 
     return ret;
@@ -45,32 +51,46 @@ int file_touch (char* _file_name)
 
 int file_exists (char* _file_name)
 {
+    /* int tmp = 0; */
+    int ret = 0;
+
     // todo- add ret
     if (_file_name == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
     if (_file_name [0] == '\0')
     {
         ERR_PRINT (_ESTREMPTY);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
     access (_file_name, F_OK);
     switch (errno)
     {
     case 0:
-        return 1;
+        ret = 1;
+        return ret;
         break;
     case ENOENT:
         err_reset ();
-        return 0;
+        ret = 0;
+        return ret;
         break;
     default:
         ERR_SYS (errno);
         ERR_PRINT (_EACCESS);
-        return -1;
+        ret = -1;
+        return ret;
     }
+    /* if (tmp < 0) */
+    /* { */
+    /*     ret = tmp; */
+    /* } */
+    ret = -1;
+    return ret;
 }

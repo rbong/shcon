@@ -2,6 +2,7 @@
 #include <shm.h>
 #include <sem.h>
 #include <err.h>
+#include <msg.h>
 
 /* -- START OF GUARD BLOCK -- */
 #ifndef SHCON_H

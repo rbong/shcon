@@ -9,20 +9,26 @@ key_t (*ipc_gen_key) (char*, int) = ipc_gen_key_ftok;
 
 ipc_t* ipc_t_new (void)
 {
-    ipc_t* _ipc = NULL;
+    /* int tmp = 0; */
+    ipc_t* ret = NULL;
 
-    _ipc = malloc (sizeof (ipc_t));
-    if (_ipc == NULL)
+    ret = malloc (sizeof (ipc_t));
+    if (ret == NULL)
     {
         ERR_PRINT (_EALLOC);
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
-    _ipc->path    = NULL;
-    _ipc->flags   = 0;
-    _ipc->proj_id = 0;
-    _ipc->key     = 0;
-    return _ipc;
+    ret->path    = NULL;
+    ret->flags   = 0;
+    ret->proj_id = 0;
+    ret->key     = 0;
+    /* if (tmp < 0) */
+    /* { */
+    /*     ret = tmp; */
+    /* } */
+    return ret;
 }
 
 int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
@@ -33,7 +39,8 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
     if (_ipc == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
     if ((*_ipc) == NULL)
@@ -41,7 +48,8 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
         (*_ipc) = ipc_t_new ();
         if ((*_ipc) == NULL)
         {
-            return -1;
+            ret = -1;
+            return ret;
         }
     }
 
@@ -75,6 +83,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
         if (tmp < 0)
         {
             ret = tmp;
+            return ret;
         }
     }
     else if (_key > 0)
@@ -92,6 +101,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
 int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub)
 {
     int   tmp   = 0;
+    int   ret   = 0;
     char* _path = NULL;
 
     // all NULL checks are performed by called functions
@@ -99,15 +109,23 @@ int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub)
     _path = ipc_gen_path (_root, _sub);
     if (_path == NULL)
     {
-        return -1;
+        ret = -1;
+        return ret;
     }
 
     tmp = ipc_t_set (_ipc, 0, 0, _path, 0);
-    return tmp;
+    if (tmp < 0)
+    {
+        ret = tmp;
+    }
+    return ret;
 }
 
 void ipc_t_del (ipc_t** _ipc)
 {
+    /* int tmp = 0; */
+    /* int ret = 0; */
+
     if (_ipc == NULL || (*_ipc) == NULL)
     {
         return;
@@ -121,25 +139,31 @@ void ipc_t_del (ipc_t** _ipc)
     free ((*_ipc));
     (*_ipc) = NULL;
 
+    /* if (tmp < 0) */
+    /* { */
+    /*     ret = tmp; */
+    /* } */
     return;
 }
 
 char* ipc_gen_path (char* _root, char* _sub)
 {
-    int   ret    = NULL;
-    char* _path   = NULL;
-    char* as [2] = { NULL, NULL };
+    int   tmp     = 0;
+    char* ret     = NULL;
+    char* _as [2] = { NULL, NULL };
 
     if (_sub == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
     if (_sub [0] == '\0')
     {
         ERR_PRINT (_ESTREMPTY);
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
     if (_root == NULL || _root [0] == '\0')
@@ -147,64 +171,71 @@ char* ipc_gen_path (char* _root, char* _sub)
         _root = ipc_root;
     }
 
-    as [0] = _root;
-    as [1] = _sub;
-    ret = str_cat_len (2, as);
-    if (ret <= 0)
+    _as [0] = _root;
+    _as [1] = _sub;
+    tmp = str_cat_len (2, _as);
+    if (tmp <= 0)
     {
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
-    _path = malloc (ret);
-    if (_path == NULL)
+    ret = malloc (tmp);
+    if (ret == NULL)
     {
         ERR_SYS (errno);
         ERR_PRINT (_EALLOC);
-        return NULL;
+        return ret;
     }
 
-    ret = str_cat (2, _path, as);
-    if (ret < 0)
+    tmp = str_cat (2, ret, _as);
+    if (tmp < 0)
     {
-        return NULL;
+        ret = NULL;
+        return ret;
     }
-    if (_path == NULL)
+    if (ret == NULL)
     {
         ERR_PRINT (_EBADFUNC);
-        return NULL;
+        ret = NULL;
+        return ret;
     }
 
-    ret = file_touch (_path);
-    if (ret < 0)
+    tmp = file_touch (ret);
+    if (tmp < 0)
     {
-        free (_path);
-        return NULL;
+        free (ret);
+        ret = NULL;
     }
-    return _path;
+    return ret;
 }
 
 key_t ipc_gen_key_ftok (char* _path, int _proj_id)
 {
-    key_t key = 0;
+    /* int tmp = 0; */
+    key_t ret = 0;
 
     if (_path == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
     if (_proj_id <= 0)
     {
         ERR_PRINT (_EBADVAL);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
-    key = ftok (_path, _proj_id);
-    if (key < 0)
+    ret = ftok (_path, _proj_id);
+    if (ret < 0)
     {
         ERR_SYS (errno);
         ERR_PRINT (_ESYSTEM);
-        return -1;
+        ret = -1;
+        return ret;
     }
-    return key;
+    return ret;
 }
