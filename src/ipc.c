@@ -95,11 +95,11 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
     return ret;
 }
 
-int ipc_t_from_path (ipc_t** _ipc, char* root, char* sub)
+int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub)
 {
     char* _path = NULL;
 
-    _path = ipc_gen_path (root, sub);
+    _path = ipc_gen_path (_root, _sub);
 
     if (_path == NULL)
     {
@@ -109,22 +109,25 @@ int ipc_t_from_path (ipc_t** _ipc, char* root, char* sub)
     return ipc_t_set (_ipc, 0, 0, _path, 0);
 }
 
-void ipc_t_del (ipc_t* _ipc)
+void ipc_t_del (ipc_t** _ipc)
 {
-    if (_ipc == NULL)
+    if (_ipc == NULL || (*_ipc) == NULL)
     {
         return;
     }
 
-    if (_ipc->path != NULL)
+    if ((*_ipc)->path != NULL)
     {
-        free (_ipc->path);
+        free ((*_ipc)->path);
     }
 
-    free (_ipc);
+    free ((*_ipc));
+    (*_ipc) = NULL;
+
+    return;
 }
 
-char* ipc_gen_path (char* root, char* sub)
+char* ipc_gen_path (char* _root, char* _sub)
 {
     int   ret    = NULL;
     char* _path   = NULL;
@@ -132,25 +135,25 @@ char* ipc_gen_path (char* root, char* sub)
 
     err_reset ();
 
-    if (sub == NULL)
+    if (_sub == NULL)
     {
         err_set (_EPTRNULL);
         return NULL;
     }
 
-    if (sub [0] == '\0')
+    if (_sub [0] == '\0')
     {
         err_set (_ESTREMPTY);
         return NULL;
     }
 
-    if (root == NULL || root [0] == '\0')
+    if (_root == NULL || _root [0] == '\0')
     {
-        root = ipc_root;
+        _root = ipc_root;
     }
 
-    as [0] = root;
-    as [1] = sub;
+    as [0] = _root;
+    as [1] = _sub;
     ret = str_cat_len (2, as);
 
     if (ret <= 0)

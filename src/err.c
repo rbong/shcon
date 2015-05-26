@@ -10,18 +10,18 @@ const err_info_t err_table [] =
 int       err_number = _ESUCCESS;
 const int ERR_MAX    = sizeof (err_table) / sizeof (err_info_t) - 1;
 
-void err_set (int code)
+void err_set (int _code)
 {
-    err_number = code;
+    err_number = _code;
 }
 
-char* err_get_msg (int code)
+char* err_get_msg (int _code)
 {
-    if (code >= ERR_MAX || code < 0)
+    if (_code >= ERR_MAX || _code < 0)
     {
         return err_table [_EUNKNOWN].msg;
     }
-    return err_table [code].msg;
+    return err_table [_code].msg;
 }
 
 void err_reset (void)

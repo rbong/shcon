@@ -2,39 +2,39 @@
 
 shm_t* shm_t_new (void)
 {
-    shm_t* shm = NULL;
+    shm_t* _shm = NULL;
 
-    shm = malloc (sizeof (shm_t));
-    if (shm == NULL)
+    _shm = malloc (sizeof (shm_t));
+    if (_shm == NULL)
     {
         err_set (_EALLOC);
         return NULL;
     }
 
-    shm->ipc  = NULL;
-    shm->size = 0;
-    shm->id   = 0;
-    shm->seg  = NULL;
+    _shm->ipc  = NULL;
+    _shm->size = 0;
+    _shm->id   = 0;
+    _shm->seg  = NULL;
 
-    return shm;
+    return _shm;
 }
 
-int shm_t_set (shm_t** shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
+int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
 {
     int res = 0;
     int ret = 0;
 
-    if (shm == NULL)
+    if (_shm == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    if ((*shm) == NULL)
+    if ((*_shm) == NULL)
     {
-        (*shm) = shm_t_new ();
+        (*_shm) = shm_t_new ();
 
-        if ((*shm) == NULL)
+        if ((*_shm) == NULL)
         {
             return -1;
         }
@@ -42,22 +42,22 @@ int shm_t_set (shm_t** shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
 
     if (_ipc != NULL)
     {
-        (*shm)->ipc = _ipc;
+        (*_shm)->ipc = _ipc;
     }
 
     if (_size == 0)
     {
         // todo- get real max
-        (*shm)->size = 1028;
+        (*_shm)->size = 1028;
     }
     else if (_size > 0)
     {
-        (*shm)->size = _size;
+        (*_shm)->size = _size;
     }
 
     if (_id == 0)
     {
-        res = shm_gen_id ((*shm));
+        res = shm_gen_id ((*_shm));
         if (res < 0)
         {
             ret = res;
@@ -66,12 +66,12 @@ int shm_t_set (shm_t** shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
     }
     else if (_id > 0)
     {
-        (*shm)->id = _id;
+        (*_shm)->id = _id;
     }
 
     if (_seg != NULL)
     {
-        (*shm)->seg = _seg;
+        (*_shm)->seg = _seg;
     }
 
     if (res < 0)
@@ -82,14 +82,14 @@ int shm_t_set (shm_t** shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
     return ret;
 }
 
-int shm_t_from_path (shm_t** shm, char* root, char* sub)
+int shm_t_from_path (shm_t** _shm, char* _root, char* _sub)
 {
     int res = 0;
     int ret = 0;
 
     ipc_t* _ipc = NULL;
 
-    res = ipc_t_from_path (&_ipc, root, sub);
+    res = ipc_t_from_path (&_ipc, _root, _sub);
 
     if (res < 0)
     {
@@ -97,11 +97,11 @@ int shm_t_from_path (shm_t** shm, char* root, char* sub)
         return ret;
     }
 
-    ret = shm_t_from_ipc (shm, _ipc);
+    ret = shm_t_from_ipc (_shm, _ipc);
     return ret;
 }
 
-int shm_t_from_ipc (shm_t** shm, ipc_t* _ipc)
+int shm_t_from_ipc (shm_t** _shm, ipc_t* _ipc)
 {
     int res = 0;
     int ret = 0;
@@ -112,7 +112,7 @@ int shm_t_from_ipc (shm_t** shm, ipc_t* _ipc)
         return -1;
     }
 
-    res = shm_t_set (shm, _ipc, 0, 0, NULL);
+    res = shm_t_set (_shm, _ipc, 0, 0, NULL);
 
     if (res < 0)
     {
@@ -120,7 +120,7 @@ int shm_t_from_ipc (shm_t** shm, ipc_t* _ipc)
         return ret;
     }
 
-    res = shm_attach_seg (*shm);
+    res = shm_attach_seg (*_shm);
 
     if (res < 0)
     {
@@ -130,38 +130,41 @@ int shm_t_from_ipc (shm_t** shm, ipc_t* _ipc)
     return ret;
 }
 
-void shm_t_del (shm_t** shm)
+void shm_t_del (shm_t** _shm)
 {
-    if (shm == NULL || *shm == NULL)
+    if (_shm == NULL || *_shm == NULL)
     {
         return;
     }
 
-    if ((*shm)->ipc != NULL)
+    if ((*_shm)->ipc != NULL)
     {
-        ipc_t_del (((*shm)->ipc));
+        ipc_t_del (&((*_shm)->ipc));
     }
 
     // todo- maybe something for seg
 
-    free (*shm);
+    free (*_shm);
+    (*_shm) = NULL;
+
+    return;
 }
 
-int shm_gen_id (shm_t* shm)
+int shm_gen_id (shm_t* _shm)
 {
     int ret    = 0;
     int _flags = 0;
     err_reset ();
 
-    if (shm == NULL || shm->ipc == NULL)
+    if (_shm == NULL || _shm->ipc == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    _flags = shm->ipc->flags | IPC_CREAT | IPC_EXCL;
-    shm->id = shmget (shm->ipc->key, shm->size, _flags);
-    if (shm->id < 0)
+    _flags = _shm->ipc->flags | IPC_CREAT | IPC_EXCL;
+    _shm->id = shmget (_shm->ipc->key, _shm->size, _flags);
+    if (_shm->id < 0)
     {
         switch (errno)
         {
@@ -171,7 +174,7 @@ int shm_gen_id (shm_t* shm)
             default:
                 ERR_AT_LINE_SYS (0, errno);
                 err_set (_ESYSTEM);
-                ret = shm->id;
+                ret = _shm->id;
                 return ret;
         }
     }
@@ -181,9 +184,9 @@ int shm_gen_id (shm_t* shm)
         return ret;
     }
 
-    shm->id = shmget (shm->ipc->key, shm->size, shm->ipc->flags);
+    _shm->id = shmget (_shm->ipc->key, _shm->size, _shm->ipc->flags);
 
-    if (shm->id < 0)
+    if (_shm->id < 0)
     {
         ERR_AT_LINE_SYS (0, errno);
         // todo- make a new error
@@ -193,20 +196,20 @@ int shm_gen_id (shm_t* shm)
 
     return 0;
 
-    return shm->id;
+    return _shm->id;
 }
 
-int shm_attach_seg (shm_t* shm)
+int shm_attach_seg (shm_t* _shm)
 {
-    if (shm == NULL)
+    if (_shm == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    shm->seg = shmat (shm->id, 0, 0);
+    _shm->seg = shmat (_shm->id, 0, 0);
 
-    if (shm->seg < 0)
+    if (_shm->seg < 0)
     {
         ERR_AT_LINE_SYS (0, errno);
         err_set (_ESYSTEM);
@@ -216,16 +219,16 @@ int shm_attach_seg (shm_t* shm)
     return 0;
 }
 
-int shm_write (shm_t* shm, void* buf, int nbytes)
+int shm_write (shm_t* _shm, void* _buf, int _bytes)
 {
-    if (shm == NULL || buf == NULL || shm->seg == NULL)
+    if (_shm == NULL || _buf == NULL || _shm->seg == NULL)
     {
         err_set (_EPTRNULL);
     }
 
-    memcpy (shm->seg, buf, nbytes);
+    memcpy (_shm->seg, _buf, _bytes);
 
-    if (shm->seg == NULL)
+    if (_shm->seg == NULL)
     {
         return -1;
     }
@@ -233,20 +236,20 @@ int shm_write (shm_t* shm, void* buf, int nbytes)
     return 0;
 }
 
-int shm_read (shm_t* shm, void* buf, int nbytes)
+int shm_read (shm_t* _shm, void* _buf, int _bytes)
 {
-    // todo- urgent- overhaul this, APPEND MESSAGES TO THE SHM
+    // todo- urgent- overhaul this, APPEND MESSAGES TO THE _shm
     // todo- urgent- make an init message on all shm, check for it and init semaphore/shm by clearing everything and setting the semaphore if it is not present
     // todo- urgent- make a version indicator on all init messages, have it set by makefile
     // todo- urgent- make msgs void, not char
-    if (shm == NULL || buf == NULL || shm->seg == NULL)
+    if (_shm == NULL || _buf == NULL || _shm->seg == NULL)
     {
         err_set (_EPTRNULL);
     }
 
-    memcpy (buf, shm->seg, nbytes);
+    memcpy (_buf, _shm->seg, _bytes);
 
-    if (buf == NULL)
+    if (_buf == NULL)
     {
         return -1;
     }

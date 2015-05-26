@@ -1,33 +1,33 @@
 #include <file.h>
 
 // todo- determine if shm actually needs an untouched file, skip unreadale files and see if shm needs readable files
-int file_touch (char* file_name)
+int file_touch (char* _file_name)
 {
     int   ret = 0;
     FILE* fp  = NULL;
 
     err_reset ();
 
-    if (file_name == NULL)
+    if (_file_name == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    if (file_name [0] == '\0')
+    if (_file_name [0] == '\0')
     {
         err_set (_ESTREMPTY);
         return -1;
     }
 
-    ret = file_exists (file_name);
+    ret = file_exists (_file_name);
 
     if (ret != 0)
     {
         return ret;
     }
 
-    fp = fopen (file_name, "a+");
+    fp = fopen (_file_name, "a+");
 
     if (fp == NULL)
     {
@@ -48,23 +48,23 @@ int file_touch (char* file_name)
     return ret;
 }
 
-int file_exists (char* file_name)
+int file_exists (char* _file_name)
 {
     err_reset ();
 
-    if (file_name == NULL)
+    if (_file_name == NULL)
     {
         err_set (_EPTRNULL);
         return -1;
     }
 
-    if (file_name [0] == '\0')
+    if (_file_name [0] == '\0')
     {
         err_set (_ESTREMPTY);
         return -1;
     }
 
-    access (file_name, F_OK);
+    access (_file_name, F_OK);
     switch (errno)
     {
     case 0:

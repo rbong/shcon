@@ -33,6 +33,6 @@ extern key_t (*ipc_gen_key) (char*, int);
 ipc_t* ipc_t_new        (void);
 int    ipc_t_set        (ipc_t**, int, int, char*, key_t);
 int    ipc_t_from_path  (ipc_t**, char*, char*);
-void   ipc_t_del        (ipc_t*);
+void   ipc_t_del        (ipc_t**);
 char*  ipc_gen_path     (char*, char*);
 key_t  ipc_gen_key_ftok (char*, int);

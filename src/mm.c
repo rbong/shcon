@@ -1,12 +1,12 @@
 // todo- check consistency among parallel structure functions
-// todo- rename all local variables * with _*
-// todo- make *_del functions accept ** so that * can be chaned to NULL
-// todo- write functions that test if structs are NULL
+// todo- write functions that test if structs are empty
 // todo- name structs with different names for the type and structure
 // todo- check that complex return statements are correct
 // todo- rename res to tmp and add it everywhere
 // todo- remove newlines from related statements
 // todo- add comments for function operation and file purposes
+// todo- rehaul error framework
+// todo- return implicitly from void functions
 // todo- write test functions
 #include <stdio.h>
 #include <unistd.h>
