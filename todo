@@ -1,0 +1,9 @@
+decide whether you always or never want both tmp and ret
+check that headers are parallel
+start adding maximums
+on large memory copying statements, check everything can fit
+create function to recursively create directories
+add comments for function operation and file purposes
+write test functions
+write test programs
+store temporary err_num value when recoverable so it is not overwrote
