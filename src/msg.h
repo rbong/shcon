@@ -5,7 +5,7 @@
 
 #ifndef MM_MSG
 #define MM_MSG
-typedef struct msg_hdr_t
+typedef struct
 {
     int version;
     int date;
@@ -13,7 +13,7 @@ typedef struct msg_hdr_t
     int data_len;
 } msg_hdr_t;
 // todo- name all structures accordingly instead of having both names the same
-typedef struct msg_t
+typedef struct
 {
     msg_hdr_t hdr;
     char*     cmd;
@@ -21,4 +21,7 @@ typedef struct msg_t
 } msg_t;
 #endif
 
-int msg_get_bin_len (msg_t*);
+msg_t* msg_t_new      (void);
+void   msg_t_del      (msg_t**);
+void*  msg_to_bin     (msg_t*);
+int    msg_to_bin_len (msg_t*);

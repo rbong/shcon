@@ -6,42 +6,37 @@ int file_touch (char* _file_name)
     int   ret = 0;
     FILE* fp  = NULL;
 
-    err_reset ();
-
     if (_file_name == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
     if (_file_name [0] == '\0')
     {
-        err_set (_ESTREMPTY);
+        ERR_PRINT (_ESTREMPTY);
         return -1;
     }
 
     ret = file_exists (_file_name);
-
     if (ret != 0)
     {
         return ret;
     }
 
     fp = fopen (_file_name, "a+");
-
     if (fp == NULL)
     {
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_EFOPEN);
+        ERR_SYS (errno);
+        ERR_PRINT (_EFOPEN);
         return -1;
     }
 
     ret = fclose (fp);
-
     if (ret == EOF)
     {
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_EFCLOSE);
+        ERR_SYS (errno);
+        ERR_PRINT (_EFCLOSE);
         return -1;
     }
 
@@ -50,17 +45,16 @@ int file_touch (char* _file_name)
 
 int file_exists (char* _file_name)
 {
-    err_reset ();
-
+    // todo- add ret
     if (_file_name == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
     if (_file_name [0] == '\0')
     {
-        err_set (_ESTREMPTY);
+        ERR_PRINT (_ESTREMPTY);
         return -1;
     }
 
@@ -75,8 +69,8 @@ int file_exists (char* _file_name)
         return 0;
         break;
     default:
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_EACCESS);
+        ERR_SYS (errno);
+        ERR_PRINT (_EACCESS);
         return -1;
     }
 }

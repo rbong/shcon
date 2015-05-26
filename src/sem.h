@@ -8,7 +8,7 @@
 /* -- START OF GUARD BLOCK -- */
 #ifndef MM_SEM
 #define MM_SEM
-typedef struct sem_t
+typedef struct
 {
     ipc_t* ipc;
     int    len;
@@ -16,14 +16,14 @@ typedef struct sem_t
     int    locked;
 } sem_t;
 
-extern int sem_len;
-
 union semun
 {
     int              val;
     struct semid_ds* buf;
     unsigned short*  array;
 } semun;
+
+extern int sem_len;
 #endif
 /* --- END OF GUARD BLOCK --- */
 

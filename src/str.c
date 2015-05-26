@@ -5,8 +5,6 @@ int str_cat (int _strs, char* _dest, char** _src)
     int i;
     int bytes = 0;
 
-    err_reset ();
-
     if (_strs <= 0)
     {
         return 0;
@@ -14,7 +12,7 @@ int str_cat (int _strs, char* _dest, char** _src)
 
     if (_dest == NULL || _src == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
@@ -34,11 +32,9 @@ int str_cat_len (int _strs, char** _src)
     int len = 1;
     char* s;
 
-    err_reset ();
-
     if (_src == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
@@ -47,11 +43,10 @@ int str_cat_len (int _strs, char** _src)
         s = _src [i];
         if (s == NULL)
         {
-            err_set (_EPTRNULL);
+            ERR_PRINT (_EPTRNULL);
             return -1;
         }
         len += strlen (s);
     }
-
     return len;
 }

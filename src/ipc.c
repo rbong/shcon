@@ -12,10 +12,9 @@ ipc_t* ipc_t_new (void)
     ipc_t* _ipc = NULL;
 
     _ipc = malloc (sizeof (ipc_t));
-
     if (_ipc == NULL)
     {
-        err_set (_EALLOC);
+        ERR_PRINT (_EALLOC);
         return NULL;
     }
 
@@ -23,25 +22,23 @@ ipc_t* ipc_t_new (void)
     _ipc->flags   = 0;
     _ipc->proj_id = 0;
     _ipc->key     = 0;
-
     return _ipc;
 }
 
 int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
 {
-    int res = 0;
+    int tmp = 0;
     int ret = 0;
 
     if (_ipc == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
     if ((*_ipc) == NULL)
     {
         (*_ipc) = ipc_t_new ();
-
         if ((*_ipc) == NULL)
         {
             return -1;
@@ -54,7 +51,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
     }
     else if (_flags > 0)
     {
-        // IPC_EXCL and IPC_CREAT should only be used to check if the semaphore exists
+        // IPC_EXCL and IPC_CREAT should only be used by the program
         (*_ipc)->flags = _flags & (~IPC_EXCL) & (~IPC_CREAT);
     }
 
@@ -74,11 +71,10 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
 
     if (_key == 0)
     {
-        (*_ipc)->key = ipc_gen_key ((*_ipc)->path, (*_ipc)->proj_id);
-
-        if (res < 0)
+        tmp = (*_ipc)->key = ipc_gen_key ((*_ipc)->path, (*_ipc)->proj_id);
+        if (tmp < 0)
         {
-            ret = res;
+            ret = tmp;
         }
     }
     else if (_key > 0)
@@ -86,27 +82,28 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
         (*_ipc)->key = _key;
     }
 
-
-    if (res < 0)
+    if (tmp < 0)
     {
-        ret = res;
+        ret = tmp;
     }
-
     return ret;
 }
 
 int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub)
 {
+    int   tmp   = 0;
     char* _path = NULL;
 
-    _path = ipc_gen_path (_root, _sub);
+    // all NULL checks are performed by called functions
 
+    _path = ipc_gen_path (_root, _sub);
     if (_path == NULL)
     {
         return -1;
     }
 
-    return ipc_t_set (_ipc, 0, 0, _path, 0);
+    tmp = ipc_t_set (_ipc, 0, 0, _path, 0);
+    return tmp;
 }
 
 void ipc_t_del (ipc_t** _ipc)
@@ -133,17 +130,15 @@ char* ipc_gen_path (char* _root, char* _sub)
     char* _path   = NULL;
     char* as [2] = { NULL, NULL };
 
-    err_reset ();
-
     if (_sub == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return NULL;
     }
 
     if (_sub [0] == '\0')
     {
-        err_set (_ESTREMPTY);
+        ERR_PRINT (_ESTREMPTY);
         return NULL;
     }
 
@@ -155,41 +150,36 @@ char* ipc_gen_path (char* _root, char* _sub)
     as [0] = _root;
     as [1] = _sub;
     ret = str_cat_len (2, as);
-
     if (ret <= 0)
     {
         return NULL;
     }
 
     _path = malloc (ret);
-
     if (_path == NULL)
     {
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_EALLOC);
+        ERR_SYS (errno);
+        ERR_PRINT (_EALLOC);
         return NULL;
     }
 
     ret = str_cat (2, _path, as);
-
     if (ret < 0)
     {
         return NULL;
     }
     if (_path == NULL)
     {
-        err_set (_EBADFUNC);
+        ERR_PRINT (_EBADFUNC);
         return NULL;
     }
 
     ret = file_touch (_path);
-
     if (ret < 0)
     {
         free (_path);
         return NULL;
     }
-
     return _path;
 }
 
@@ -197,28 +187,24 @@ key_t ipc_gen_key_ftok (char* _path, int _proj_id)
 {
     key_t key = 0;
 
-    err_reset ();
-
     if (_path == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
     if (_proj_id <= 0)
     {
-        err_set (_EBADVAL);
+        ERR_PRINT (_EBADVAL);
         return -1;
     }
 
     key = ftok (_path, _proj_id);
-
     if (key < 0)
     {
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_ESYSTEM);
+        ERR_SYS (errno);
+        ERR_PRINT (_ESYSTEM);
         return -1;
     }
-
     return key;
 }

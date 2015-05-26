@@ -7,7 +7,7 @@ shm_t* shm_t_new (void)
     _shm = malloc (sizeof (shm_t));
     if (_shm == NULL)
     {
-        err_set (_EALLOC);
+        ERR_PRINT (_EALLOC);
         return NULL;
     }
 
@@ -15,25 +15,23 @@ shm_t* shm_t_new (void)
     _shm->size = 0;
     _shm->id   = 0;
     _shm->seg  = NULL;
-
     return _shm;
 }
 
 int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
 {
-    int res = 0;
+    int tmp = 0;
     int ret = 0;
 
     if (_shm == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
     if ((*_shm) == NULL)
     {
         (*_shm) = shm_t_new ();
-
         if ((*_shm) == NULL)
         {
             return -1;
@@ -57,10 +55,10 @@ int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
 
     if (_id == 0)
     {
-        res = shm_gen_id ((*_shm));
-        if (res < 0)
+        tmp = shm_gen_id ((*_shm));
+        if (tmp < 0)
         {
-            ret = res;
+            ret = tmp;
             return ret;
         }
     }
@@ -74,26 +72,49 @@ int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
         (*_shm)->seg = _seg;
     }
 
-    if (res < 0)
+    if (tmp < 0)
     {
-        ret = res;
+        ret = tmp;
+    }
+    return ret;
+}
+
+int shm_t_from_ipc (shm_t** _shm, ipc_t* _ipc)
+{
+    int tmp = 0;
+    int ret = 0;
+
+    if (_ipc == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+        return -1;
     }
 
+    tmp = shm_t_set (_shm, _ipc, 0, 0, NULL);
+    if (tmp < 0)
+    {
+        ret = tmp;
+        return ret;
+    }
+
+    tmp = shm_attach_seg (*_shm);
+    if (tmp < 0)
+    {
+        ret = tmp;
+    }
     return ret;
 }
 
 int shm_t_from_path (shm_t** _shm, char* _root, char* _sub)
 {
-    int res = 0;
-    int ret = 0;
-
+    int    tmp  = 0;
+    int    ret  = 0;
     ipc_t* _ipc = NULL;
 
-    res = ipc_t_from_path (&_ipc, _root, _sub);
-
-    if (res < 0)
+    tmp = ipc_t_from_path (&_ipc, _root, _sub);
+    if (tmp < 0)
     {
-        ret = res;
+        ret = tmp;
         return ret;
     }
 
@@ -101,38 +122,9 @@ int shm_t_from_path (shm_t** _shm, char* _root, char* _sub)
     return ret;
 }
 
-int shm_t_from_ipc (shm_t** _shm, ipc_t* _ipc)
-{
-    int res = 0;
-    int ret = 0;
-
-    if (_ipc == NULL)
-    {
-        err_set (_EPTRNULL);
-        return -1;
-    }
-
-    res = shm_t_set (_shm, _ipc, 0, 0, NULL);
-
-    if (res < 0)
-    {
-        ret = res;
-        return ret;
-    }
-
-    res = shm_attach_seg (*_shm);
-
-    if (res < 0)
-    {
-        ret = res;
-    }
-
-    return ret;
-}
-
 void shm_t_del (shm_t** _shm)
 {
-    if (_shm == NULL || *_shm == NULL)
+    if (_shm == NULL || (*_shm) == NULL)
     {
         return;
     }
@@ -154,11 +146,10 @@ int shm_gen_id (shm_t* _shm)
 {
     int ret    = 0;
     int _flags = 0;
-    err_reset ();
 
     if (_shm == NULL || _shm->ipc == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
@@ -172,8 +163,8 @@ int shm_gen_id (shm_t* _shm)
                 err_reset ();
                 break;
             default:
-                ERR_AT_LINE_SYS (0, errno);
-                err_set (_ESYSTEM);
+                ERR_SYS (errno);
+                ERR_PRINT (_ESYSTEM);
                 ret = _shm->id;
                 return ret;
         }
@@ -185,51 +176,30 @@ int shm_gen_id (shm_t* _shm)
     }
 
     _shm->id = shmget (_shm->ipc->key, _shm->size, _shm->ipc->flags);
-
     if (_shm->id < 0)
     {
-        ERR_AT_LINE_SYS (0, errno);
+        ERR_SYS (errno);
         // todo- make a new error
-        err_set (_ESYSTEM);
+        ERR_PRINT (_ESYSTEM);
         return -1;
     }
 
-    return 0;
-
-    return _shm->id;
+    return ret;
 }
 
 int shm_attach_seg (shm_t* _shm)
 {
     if (_shm == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
         return -1;
     }
 
     _shm->seg = shmat (_shm->id, 0, 0);
-
     if (_shm->seg < 0)
     {
-        ERR_AT_LINE_SYS (0, errno);
-        err_set (_ESYSTEM);
-        return -1;
-    }
-
-    return 0;
-}
-
-int shm_write (shm_t* _shm, void* _buf, int _bytes)
-{
-    if (_shm == NULL || _buf == NULL || _shm->seg == NULL)
-    {
-        err_set (_EPTRNULL);
-    }
-
-    memcpy (_shm->seg, _buf, _bytes);
-
-    if (_shm->seg == NULL)
-    {
+        ERR_SYS (errno);
+        ERR_PRINT (_ESYSTEM);
         return -1;
     }
 
@@ -244,12 +214,27 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes)
     // todo- urgent- make msgs void, not char
     if (_shm == NULL || _buf == NULL || _shm->seg == NULL)
     {
-        err_set (_EPTRNULL);
+        ERR_PRINT (_EPTRNULL);
     }
 
     memcpy (_buf, _shm->seg, _bytes);
-
     if (_buf == NULL)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+int shm_write (shm_t* _shm, void* _buf, int _bytes)
+{
+    if (_shm == NULL || _buf == NULL || _shm->seg == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+    }
+
+    memcpy (_shm->seg, _buf, _bytes);
+    if (_shm->seg == NULL)
     {
         return -1;
     }

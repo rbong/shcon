@@ -19,7 +19,7 @@ enum IPC_FLAGS {
     /* IPC_EXCL */
 };
 
-typedef struct ipc_t
+typedef struct
 {
     int   flags;
     int   proj_id;
