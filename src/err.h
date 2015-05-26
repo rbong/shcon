@@ -9,6 +9,7 @@
 #define ERR_SYS(n) \
     (_err_sys (stderr, __FILE__, __func__, __LINE__, n))
 
+/* -- START OF GUARD BLOCK -- */
 #ifndef MM_ERR
 #define MM_ERR
 typedef struct
@@ -27,6 +28,7 @@ extern const err_info_t err_table [];
 extern int       err_num;
 extern const int ERR_MAX;
 #endif
+/* --- END OF GUARD BLOCK --- */
 
 void  _err_pr    (FILE*, char*, const char*, int, char*, ...);
 void  _err_sys   (FILE*, char*, const char*, int, int);

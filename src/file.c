@@ -43,9 +43,7 @@ int file_touch (char* _file_name)
         ERR_SYS (errno);
         ERR_PRINT (_EFCLOSE);
         ret = tmp;
-        return ret;
     }
-
     return ret;
 }
 

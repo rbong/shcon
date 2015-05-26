@@ -1,5 +1,3 @@
-decide whether you always or never want both tmp and ret
-check that headers are parallel
 start adding maximums
 on memory copying statements, check everything can fit
 create function to recursively create directories

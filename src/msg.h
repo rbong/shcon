@@ -3,6 +3,7 @@
 
 #include <err.h>
 
+/* -- START OF GUARD BLOCK -- */
 #ifndef MM_MSG
 #define MM_MSG
 typedef struct
@@ -20,6 +21,7 @@ typedef struct
     char*     data;
 } msg_t;
 #endif
+/* --- END OF GUARD BLOCK --- */
 
 msg_t* msg_t_new      (void);
 void   msg_t_del      (msg_t**);

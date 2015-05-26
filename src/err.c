@@ -29,13 +29,13 @@ void _err_pr (FILE* _fp, char* _file, const char* _fn, int _l, char* _fmt, ...)
     return;
 }
 
-void _err_sys (FILE* _fp, char* _file, const char* _fn, int _l, int n)
+void _err_sys (FILE* _fp, char* _file, const char* _fn, int _l, int _n)
 {
     /* int tmp = 0; */
     /* int ret = 0; */
 
     fprintf (_fp, "%s:%s:%s():%d: ", "mm", _file, _fn, _l);
-    fprintf (_fp, "System: %s.\n", strerror (n));
+    fprintf (_fp, "System: %s.\n", strerror (_n));
 
     /* if (tmp < 0) */
     /* { */

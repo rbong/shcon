@@ -4,7 +4,6 @@
 #include <err.h>
 #include <ipc.h>
 
-// todo- comment all guard blocks
 /* -- START OF GUARD BLOCK -- */
 #ifndef MM_SEM
 #define MM_SEM
