@@ -1,5 +1,7 @@
 add comments for function operation and file purposes
 write styleguide
+put variable names into prototypes.
+call functions with make
 start adding maximums
 on memory copying statements, check everything can fit
 create function to recursively create directories

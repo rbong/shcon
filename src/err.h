@@ -1,27 +1,54 @@
+/**
+@file err.h
+@author Roger Bongers
+@date May 27 2015
+@brief Error processing.
+
+Defines a system for printing and recording errors based on error codes.
+
+New error codes should be entered into err_table.h along with their messages.
+After entering in new error codes, run the ecodegen.sh script, or run make.
+New error codes will be available after recompiling.
+Do not manually enter codes into #err_codes.
+
+To print error codes defined by err_table.h, use the ERR_PRINT() macro.
+To print error codes defined by the system, use the ERR_SYS() macro.
+**/
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
 #include <error.h>
 #include <string.h>
 
-/*
- * ERR_PRINT ()- prints custom error messages.
- * args-         error number
- * returns-      returns no value and does not set err_num.
- */
+/**
+@def ERR_PRINT(n)
+@brief Prints program error messages.
+
+A macro.
+
+Calls _err_pr() to print error from #err_table. Also sets #err_num.
+The location printed by _err_pr() will be the location that calls the macro.
+@param[in] n Refers to the program error message to print. Saved in #err_num.
+@return None.
+**/
 #define ERR_PRINT(n) \
     (_err_pr (stderr, __FILE__, __func__, __LINE__, _err_s_msg (err_num = n)))
-/* ERR_SYS ()- prints system error messages.
- * args-       errno
- * returns-    returns no value and does not set err_num.
- */
+/**
+@def ERR_SYS(n)
+@param[in] n The error code to print.
+@brief Prints system error messages.
+
+A macro.
+
+Calls _err_pr() to print a system error.
+The location printed by _err_pr() will be the location that calls the macro.
+**/
 #define ERR_SYS(n) \
     (_err_pr (stderr, __FILE__, __func__, __LINE__, strerror (n)))
 
 /* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef MM_ERR
 #define MM_ERR
-// err_info_t- contains custom error information for indexing and printing.
 typedef struct
 {
     int   code;
