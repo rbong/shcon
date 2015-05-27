@@ -4,7 +4,7 @@ static const msg_hdr_t msg_hdr_empty = { 0 };
 
 msg_t* msg_t_new (void)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     msg_t* ret = NULL;
 
     ret = malloc (sizeof (msg_t));
@@ -20,10 +20,10 @@ msg_t* msg_t_new (void)
     ret->hdr  = msg_hdr_empty;
     ret->data = NULL;
     ret->cmd  = NULL;
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
@@ -31,8 +31,8 @@ msg_t* msg_t_new (void)
 
 void msg_t_del (msg_t** _msg)
 {
-    /* int tmp = 0; */
-    /* int ret = 0; */
+    // int tmp = 0;
+    // int ret = 0;
 
     if (_msg == NULL || (*_msg) == NULL)
     {
@@ -52,10 +52,10 @@ void msg_t_del (msg_t** _msg)
     free ((*_msg));
     *(_msg) = NULL;
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return;
 }
 
@@ -101,7 +101,7 @@ void* msg_to_bin (msg_t* _msg)
 
 int msg_to_bin_len (msg_t* _msg)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     if (_msg == NULL)
@@ -112,9 +112,9 @@ int msg_to_bin_len (msg_t* _msg)
     }
     
     ret = sizeof (msg_hdr_t) + _msg->hdr.cmd_len + _msg->hdr.data_len;
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }

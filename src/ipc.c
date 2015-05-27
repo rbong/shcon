@@ -9,7 +9,7 @@ key_t (*ipc_gen_key) (char*, int) = ipc_gen_key_ftok;
 
 ipc_t* ipc_t_new (void)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     ipc_t* ret = NULL;
 
     ret = malloc (sizeof (ipc_t));
@@ -24,10 +24,10 @@ ipc_t* ipc_t_new (void)
     ret->flags   = 0;
     ret->proj_id = 0;
     ret->key     = 0;
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
@@ -123,8 +123,8 @@ int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub)
 
 void ipc_t_del (ipc_t** _ipc)
 {
-    /* int tmp = 0; */
-    /* int ret = 0; */
+    // int tmp = 0;
+    // int ret = 0;
 
     if (_ipc == NULL || (*_ipc) == NULL)
     {
@@ -139,10 +139,10 @@ void ipc_t_del (ipc_t** _ipc)
     free ((*_ipc));
     (*_ipc) = NULL;
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return;
 }
 
@@ -212,7 +212,7 @@ char* ipc_gen_path (char* _root, char* _sub)
 
 key_t ipc_gen_key_ftok (char* _path, int _proj_id)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     key_t ret = 0;
 
     if (_path == NULL)

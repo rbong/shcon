@@ -10,7 +10,7 @@ static struct sembuf sem_unlock_buf = { 1, +1, IPC_NOWAIT };
 
 sem_t* sem_t_new (void)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     sem_t* ret = NULL;
 
     ret = malloc (sizeof (sem_t));
@@ -24,10 +24,10 @@ sem_t* sem_t_new (void)
     ret->len    = 0;
     ret->id     = 0;
     ret->locked = 0;
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
@@ -105,8 +105,8 @@ int sem_t_from_ipc (sem_t** _sem, ipc_t* _ipc)
 
 void sem_t_del (sem_t** _sem)
 {
-    /* int tmp = 0; */
-    /* int ret = 0; */
+    // int tmp = 0;
+    // int ret = 0;
 
     if (_sem == NULL || (*_sem) == NULL)
     {
@@ -121,10 +121,10 @@ void sem_t_del (sem_t** _sem)
     free ((*_sem));
     (*_sem) = NULL;
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return;
 }
 
@@ -220,7 +220,7 @@ int sem_gen_id (sem_t* _sem)
 // todo- test race conditions, read more on semop
 int sem_lock (sem_t* _sem)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     if (_sem == NULL)
@@ -245,16 +245,16 @@ int sem_lock (sem_t* _sem)
     }
     _sem->locked = 1;
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
 int sem_unlock (sem_t* _sem)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     if (_sem == NULL)
@@ -279,10 +279,10 @@ int sem_unlock (sem_t* _sem)
     }
     _sem->locked = 0;
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 

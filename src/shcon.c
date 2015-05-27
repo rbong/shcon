@@ -2,7 +2,7 @@
 
 shcon_t* shcon_t_new (void)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     shcon_t* ret = NULL;
 
     ret = malloc (sizeof (shcon_t));
@@ -16,16 +16,16 @@ shcon_t* shcon_t_new (void)
     ret->ipc = NULL;
     ret->shm = NULL;
     ret->sem = NULL;
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
 int shcon_t_set (shcon_t** _shcon, ipc_t* _ipc, shm_t* _shm, sem_t* _sem)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     if (_shcon == NULL)
@@ -61,10 +61,10 @@ int shcon_t_set (shcon_t** _shcon, ipc_t* _ipc, shm_t* _shm, sem_t* _sem)
         (*_shcon)->sem = _sem;
     }
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
@@ -107,8 +107,8 @@ int shcon_t_from_path (shcon_t** _shcon, char* _root, char* _sub)
 
 void shcon_t_del (shcon_t** _shcon)
 {
-    /* int tmp = 0; */
-    /* int ret = 0; */
+    // int tmp = 0;
+    // int ret = 0;
 
     if (_shcon == NULL || (*_shcon) == NULL)
     {
@@ -133,10 +133,10 @@ void shcon_t_del (shcon_t** _shcon)
     free ((*_shcon));
     (*_shcon) = NULL;
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return;
 }
 

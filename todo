@@ -1,5 +1,5 @@
 add comments for function operation and file purposes
-comment all sections of code
+write styleguide
 start adding maximums
 on memory copying statements, check everything can fit
 create function to recursively create directories

@@ -4,7 +4,7 @@
 #include <err.h>
 #include <msg.h>
 
-/* -- START OF GUARD BLOCK -- */
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef SHCON_H
 #define SHCON_H
 typedef struct
@@ -14,7 +14,7 @@ typedef struct
     sem_t* sem;
 } shcon_t;
 #endif
-/* --- END OF GUARD BLOCK --- */
+/* -------------------------- END OF GUARD BLOCK -------------------------- */
 
 shcon_t* shcon_t_new       (void);
 int      shcon_t_set       (shcon_t**, ipc_t*, shm_t*, sem_t*);

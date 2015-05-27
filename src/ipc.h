@@ -5,7 +5,7 @@
 #include <str.h>
 #include <file.h>
 
-/* -- START OF GUARD BLOCK -- */
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef MM_IPC
 #define MM_IPC
 enum IPC_FLAGS {
@@ -15,9 +15,9 @@ enum IPC_FLAGS {
     IPC_GRP_W =  020,
     IPC_OTH_R =   04,
     IPC_OTH_W =   02,
-    /* defined in in sys/ipc.h */
-    /* IPC_CREAT */
-    /* IPC_EXCL */
+    // defined in in sys/ipc.h
+    // IPC_CREAT
+    // IPC_EXCL
 };
 
 typedef struct
@@ -30,7 +30,7 @@ typedef struct
 
 extern key_t (*ipc_gen_key) (char*, int);
 #endif
-/* --- END OF GUARD BLOCK --- */
+/* -------------------------- END OF GUARD BLOCK -------------------------- */
 
 ipc_t* ipc_t_new        (void);
 int    ipc_t_set        (ipc_t**, int, int, char*, key_t);

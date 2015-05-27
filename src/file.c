@@ -49,7 +49,7 @@ int file_touch (char* _file_name)
 
 int file_exists (char* _file_name)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     // todo- add ret
@@ -85,10 +85,10 @@ int file_exists (char* _file_name)
         ret = -1;
         return ret;
     }
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     ret = -1;
     return ret;
 }

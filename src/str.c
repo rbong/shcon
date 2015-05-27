@@ -2,7 +2,7 @@
 
 int str_cat (int _strs, char* _dest, char** _src)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret    = 0;
     int i      = 0;
     int _bytes = 0;
@@ -27,16 +27,16 @@ int str_cat (int _strs, char* _dest, char** _src)
     }
     _dest [_bytes] = '\0';
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
 int str_cat_len (int _strs, char** _src)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int   ret = 0;
     int   i;
     char* _s;

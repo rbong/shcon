@@ -11,7 +11,7 @@
 #include <file.h>
 #include <msg.h>
 
-/* -- START OF GUARD BLOCK -- */
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef MM_SHM
 #define MM_SHM
 typedef struct
@@ -22,7 +22,7 @@ typedef struct
     void*  seg;
 } shm_t;
 #endif
-/* --- END OF GUARD BLOCK --- */
+/* -------------------------- END OF GUARD BLOCK -------------------------- */
 
 shm_t* shm_t_new       (void);
 int    shm_t_set       (shm_t**, ipc_t*, size_t, int, void*);

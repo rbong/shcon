@@ -16,10 +16,10 @@ shm_t* shm_t_new (void)
     ret->size = 0;
     ret->id   = 0;
     ret->seg  = NULL;
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return ret;
 }
 
@@ -134,8 +134,8 @@ int shm_t_from_path (shm_t** _shm, char* _root, char* _sub)
 
 void shm_t_del (shm_t** _shm)
 {
-    /* int tmp = 0; */
-    /* int ret = 0; */
+    // int tmp = 0;
+    // int ret = 0;
 
     if (_shm == NULL || (*_shm) == NULL)
     {
@@ -152,10 +152,10 @@ void shm_t_del (shm_t** _shm)
     free (*_shm);
     (*_shm) = NULL;
 
-    /* if (tmp < 0) */
-    /* { */
-    /*     ret = tmp; */
-    /* } */
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
     return;
 }
 
@@ -207,7 +207,7 @@ int shm_gen_id (shm_t* _shm)
 
 int shm_attach_seg (shm_t* _shm)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     if (_shm == NULL)
@@ -234,7 +234,7 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes)
     // todo- urgent- make a version indicator on all init messages, have it set by makefile
     // todo- urgent- make msgs void, not char
 
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     if (_shm == NULL || _buf == NULL || _shm->seg == NULL)
@@ -255,7 +255,7 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes)
 
 int shm_write (shm_t* _shm, void* _buf, int _bytes)
 {
-    /* int tmp = 0; */
+    // int tmp = 0;
     int ret = 0;
 
     if (_shm == NULL || _buf == NULL || _shm->seg == NULL)

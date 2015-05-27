@@ -4,7 +4,7 @@
 #include <err.h>
 #include <ipc.h>
 
-/* -- START OF GUARD BLOCK -- */
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef MM_SEM
 #define MM_SEM
 typedef struct
@@ -24,7 +24,7 @@ union semun
 
 extern int sem_len;
 #endif
-/* --- END OF GUARD BLOCK --- */
+/* -------------------------- END OF GUARD BLOCK -------------------------- */
 
 sem_t* sem_t_new      (void);
 int    sem_t_set      (sem_t**, ipc_t*, int);
