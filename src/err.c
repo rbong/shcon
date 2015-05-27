@@ -1,5 +1,14 @@
+/**
+@file err.c
+@author Roger Bongers
+@date May 27 2015
+@see err.h
+**/
 #include <err.h>
 
+/**
+@hideinitializer
+**/
 const err_info_t err_table [] =
 {
 #include <data/err_table.h>
@@ -9,13 +18,13 @@ const err_info_t err_table [] =
 int       err_num = _ESUCCESS;
 const int ERR_MAX = sizeof (err_table) / sizeof (err_info_t) - 1;
 
-void _err_pr (FILE* _fp, char* _file, const char* _fn, int _l, char* _fmt, ...)
+void _err_pr (FILE* _fp, char* _src, const char* _fn, int _l, char* _fmt, ...)
 {
     // int tmp = 0;
     // int ret = 0;
     va_list _args = { 0 };
 
-    fprintf (_fp, "%s:%s:%s():%d: ", "mm", _file, _fn, _l);
+    fprintf (_fp, "%s:%s:%s():%d: ", "mm", _src, _fn, _l);
     va_start (_args, _fmt);
     vfprintf (_fp, _fmt, _args);
     va_end (_args);
@@ -28,7 +37,7 @@ void _err_pr (FILE* _fp, char* _file, const char* _fn, int _l, char* _fmt, ...)
     return;
 }
 
-char* _err_s_msg (int _code)
+char* _err_get_msg (int _code)
 {
     // int tmp = 0;
     char* ret = 0;

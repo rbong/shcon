@@ -1,4 +1,8 @@
 add comments for function operation and file purposes
+find a good place to put stray file documentation
+make sure you commented scripts
+make sure you commented test files
+make a better program name system for err
 write styleguide
 put variable names into prototypes.
 call functions with make
@@ -8,3 +12,4 @@ create function to recursively create directories
 write test functions
 write test programs
 store temporary err_num value when recoverable so it is not overwrote
+make makefile produce files from .in
