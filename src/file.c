@@ -1,3 +1,9 @@
+/** @file file.c
+@author Roger Bongers
+@date May 27 2015
+@brief See file.h.
+@see file.h
+**/
 #include <file.h>
 
 // todo- determine if shm actually needs an untouched file, skip unreadale files and see if shm needs readable files
@@ -84,6 +90,7 @@ int file_exists (char* _file_name)
         ERR_PRINT (_EACCESS);
         ret = -1;
         return ret;
+        break;
     }
     // if (tmp < 0)
     // {

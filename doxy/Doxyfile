@@ -20,6 +20,9 @@ MULTILINE_CPP_IS_BRIEF = NO
 INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 4
+ALIASES                += beg{1}="<p><dl class=\"params\"><dt>\1</dt><dd><table class=\"params\">"
+ALIASES                += ent{2}="<tr><td class=\"paramname\">\1</td><td>\2</td></tr>"
+ALIASES                += end="</table></dd></dl>"
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO

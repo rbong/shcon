@@ -2,8 +2,10 @@
 @file err.c
 @author Roger Bongers
 @date May 27 2015
+@brief See err.h.
 @see err.h
 **/
+
 #include <err.h>
 
 /**

@@ -1,3 +1,9 @@
+/** @file ipc.c
+@author Roger Bongers
+@date May 27 2015
+@brief See ipc.h.
+@see ipc.h
+**/
 #include <ipc.h>
 
 int   ipc_flags   = IPC_USR_R | IPC_USR_W | IPC_GRP_R | IPC_GRP_W;
