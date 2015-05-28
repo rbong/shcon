@@ -41,8 +41,10 @@ The location printed by _err_pr() will be where the macro is called.
 **/
 typedef struct
 {
-    int   code; //!< The error number.
-    char* msg; //!< The error message.
+    int   code;
+    //!< The error number.
+    char* msg;
+    //!< The error message.
 } err_info_t;
 
 /**

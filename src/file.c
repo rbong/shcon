@@ -96,6 +96,7 @@ int file_exists (char* _file_name)
     // {
     //     ret = tmp;
     // }
+    // todo- make a new error for reaching the end of a function.
     ret = -1;
     return ret;
 }

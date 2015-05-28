@@ -22,7 +22,8 @@
 @ent{_EFOPEN, Could not open file specified by \b _file_name.}
 @ent{_EFCLOSE, Could not close file pointer created with \b _file_name.}
 @end
-@see file_exists
+@note Inherits errors form file_exists()
+@see file_exists()
 **/
 int file_touch (char* _file_name);
 /**

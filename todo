@@ -17,3 +17,4 @@ make makefile produce files from .in
 disable IPC_CREAT and IPC_EXCL elsewhere
 create example files
 put typedef enums in structures rather than ints
+make ipc_t not fail spectacularly in ipc_t_set() when the path is not set and it tries to make a key, but rather make a new error for this situation

@@ -6,10 +6,12 @@
 **/
 #include <ipc.h>
 
+//! Default value for ipc_t \b flags.
 int   ipc_flags   = IPC_USR_R | IPC_USR_W | IPC_GRP_R | IPC_GRP_W;
+//! Default value for ipc_t \b proj_id.
 int   ipc_proj_id = 'M';
+//! Default value for ipc_gen_path() \b _root.
 char* ipc_root    = "/tmp/";
-char* ipc_sub     = "mm";
 
 key_t (*ipc_gen_key) (char*, int) = ipc_gen_key_ftok;
 
@@ -200,12 +202,12 @@ char* ipc_gen_path (char* _root, char* _sub)
         ret = NULL;
         return ret;
     }
-    if (ret == NULL)
-    {
-        ERR_PRINT (_EBADFUNC);
-        ret = NULL;
-        return ret;
-    }
+    // if (ret == NULL)
+    // {
+    //     ERR_PRINT (_EBADFUNC);
+    //     ret = NULL;
+    //     return ret;
+    // }
 
     tmp = file_touch (ret);
     if (tmp < 0)
@@ -239,6 +241,7 @@ key_t ipc_gen_key_ftok (char* _path, int _proj_id)
     if (ret < 0)
     {
         ERR_SYS (errno);
+        // todo- make a new error
         ERR_PRINT (_ESYSTEM);
         ret = -1;
         return ret;
