@@ -8,7 +8,6 @@ write styleguide
 put variable names into prototypes.
 call functions with make
 start adding maximums
-on memory copying statements, check everything can fit
 create function to recursively create directories
 write test functions
 write test programs
@@ -18,3 +17,9 @@ disable IPC_CREAT and IPC_EXCL elsewhere
 create example files
 put typedef enums in structures rather than ints
 make ipc_t not fail spectacularly in ipc_t_set() when the path is not set and it tries to make a key, but rather make a new error for this situation
+create more generic names for msg than data and cmd
+make shm and sem unaware of ipc
+make _t functions way more general
+recheck that "set" functions behave the same way. shm does not attach to a segment, but other types do their unsafe functions. also ipc functions return weird types instead of accepting ipc pointers.
+look up how to check for and catch memcpy errors.
+make str_cat and msg_to_bin behave the same way

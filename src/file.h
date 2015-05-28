@@ -14,7 +14,7 @@
 /**
 @brief Create an empty file if it does not exist.
 @param _file_name The path to the file.
-@return Returns 0 if the file was created or 1 if the file existed.
+@return Upon success, returns 0 if the file did not exist and 1 if it did.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _file_name was NULL.}
@@ -29,7 +29,7 @@ int file_touch (char* _file_name);
 /**
 @brief Determine if a file exists.
 @param _file_name The path to the file.
-@return Returns 0 if the file was created or 1 if the file existed.
+@return Upon success, returns 0 if the file does exist and 1 if it does.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @details
 @beg{Errors}

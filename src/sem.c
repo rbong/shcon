@@ -1,3 +1,10 @@
+/** @file sem.c
+@author Roger Bongers
+@date May 28 2015
+@brief See sem.h.
+@see sem.h
+**/
+
 // todo- decide if _add should be a global variable
 #include <sem.h>
 
@@ -5,8 +12,8 @@ int sem_add_conn (sem_t*);
 
 int sem_len = 2;
 
-static struct sembuf sem_lock_buf   = { 1, -1, SEM_UNDO };
-static struct sembuf sem_unlock_buf = { 1, +1, IPC_NOWAIT };
+struct sembuf sem_lock_buf   = { 1, -1, SEM_UNDO };
+struct sembuf sem_unlock_buf = { 1, +1, IPC_NOWAIT | SEM_UNDO };
 
 sem_t* sem_t_new (void)
 {
@@ -190,8 +197,6 @@ int sem_gen_id (sem_t* _sem)
         tmp = sem_add_conn (_sem);
         if (tmp < 0)
         {
-            ERR_SYS (errno);
-            ERR_PRINT (_ESYSTEM);
             ret = tmp;
         }
         return ret;
@@ -210,8 +215,6 @@ int sem_gen_id (sem_t* _sem)
     tmp = sem_add_conn (_sem);
     if (tmp < 0)
     {
-        ERR_SYS (errno);
-        ERR_PRINT (_ESYSTEM);
         ret = tmp;
     }
     return ret;
@@ -286,7 +289,11 @@ int sem_unlock (sem_t* _sem)
     return ret;
 }
 
-// do not use this external to sem.c
+/**
+@brief Adds a connection to a sem_t.
+@details Called once upon connecting and automatically undone.
+Not used external to sem.c.
+**/
 int sem_add_conn (sem_t* _sem)
 {
     int           tmp  = 0;

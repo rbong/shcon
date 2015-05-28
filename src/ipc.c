@@ -4,6 +4,7 @@
 @brief See ipc.h.
 @see ipc.h
 **/
+
 #include <ipc.h>
 
 //! Default value for ipc_t \b flags.
@@ -39,7 +40,7 @@ ipc_t* ipc_t_new (void)
     return ret;
 }
 
-int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
+int ipc_t_set (ipc_t** _ipc, int _flags, char* _path, key_t _key)
 {
     int tmp = 0;
     int ret = 0;
@@ -71,14 +72,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, int _proj_id, char* _path, key_t _key)
         (*_ipc)->flags = _flags & (~IPC_EXCL) & (~IPC_CREAT);
     }
 
-    if (_proj_id == 0)
-    {
-        (*_ipc)->proj_id = ipc_proj_id;
-    }
-    else if (_proj_id > 0)
-    {
-        (*_ipc)->proj_id = _proj_id;
-    }
+    (*_ipc)->proj_id = ipc_proj_id;
 
     if (_path != NULL)
     {
@@ -121,7 +115,7 @@ int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub)
         return ret;
     }
 
-    tmp = ipc_t_set (_ipc, 0, 0, _path, 0);
+    tmp = ipc_t_set (_ipc, 0, _path, 0);
     if (tmp < 0)
     {
         ret = tmp;
@@ -154,6 +148,7 @@ void ipc_t_del (ipc_t** _ipc)
     return;
 }
 
+// todo- make this a file function
 char* ipc_gen_path (char* _root, char* _sub)
 {
     int   tmp     = 0;

@@ -1,3 +1,10 @@
+/** @file shcon.c
+@author Roger Bongers
+@date May 28 2015
+@brief See shcon.h.
+@see shcon.h
+**/
+
 #include <shcon.h>
 
 shcon_t* shcon_t_new (void)

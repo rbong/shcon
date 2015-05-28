@@ -1,4 +1,14 @@
+/** @file shm.c
+@author Roger Bongers
+@date May 28 2015
+@brief See shm.h.
+@see shm.h
+**/
+
 #include <shm.h>
+
+//! Default value for ipc_t \b size.
+int shm_size = 1028;
 
 shm_t* shm_t_new (void)
 {
@@ -52,7 +62,7 @@ int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
     if (_size == 0)
     {
         // todo- get real max
-        (*_shm)->size = 1028;
+        (*_shm)->size = shm_size;
     }
     else if (_size > 0)
     {
@@ -200,7 +210,7 @@ int shm_gen_id (shm_t* _shm)
         ERR_SYS (errno);
         // todo- make a new error
         ERR_PRINT (_ESYSTEM);
-        ret = -1;
+        ret = tmp;
     }
     return ret;
 }
@@ -247,8 +257,8 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes)
     memcpy (_buf, _shm->seg, _bytes);
     if (_buf == NULL)
     {
+        ERR_PRINT (_ESYSTEM);
         ret = -1;
-        return ret;
     }
     return ret;
 }
@@ -268,6 +278,7 @@ int shm_write (shm_t* _shm, void* _buf, int _bytes)
     memcpy (_shm->seg, _buf, _bytes);
     if (_shm->seg == NULL)
     {
+        ERR_PRINT (_ESYSTEM);
         ret = -1;
     }
     return ret;

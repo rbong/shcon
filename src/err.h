@@ -9,6 +9,7 @@
 To print error codes defined by the system, use the ERR_SYS() macro.
 @see test_err.h
 **/
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
@@ -41,10 +42,10 @@ The location printed by _err_pr() will be where the macro is called.
 **/
 typedef struct
 {
-    int   code;
-    //!< The error number.
+    //! The error number.
+    int code;
+    //! The error message.
     char* msg;
-    //!< The error message.
 } err_info_t;
 
 /**
@@ -114,7 +115,7 @@ void _err_pr (FILE* _fp, char* _src, const char* _fn, int _l, char* _fmt, ...);
 /**
 @brief Retrieves an error message.
 @param _code The error code corresponding to the message.
-@return The string corresponding to \b _code.
+@return Upon success, returns the string corresponding to \b _code.
 If the code is not within bounds, returns the \b _EUNKNOWN message.
 @see err_info_t
 **/

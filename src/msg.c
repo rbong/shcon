@@ -1,6 +1,14 @@
+/** @file msg.c
+@author Roger Bongers
+@date May 28 2015
+@brief See msg.h.
+@see msg.h
+**/
+
 #include <msg.h>
 
-static const msg_hdr_t msg_hdr_empty = { 0 };
+//! The default value for a msg_t \b hdr.
+const msg_hdr_t msg_hdr_empty = { 0 };
 
 msg_t* msg_t_new (void)
 {
@@ -72,30 +80,35 @@ void* msg_to_bin (msg_t* _msg)
         return ret;
     }
 
-    tmp = msg_to_bin_len (_msg);
+    tmp = len = msg_to_bin_len (_msg);
     if (tmp < 0)
     {
         ret = NULL;
         return ret;
     }
 
-    ret = malloc (tmp);
+    ret = malloc (len);
     if (ret == NULL)
     {
-        ret = NULL;
+        ERR_PRINT (_EALLOC);
         return ret;
     }
 
+    // todo- bounds check
+    if (sizeof (ret) < len)
+    {
+        ERR_PRINT (_EPTROVERFLOW);
+        free (ret);
+        ret = NULL;
+        return ret;
+    }
+    len = 0;
     memcpy (ret + len, &(_msg->hdr), sizeof (msg_hdr_t));
     len += sizeof (msg_hdr_t);
     memcpy (ret + len, _msg->cmd, _msg->hdr.cmd_len);
     len += _msg->hdr.cmd_len;
     memcpy (ret + len, _msg->data, _msg->hdr.data_len);
     len += _msg->hdr.data_len;
-    if (tmp < 0)
-    {
-        ret = NULL;
-    }
     return ret;
 }
 
