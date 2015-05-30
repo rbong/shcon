@@ -84,7 +84,7 @@ If \b _path is NULL, does not populate \b _ipc member \b path.
 @param _key If \b _key is 0, generates a new key to populates \b _ipc.
 If \b _key is 1 or more, populates \b _ipc with \b _key.
 If \b _key is less than 0, does not populate \b _ipc member \b key.
-@return Upon success, returns 0 and fully populates \b _ipc.
+@return Upon success, returns 0 and populates \b _ipc.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _ipc is NULL.}

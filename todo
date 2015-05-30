@@ -19,3 +19,4 @@ write styleguide
 create example files
 call scripts with make
 start adding maximums
+make sem member len customizable

@@ -47,7 +47,7 @@ If \b _ipc is NULL, does not populate \b _shcon member \b ipc.
 If \b _shm is NULL, does not populate \b _shcon member \b shm.
 @param _sem If \b _sem is not NULL, populates \b _shcon with the sem_t address.
 If \b _sem is NULL, does not populate \b _shcon member \b sem.
-@return Upon success, returns 0 and fully populates \b _shcon.
+@return Upon success, returns 0 and populates \b _shcon.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}

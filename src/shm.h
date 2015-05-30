@@ -57,7 +57,7 @@ If \b _id is 1 or more, populates \b _shm with \b _id.
 If \b _id is less than 0, does not populate \b _shm member \b id.
 @param _seg If \b _seg is not NULL, populates \b _shm with the address.
 If \b _seg is NULL, does not populate \b _shm member \b seg.
-@return Upon success, returns 0 and fully populates \b _shm.
+@return Upon success, returns 0 and populates \b _shm.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}

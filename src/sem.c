@@ -27,7 +27,6 @@ sem_t* sem_t_new (void)
         return NULL;
     }
 
-    ret->ipc    = NULL;
     ret->len    = 0;
     ret->id     = 0;
     ret->locked = 0;
@@ -38,7 +37,7 @@ sem_t* sem_t_new (void)
     return ret;
 }
 
-int sem_t_set (sem_t** _sem, ipc_t* _ipc, int _id)
+int sem_t_set (sem_t** _sem, int _id, key_t _key, int _flags)
 {
     int tmp = 0;
     int ret = 0;
@@ -60,17 +59,13 @@ int sem_t_set (sem_t** _sem, ipc_t* _ipc, int _id)
         }
     }
 
-    if (_ipc != NULL)
-    {
-        (*_sem)->ipc = _ipc;
-    }
-
     // not user definable- must have one semaphore for lock, one for members
     (*_sem)->len = sem_len;
 
-    if (_id == 0)
+    // todo- determine if having no flags is useful
+    if (_id == 0 && _key > 0 && _flags >= 0)
     {
-        tmp = sem_gen_id ((*_sem));
+        tmp = sem_gen_id ((*_sem), _key, _flags);
         if (tmp < 0)
         {
             ret = tmp;
@@ -90,26 +85,6 @@ int sem_t_set (sem_t** _sem, ipc_t* _ipc, int _id)
     return ret;
 }
 
-int sem_t_from_ipc (sem_t** _sem, ipc_t* _ipc)
-{
-    int tmp = 0;
-    int ret = 0;
-
-    if (_ipc == NULL)
-    {
-        ERR_PRINT (_EPTRNULL);
-        ret = -1;
-        return ret;
-    }
-
-    tmp = sem_t_set (_sem, _ipc, 0);
-    if (tmp < 0)
-    {
-        ret = tmp;
-    }
-    return ret;
-}
-
 void sem_t_del (sem_t** _sem)
 {
     // int tmp = 0;
@@ -118,11 +93,6 @@ void sem_t_del (sem_t** _sem)
     if (_sem == NULL || (*_sem) == NULL)
     {
         return;
-    }
-
-    if ((*_sem)->ipc != NULL)
-    {
-        free ((*_sem)->ipc);
     }
 
     free ((*_sem));
@@ -136,14 +106,13 @@ void sem_t_del (sem_t** _sem)
 }
 
 // todo- determine if this should allocate or not, split this up
-int sem_gen_id (sem_t* _sem)
+int sem_gen_id (sem_t* _sem, key_t _key, int _flags)
 {
     int         tmp      = 0;
     int         ret      = 0;
-    int         _flags   = 0;
     union semun _sem_ops = { 0 };
 
-    if (_sem == NULL || _sem->ipc == NULL)
+    if (_sem == NULL)
     {
         ERR_PRINT (_EPTRNULL);
         ret = -1;
@@ -151,8 +120,7 @@ int sem_gen_id (sem_t* _sem)
     }
 
     // create new semaphore if it doesn't exist
-    _flags = _sem->ipc->flags | IPC_CREAT | IPC_EXCL;
-    tmp = _sem->id = semget (_sem->ipc->key, _sem->len, _flags);
+    tmp = _sem->id = semget (_key, _sem->len, _flags);
     if (tmp < 0)
     {
         switch (errno)
@@ -202,7 +170,7 @@ int sem_gen_id (sem_t* _sem)
         return ret;
     }
 
-    tmp = _sem->id = semget (_sem->ipc->key, _sem->len, _sem->ipc->flags);
+    tmp = _sem->id = semget (_key, _sem->len, _flags);
     if (tmp < 0)
     {
         ERR_SYS (errno);
