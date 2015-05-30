@@ -7,7 +7,7 @@
 
 #include <shm.h>
 
-//! Default value for ipc_t \b size.
+//! Default value for shm_t \b size.
 int shm_size = 1028;
 
 shm_t* shm_t_new (void)
@@ -22,7 +22,6 @@ shm_t* shm_t_new (void)
         return ret;
     }
 
-    ret->ipc  = NULL;
     ret->size = 0;
     ret->id   = 0;
     ret->seg  = NULL;
@@ -33,7 +32,8 @@ shm_t* shm_t_new (void)
     return ret;
 }
 
-int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
+int shm_t_set
+  (shm_t** _shm, size_t _size, int _id, void* _seg, key_t key, int _flags)
 {
     int tmp = 0;
     int ret = 0;
@@ -54,11 +54,6 @@ int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
         }
     }
 
-    if (_ipc != NULL)
-    {
-        (*_shm)->ipc = _ipc;
-    }
-
     if (_size == 0)
     {
         // todo- get real max
@@ -69,9 +64,9 @@ int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
         (*_shm)->size = _size;
     }
 
-    if (_id == 0)
+    if (_id == 0 && _key > 0 && _flags >= 0)
     {
-        tmp = shm_gen_id ((*_shm));
+        tmp = shm_gen_id ((*_shm), _key, _flags);
         if (tmp < 0)
         {
             ret = tmp;
@@ -87,54 +82,17 @@ int shm_t_set (shm_t** _shm, ipc_t* _ipc, size_t _size, int _id, void* _seg)
     {
         (*_shm)->seg = _seg;
     }
-
-    if (tmp < 0)
+    else if ((*_shm)->id > 0)
     {
-        ret = tmp;
-    }
-    return ret;
-}
-
-int shm_t_from_ipc (shm_t** _shm, ipc_t* _ipc)
-{
-    int tmp = 0;
-    int ret = 0;
-
-    if (_ipc == NULL)
-    {
-        ERR_PRINT (_EPTRNULL);
-        return -1;
+        tmp = shm_attach_seg (shm_t* _shm);
+        if (tmp < 0)
+        {
+            ret = tmp;
+            return ret;
+        }
     }
 
-    tmp = shm_t_set (_shm, _ipc, 0, 0, NULL);
-    if (tmp < 0)
-    {
-        ret = tmp;
-        return ret;
-    }
 
-    tmp = shm_attach_seg (*_shm);
-    if (tmp < 0)
-    {
-        ret = tmp;
-    }
-    return ret;
-}
-
-int shm_t_from_path (shm_t** _shm, char* _root, char* _sub)
-{
-    int    tmp  = 0;
-    int    ret  = 0;
-    ipc_t* _ipc = NULL;
-
-    tmp = ipc_t_from_path (&_ipc, _root, _sub);
-    if (tmp < 0)
-    {
-        ret = tmp;
-        return ret;
-    }
-
-    tmp = shm_t_from_ipc (_shm, _ipc);
     if (tmp < 0)
     {
         ret = tmp;
@@ -152,11 +110,6 @@ void shm_t_del (shm_t** _shm)
         return;
     }
 
-    if ((*_shm)->ipc != NULL)
-    {
-        ipc_t_del (&((*_shm)->ipc));
-    }
-
     // todo- maybe something for seg
 
     free (*_shm);
@@ -169,21 +122,19 @@ void shm_t_del (shm_t** _shm)
     return;
 }
 
-int shm_gen_id (shm_t* _shm)
+int shm_gen_id (shm_t* _shm, key_t _key, int _flags)
 {
     int tmp    = 0;
     int ret    = 0;
-    int _flags = 0;
 
-    if (_shm == NULL || _shm->ipc == NULL)
+    if (_shm == NULL)
     {
         ERR_PRINT (_EPTRNULL);
         ret = -1;
         return ret;
     }
 
-    _flags = _shm->ipc->flags | IPC_CREAT | IPC_EXCL;
-    tmp = _shm->id = shmget (_shm->ipc->key, _shm->size, _flags);
+    tmp = _shm->id = shmget (_key, _shm->size, _flags);
     if (tmp < 0)
     {
         if (errno == EEXIST)
@@ -204,7 +155,7 @@ int shm_gen_id (shm_t* _shm)
         return ret;
     }
 
-    tmp = _shm->id = shmget (_shm->ipc->key, _shm->size, _shm->ipc->flags);
+    tmp = _shm->id = shmget (_key, _shm->size, _flags);
     if (tmp < 0)
     {
         ERR_SYS (errno);

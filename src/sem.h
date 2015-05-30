@@ -51,8 +51,8 @@ sem_t* sem_t_new (void);
 /**
 @brief Populates a sem_t.
 @param _sem The semaphore to populate.
-@param _id If \b _id is 0, \b _key is more than 0, and \b flags is 0 or more,
-generates a semaphore ID to populates \b _sem.
+@param _id If \b _id is 0 and \b _key  and \b flags are valid,
+generates a semaphore ID for \b _sem member \b id.
 If \b _id is 1 or more, populates _sem with \b _id.
 If \b _id is less than 0, does not populate \b _sem member \b id.
 @param _key,flags Are used to set \b _sem \b id.

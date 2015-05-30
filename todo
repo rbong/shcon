@@ -20,3 +20,4 @@ create example files
 call scripts with make
 start adding maximums
 make sem member len customizable
+do not undo sem locking
