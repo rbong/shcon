@@ -92,7 +92,6 @@ int shm_t_set
         }
     }
 
-
     if (tmp < 0)
     {
         ret = tmp;
@@ -145,7 +144,7 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags)
         {
             ERR_SYS (errno);
             ERR_PRINT (_ESYSTEM);
-            ret = _shm->id;
+            ret = tmp;
             return ret;
         }
     }
@@ -188,7 +187,7 @@ int shm_attach_seg (shm_t* _shm)
     return ret;
 }
 
-int shm_read (shm_t* _shm, void* _buf, int _bytes)
+int shm_read (shm_t* _shm, void* _buf, int _bytes, int _offset)
 {
     // todo- urgent- overhaul this, APPEND MESSAGES TO THE _shm
     // todo- urgent- make an init message on all shm, check for it and init semaphore/shm by clearing everything and setting the semaphore if it is not present
@@ -205,7 +204,14 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes)
         return ret;
     }
 
-    memcpy (_buf, _shm->seg, _bytes);
+    if (_offset < 0)
+    {
+        ERR_PRINT (_EBADVAL);
+        ret = -1;
+        return ret;
+    }
+
+    memcpy (_buf, _shm->seg + _offset, _bytes);
     if (_buf == NULL)
     {
         ERR_PRINT (_ESYSTEM);
@@ -214,7 +220,7 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes)
     return ret;
 }
 
-int shm_write (shm_t* _shm, void* _buf, int _bytes)
+int shm_write (shm_t* _shm, void* _buf, int _bytes, int _offset)
 {
     // int tmp = 0;
     int ret = 0;
@@ -226,7 +232,14 @@ int shm_write (shm_t* _shm, void* _buf, int _bytes)
         return ret;
     }
 
-    memcpy (_shm->seg, _buf, _bytes);
+    if (_offset < 0)
+    {
+        ERR_PRINT (_EBADVAL);
+        ret = -1;
+        return ret;
+    }
+
+    memcpy (_shm->seg + _offset, _buf, _bytes);
     if (_shm->seg == NULL)
     {
         ERR_PRINT (_ESYSTEM);
