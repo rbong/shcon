@@ -68,8 +68,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, char* _path, key_t _key)
     }
     else if (_flags > 0)
     {
-        // IPC_EXCL and IPC_CREAT should only be used by the program
-        (*_ipc)->flags = _flags & (~IPC_EXCL) & (~IPC_CREAT);
+        (*_ipc)->flags = _flags;
     }
 
     (*_ipc)->proj_id = ipc_proj_id;

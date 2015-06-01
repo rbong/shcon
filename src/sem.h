@@ -27,7 +27,7 @@ typedef struct
 } sem_t;
 
 //! Type of the optional parameter for \b semctl() as specified by POSIX.
-union semun
+union sem_un
 {
     int              val;
     struct semid_ds* buf;
@@ -57,6 +57,8 @@ If \b _id is 1 or more, populates _sem with \b _id.
 If \b _id is less than 0, does not populate \b _sem member \b id.
 @param _key,flags Are used to set \b _sem \b id.
 @return Upon success, returns 0 and populates \b _sem.
+<br>If the population fails because the semaphore already exists,
+returns 1 without printing and does not set err_num.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}
@@ -75,44 +77,40 @@ Does nothing if \b _sem or \b *_sem is NULL.
 void sem_t_del (sem_t** _sem);
 /**
 @brief Generates a sem_t \b id.
-@details If the semaphore set already exists, does nothing after generating ID.
-If it does not, it initializes the semaphore set.
 @param _sem The sem_t to generate the ID for.
 @param _key The unique key used to generate the correct ID.
 @param _flags The permission flags of the semaphore.
 @return Upon success, returns 0 and sets \b _sem \b id.
+<br>If the generation fails because the semaphore already exists,
+returns 1 without printing and does not set err_num.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}
 @ent{_ESYSTEM, Failure in semaphore operations.}
 @end
-@note Inherits errors from sem_add_con()
-@see sem_add_con()
 **/
 int sem_gen_id (sem_t* _sem, key_t _key, int _flags);
 /**
-@brief Locks the semaphore.
-@details This function holds the thread until the semaphore is not locked.
-@param _sem The semaphore to lock.
-@return Upon success, returns 0.
-<br>If the semaphore was already locked by this thread, returns 1.
+@brief Performs semaphore control operations.
+@param _sem The semaphore to perform the operations on.
+@param _sem_num,_cmd,_sem_un The values to pass to \b semctl() (system).
+@return Upon success, returns 0 and performs the operations.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}
-@ent{_ESYSTEM, Unable to lock semaphore.}
+@ent{_ESYSTEM, Failure calling \b semctl().}
 @end
 **/
-int sem_lock (sem_t* _sem);
+int sem_ctl (sem_t* _sem, int _sem_num, int _cmd, union sem_un _sem_un);
 /**
-@brief Unlocks the semaphore.
-@details This function does not wait for the semaphore to become available.
-@param _sem The semaphore to unlock.
-@return Upon success, returns 0.
-<br>If the semaphore was not locked by this thread, returns 1.
+@brief Performs semaphore operations.
+@param _sem The semaphore to perform the operations on.
+@param _sem_ops,_num_sem_ops The values to pass to \b semop() (system).
+@return Upon success, returns 0 and performs the operations.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}
-@ent{_ESYSTEM, Unable to unlock semaphore.}
+@ent{_ESYSTEM, Failure calling \b semop().}
 @end
 **/
-int sem_unlock (sem_t* _sem);
+int sem_op (sem_t* _sem, struct sembuf _sem_ops, size_t _num_sem_ops);
