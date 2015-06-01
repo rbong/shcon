@@ -55,6 +55,8 @@ If \b _seg is NULL and \b _shm member \b id is invalid,
 does not populate \b _shm member \b seg.
 @param _key,flags Are used to set \b _shm \b id.
 @return Upon success, returns 0 and populates \b _shm.
+<br>If the population fails because the shared memory already exists,
+returns 1 without printing and does not set err_num.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}
@@ -69,6 +71,8 @@ int shm_t_set
 @param _key,flags Are used to set \b _shm \b id.
 @param _key,flags Are used to set \b _shm \b id.
 @return Upon success, returns 0 and populates \b _shm.
+<br>If the population fails because the shared memory already exists,
+returns 1 without printing and does not set err_num.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @note Inherits errors from shm_t_set()
 **/

@@ -67,9 +67,12 @@ int shm_t_set
     if (_id == 0 && _key > 0 && _flags >= 0)
     {
         tmp = shm_gen_id ((*_shm), _key, _flags);
-        if (tmp < 0)
+        if (tmp != 0)
         {
             ret = tmp;
+        }
+        if (tmp < 0)
+        {
             return ret;
         }
     }
@@ -105,7 +108,7 @@ int shm_t_from_id (shm_t** _shm, key_t _key, int _flags)
     int ret = 0;
 
     tmp = shm_t_set (_shm, 0, 0, NULL, _key, _flags);
-    if (tmp < 0)
+    if (tmp != 0)
     {
         ret = tmp;
     }
