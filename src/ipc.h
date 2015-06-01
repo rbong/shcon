@@ -81,7 +81,8 @@ If \b _flags is 1 or more, populates _ipc with \b _flags.
 If \b _flags is less than 0, does not populate \b _ipc member \b flags.
 @param _path If \b _path is not NULL, populates \b _ipc with the address.
 If \b _path is NULL, does not populate \b _ipc member \b path.
-@param _key If \b _key is 0, generates a new key to populates \b _ipc.
+@param _key If \b _key is 0 and \b _ipc \b path and \b proj_id are valid,
+generates a new key to populates \b _ipc.
 If \b _key is 1 or more, populates \b _ipc with \b _key.
 If \b _key is less than 0, does not populate \b _ipc member \b key.
 @return Upon success, returns 0 and populates \b _ipc.
@@ -95,13 +96,15 @@ int ipc_t_set (ipc_t** _ipc, int _flags, char* _path, key_t _key);
 /**
 @brief Populates an ipc_t given path information.
 @param _ipc The struct to populate.
-@param _root,_sub Parameters to pass to ipc_gen_path().
-@return Upon success, returns 0 and fully populates \b _ipc.
+@param _path The string to populate ipc_t member \b path with.
+@return Upon success, returns 0 and populates \b _ipc.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
-@note Inherits errors from ipc_gen_path(), ipc_t_set().
-@see ipc_gen_path() ipc_t_set()
+@beg{Errors}
+@ent{_EPTRNULL, \b _path is NULL.}
+@end
+@note Inherits errors from ipc_t_set().
 **/
-int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub);
+int ipc_t_from_path (ipc_t** _ipc, char* _path);
 /**
 @brief Deletes an ipc_t.
 @details Assumes that \b _ipc has been properly created by ipc_t_new().

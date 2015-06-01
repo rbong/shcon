@@ -11,8 +11,6 @@
 int   ipc_flags   = IPC_USR_R | IPC_USR_W | IPC_GRP_R | IPC_GRP_W;
 //! Default value for ipc_t \b proj_id.
 int   ipc_proj_id = 'M';
-//! Default value for ipc_gen_path() \b _root.
-char* ipc_root    = "/tmp/";
 
 key_t (*ipc_gen_key) (char*, int) = ipc_gen_key_ftok;
 
@@ -78,38 +76,29 @@ int ipc_t_set (ipc_t** _ipc, int _flags, char* _path, key_t _key)
         (*_ipc)->path = _path;
     }
 
-    if (_key == 0)
+    if (_key == 0 && (*_ipc)->path != NULL && (*_ipc)->proj_id > 0)
     {
         tmp = (*_ipc)->key = ipc_gen_key ((*_ipc)->path, (*_ipc)->proj_id);
         if (tmp < 0)
         {
             ret = tmp;
-            return ret;
         }
     }
     else if (_key > 0)
     {
         (*_ipc)->key = _key;
     }
-
-    if (tmp < 0)
-    {
-        ret = tmp;
-    }
     return ret;
 }
 
-int ipc_t_from_path (ipc_t** _ipc, char* _root, char* _sub)
+int ipc_t_from_path (ipc_t** _ipc, char* _path)
 {
     int   tmp   = 0;
     int   ret   = 0;
-    char* _path = NULL;
 
-    // all NULL checks are performed by called functions
-
-    _path = ipc_gen_path (_root, _sub);
     if (_path == NULL)
     {
+        ERR_PRINT (_EPTRNULL);
         ret = -1;
         return ret;
     }
@@ -145,71 +134,6 @@ void ipc_t_del (ipc_t** _ipc)
     //     ret = tmp;
     // }
     return;
-}
-
-// todo- make this a file function
-char* ipc_gen_path (char* _root, char* _sub)
-{
-    int   tmp     = 0;
-    char* ret     = NULL;
-    char* _as [2] = { NULL, NULL };
-
-    if (_sub == NULL)
-    {
-        ERR_PRINT (_EPTRNULL);
-        ret = NULL;
-        return ret;
-    }
-
-    if (_sub [0] == '\0')
-    {
-        ERR_PRINT (_ESTREMPTY);
-        ret = NULL;
-        return ret;
-    }
-
-    if (_root == NULL || _root [0] == '\0')
-    {
-        _root = ipc_root;
-    }
-
-    _as [0] = _root;
-    _as [1] = _sub;
-    tmp = str_cat_len (2, _as);
-    if (tmp <= 0)
-    {
-        ret = NULL;
-        return ret;
-    }
-
-    ret = malloc (tmp);
-    if (ret == NULL)
-    {
-        ERR_SYS (errno);
-        ERR_PRINT (_EALLOC);
-        return ret;
-    }
-
-    tmp = str_cat (2, ret, _as);
-    if (tmp < 0)
-    {
-        ret = NULL;
-        return ret;
-    }
-    // if (ret == NULL)
-    // {
-    //     ERR_PRINT (_EBADFUNC);
-    //     ret = NULL;
-    //     return ret;
-    // }
-
-    tmp = file_touch (ret);
-    if (tmp < 0)
-    {
-        free (ret);
-        ret = NULL;
-    }
-    return ret;
 }
 
 key_t ipc_gen_key_ftok (char* _path, int _proj_id)
