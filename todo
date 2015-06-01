@@ -1,14 +1,11 @@
+rewrite shcon
 create function to recursively create directories
 write test functions
 write test programs
 store temporary err_num value when recoverable so it is not overwritten
 alter makefile to produce files from .in
 disable IPC_CREAT and IPC_EXCL elsewhere
-make ipc_t not fail spectacularly in ipc_t_set() when the path is not set and it tries to make a key, but rather make a new error for this situation
 create more generic names for msg than data and cmd
-make shm and sem unaware of ipc
-make _t functions way more general
-recheck that "set" functions behave the same way. shm does not attach to a segment, but other types do their unsafe functions. also ipc functions return weird types instead of accepting ipc pointers.
 look up how to check for and catch memcpy errors.
 make str_cat and msg_to_bin behave the same way
 find a good place to put stray file documentation
@@ -19,6 +16,5 @@ write styleguide
 create example files
 call scripts with make
 start adding maximums
-make sem member len customizable
-do not undo sem locking
+do use SEM_UNDO anywhere but with adding connections
 test race conditions, read more on semop
