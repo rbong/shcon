@@ -33,9 +33,6 @@ union sem_un
     struct semid_ds* buf;
     unsigned short*  array;
 };
-
-//! The number of semaphores in each sem_t.
-extern int sem_len;
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
 
@@ -51,6 +48,9 @@ sem_t* sem_t_new (void);
 /**
 @brief Populates a sem_t.
 @param _sem The semaphore to populate.
+@param _len If \b _len is 0, populates \b _sem with #sem_len.
+If \b _len is 1 or more, populates \b _sem with \b _len.
+If \b _len is less than 0, does not populate \b _sem member \b len.
 @param _id If \b _id is 0 and \b _key  and \b flags are valid,
 generates a semaphore ID for \b _sem member \b id.
 If \b _id is 1 or more, populates _sem with \b _id.
@@ -65,7 +65,7 @@ returns 1 without printing and does not set err_num.
 @end
 @note Inherits errors from sem_t_new(), sem_gen_id().
 **/
-int sem_t_set (sem_t** _sem, int _id, key_t _key, int _flags);
+int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags);
 /**
 @brief Deletes a sem_t.
 @details Assumes that \b _sem has been properly created by sem_t_new().

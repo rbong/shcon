@@ -8,6 +8,7 @@
 // todo- decide if _add should be a global variable
 #include <sem.h>
 
+//! Default value for sem_t \b len.
 int sem_len = 2;
 
 sem_t* sem_t_new (void)
@@ -32,7 +33,7 @@ sem_t* sem_t_new (void)
     return ret;
 }
 
-int sem_t_set (sem_t** _sem, int _id, key_t _key, int _flags)
+int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
 {
     int tmp = 0;
     int ret = 0;
@@ -54,8 +55,14 @@ int sem_t_set (sem_t** _sem, int _id, key_t _key, int _flags)
         }
     }
 
-    // not user definable- must have one semaphore for lock, one for members
-    (*_sem)->len = sem_len;
+    if (_len == 0)
+    {
+        (*_sem)->len = sem_len;
+    }
+    else if (_len > 0)
+    {
+        (*_sem)->len = _len;
+    }
 
     // todo- determine if having no flags is useful
     if (_id == 0 && _key > 0 && _flags >= 0)
@@ -93,7 +100,6 @@ void sem_t_del (sem_t** _sem)
     return;
 }
 
-// todo- determine if this should allocate or not, split this up
 int sem_gen_id (sem_t* _sem, key_t _key, int _flags)
 {
     int         tmp      = 0;
