@@ -99,6 +99,19 @@ int shm_t_set
     return ret;
 }
 
+int shm_t_from_id (shm_t** _shm, key_t _key, int _flags)
+{
+    int tmp = 0;
+    int ret = 0;
+
+    tmp = shm_t_set (_shm, 0, 0, NULL, _key, _flags);
+    if (tmp < 0)
+    {
+        ret = tmp;
+    }
+    return ret;
+}
+
 void shm_t_del (shm_t** _shm)
 {
     // int tmp = 0;

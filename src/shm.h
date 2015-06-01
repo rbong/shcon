@@ -53,6 +53,7 @@ If \b _seg is NULL and \b _shm member \b id is valid,
 \b _shm member \b seg is attached to the memory indicated by \b id.
 If \b _seg is NULL and \b _shm member \b id is invalid,
 does not populate \b _shm member \b seg.
+@param _key,flags Are used to set \b _shm \b id.
 @return Upon success, returns 0 and populates \b _shm.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
@@ -62,6 +63,16 @@ does not populate \b _shm member \b seg.
 **/
 int shm_t_set
   (shm_t** _shm, size_t _size, int _id, void* _seg, key_t key, int _flags);
+/**
+@brief Populates a shm_t with information to generate an \b id.
+@param _shm The struct to populate.
+@param _key,flags Are used to set \b _shm \b id.
+@param _key,flags Are used to set \b _shm \b id.
+@return Upon success, returns 0 and populates \b _shm.
+<br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
+@note Inherits errors from shm_t_set()
+**/
+int shm_t_from_id (shm_t** _shm, key_t _key, int _flags);
 /**
 @brief Deletes a shm_t.
 @details Assumes that \b _shm has been properly created by shm_t_new().
