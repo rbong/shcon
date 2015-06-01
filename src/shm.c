@@ -33,7 +33,7 @@ shm_t* shm_t_new (void)
 }
 
 int shm_t_set
-  (shm_t** _shm, size_t _size, int _id, void* _seg, key_t key, int _flags)
+  (shm_t** _shm, size_t _size, int _id, void* _seg, key_t _key, int _flags)
 {
     int tmp = 0;
     int ret = 0;
@@ -84,7 +84,7 @@ int shm_t_set
     }
     else if ((*_shm)->id > 0)
     {
-        tmp = shm_attach_seg (shm_t* _shm);
+        tmp = shm_attach_seg (*_shm, NULL, 0);
         if (tmp < 0)
         {
             ret = tmp;
@@ -136,8 +136,8 @@ void shm_t_del (shm_t** _shm)
 
 int shm_gen_id (shm_t* _shm, key_t _key, int _flags)
 {
-    int tmp    = 0;
-    int ret    = 0;
+    int tmp     = 0;
+    int ret     = 0;
 
     if (_shm == NULL)
     {
@@ -151,34 +151,19 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags)
     {
         if (errno == EEXIST)
         {
-            err_reset ();
+            ret = 1;
         }
         else
         {
             ERR_SYS (errno);
             ERR_PRINT (_ESYSTEM);
             ret = tmp;
-            return ret;
         }
-    }
-    else
-    {
-        // todo- do whatever you need to do on a new shm
-        return ret;
-    }
-
-    tmp = _shm->id = shmget (_key, _shm->size, _flags);
-    if (tmp < 0)
-    {
-        ERR_SYS (errno);
-        // todo- make a new error
-        ERR_PRINT (_ESYSTEM);
-        ret = tmp;
     }
     return ret;
 }
 
-int shm_attach_seg (shm_t* _shm)
+int shm_attach_seg (shm_t* _shm, const void* _shmaddr, int _shmflg)
 {
     // int tmp = 0;
     int ret = 0;
@@ -190,7 +175,7 @@ int shm_attach_seg (shm_t* _shm)
         return ret;
     }
 
-    _shm->seg = shmat (_shm->id, 0, 0);
+    _shm->seg = shmat (_shm->id, _shmaddr, _shmflg);
     if (_shm->seg < 0)
     {
         ERR_SYS (errno);

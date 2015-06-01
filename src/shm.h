@@ -84,11 +84,12 @@ Does nothing if \b _shm or \b *_shm is NULL.
 void shm_t_del (shm_t** _shm);
 /**
 @brief Generates a shm_t \b id.
-@details If the shared memory already exists, does nothing after generating ID.
-If it does not, it initializes the shared memory.
 @param _shm The shm_t to generate the ID with.
-@param _key,flags Are used to set \b _shm \b id.
+@param _key The unique key used to generate the correct ID.
+@param _flags The permission flags of the shared memory.
 @return Upon success, returns 0 and sets \b _shm \b id.
+<br>If the generation fails because the shared memory already exists,
+returns 1 without printing and does not set err_num.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}
@@ -99,6 +100,7 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags);
 /**
 @brief Attaches to a shared memory segment.
 @param _shm The shared memory to retrieve the correct segment with.
+@param _shmaddr,_shmflg Parameters to pass to system function \b shmat.
 @return Upon success, returns 0 and sets \b _shm \b seg.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
@@ -106,7 +108,7 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags);
 @ent{_ESYSTEM, Failure in shm operations.}
 @end
 **/
-int shm_attach_seg (shm_t* _shm);
+int shm_attach_seg (shm_t* _shm, const void* _shmaddr, int _shmflg);
 /**
 @brief Reads from shared memory.
 @param _shm The shared memory to read from.
