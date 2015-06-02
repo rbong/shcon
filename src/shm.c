@@ -12,7 +12,7 @@ int shm_size = 1028;
 
 shm_t* shm_t_new (void)
 {
-    int    tmp = 0;
+    // int    tmp = 0;
     shm_t* ret = 0;
 
     ret = malloc (sizeof (shm_t));

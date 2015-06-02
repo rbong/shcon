@@ -1,13 +1,13 @@
 # COMPILER VARIABLES
 CC     = gcc
 # FLAG VARIABLES
-INC    = -I./src -I./test -I./include
+INC    = -I./src -I./include
 CFLAGS = -Wall -g $(INC)
 # FILE VARIABLES
-DEPS   = $(wildcard src/*.c) $(wildcard test/*.c)
+DEPS   = $(wildcard src/*.c)
 OBJS   = $(DEPS:.c=.o)
 # BINARY VARIABLES
-BINS   = test/test-mm src/mm
+BINS   = src/mm
 
 all: $(BINS)
 
@@ -18,4 +18,4 @@ $(BINS): $(OBJS)
 	$(CC) $(CFLAGS) $(INC) $(MAIN) $(OBJS) -o $@
 
 clean:
-	rm -f $(OBJS) src/mm test/test-mm
+	rm -f $(OBJS) src/mm

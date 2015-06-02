@@ -38,7 +38,7 @@ union sem_un
 
 /**
 @brief Create a new sem_t.
-@return Upon success, returns an address of a sem_t with empty members.
+@return Upon success, returns the address of a sem_t with empty members.
 <br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EALLOC, could not allocate space for the sem_t.}

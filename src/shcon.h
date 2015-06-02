@@ -56,16 +56,6 @@ If \b _sem is NULL, does not populate \b _shcon member \b sem.
 **/
 int shcon_t_set (shcon_t** _shcon, ipc_t* _ipc, shm_t* _shm, sem_t* _sem);
 /**
-@brief Populates an shcon_t given path information.
-@param _shcon The shared connection to populate.
-@param _root,_sub Parameters to pass to ipc_gen_path().
-@return Upon success, returns 0 and fully populates \b _shcon.
-<br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
-@note Inherits errors from ipc_gen_path(), shm_t_from_ipc(), sem_t_from_ipc(),
-shcon_t_set()
-**/
-int shcon_t_from_path (shcon_t** _shcon, char* _root, char* _sub);
-/**
 @brief Deletes an shcon_t.
 @details Assumes that \b _shcon has been properly created by shcon_t_new().
 Does nothing if \b _shcon or \b *_shcon is NULL.
