@@ -19,3 +19,5 @@ start adding maximums
 do use SEM_UNDO anywhere but with adding connections
 test race conditions, read more on semop
 look into the possibility of locking with shm instead of sem
+make sure that _EPTRNULL error entries have and/or
+make sure that capitalization is consistent on error entries

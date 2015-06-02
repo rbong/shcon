@@ -41,7 +41,8 @@ int shm_t_set
     if (_shm == NULL)
     {
         ERR_PRINT (_EPTRNULL);
-        return -1;
+        ret = -1;
+        return ret;
     }
 
     if ((*_shm) == NULL)

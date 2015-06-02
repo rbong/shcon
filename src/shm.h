@@ -35,7 +35,7 @@ typedef struct
 @return Upon success, returns an address of a shm_t with empty members.
 <br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EALLOC, could not allocate space for the shm_t.}
+@ent{_EALLOC, Could not allocate space for the shm_t.}
 @end
 **/
 shm_t* shm_t_new (void);
