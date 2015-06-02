@@ -16,6 +16,9 @@ To print error codes defined by the system, use the ERR_SYS() macro.
 #include <error.h>
 #include <string.h>
 
+/**
+@brief An error location.
+**/
 #define _ERR_LOC ((err_loc_t) { __FILE__, __func__, __LINE__ })
 /**
 @brief Prints program error messages.

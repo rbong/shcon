@@ -30,6 +30,7 @@ msg_t* msg_t_new (void)
     // }
     return ret;
 }
+
 int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data)
 {
     int tmp = 0;

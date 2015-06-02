@@ -84,7 +84,7 @@ If \b _data is NULL, does not populate \b _msg member \b data.
 **/
 int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data);
 /**
-@brief Generates a message header.
+@brief Generates a msg_hdr_t.
 @return Upon success, returns a message header with relevant data.
 <br>Upon failure, returns a header with member \b ver set to 0.
 @note Inherets errors from get_sec().

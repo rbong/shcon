@@ -59,7 +59,6 @@ int shcon_t_set (shcon_t** _shcon, ipc_t* _ipc, shm_t* _shm, sem_t* _sem);
 @brief Deletes an shcon_t.
 @details Assumes that \b _shcon has been properly created by shcon_t_new().
 Does nothing if \b _shcon or \b *_shcon is NULL.
-@returns Sets \b *_shcon to NULL after freeing data.
 @param _shcon The struct to free.
 @return Sets \b *_shcon to NULL after freeing data.
 **/

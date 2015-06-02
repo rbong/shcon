@@ -70,7 +70,6 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags);
 @brief Deletes a sem_t.
 @details Assumes that \b _sem has been properly created by sem_t_new().
 Does nothing if \b _sem or \b *_sem is NULL.
-@returns Sets \b *_sem to NULL after freeing data.
 @param _sem The semaphore to free.
 @return Sets \b *_sem to NULL after freeing data.
 **/
