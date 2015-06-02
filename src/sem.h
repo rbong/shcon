@@ -18,9 +18,9 @@
 **/
 typedef struct
 {
-    //! The constant number of semaphores in the set, as specified by #sem_len.
+    //! The number of semaphores in the set.
     int    len;
-    //! The identifier of the set.
+    //! Semaphore set identifier.
     int    id;
     //! Specifies whether this process has locked the semaphore.
     int    locked;
