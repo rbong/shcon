@@ -14,6 +14,12 @@
 /* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef SHCON_H
 #define SHCON_H
+enum _SHCON_SEM_SET
+{
+    SEMSET_LOCK = 0,
+    SEMSET_CON  = 1,
+    SEMSET_READ = 2,
+};
 /**
 @brief A shared connection.
 **/
@@ -25,6 +31,8 @@ typedef struct
     shm_t* shm;
     //! Semaphore to lock \b shm and track connections.
     sem_t* sem;
+    //! Specifies whether this process has locked the connection.
+    int locked;
 } shcon_t;
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */

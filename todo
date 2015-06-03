@@ -4,8 +4,6 @@ write test functions
 write test programs
 store temporary err_num value when recoverable so it is not overwritten
 alter makefile to produce files from .in
-disable IPC_CREAT and IPC_EXCL elsewhere
-create more generic names for msg than data and cmd
 look up how to check for and catch memcpy errors.
 make str_cat and msg_to_bin behave the same way
 find a good place to put stray file documentation
@@ -21,3 +19,8 @@ test race conditions, read more on semop
 look into the possibility of locking with shm instead of sem
 make sure that _EPTRNULL error entries have and/or
 make sure that capitalization is consistent on error entries
+make new errors!
+rename binary messages to raw
+break up various shcon utils into other utils
+rename gen_id to get_id
+ensure that all t_new declarations are checked at the beginning of funcs

@@ -18,6 +18,7 @@ enum _MSG_CONST
     //! Maximum size of message. System limit.
     MSG_MAX_SIZE = 4056,
 };
+
 enum _MSG_TYPE
 {
     //! An init message, where only \b type and \b version are guaranteed.
@@ -27,6 +28,7 @@ enum _MSG_TYPE
     //! A message to disconnect, where only \b type is guaranteed.
     MSG_KILL = 3L,
 };
+
 /**
 @brief Message metadata.
 **/
@@ -39,6 +41,7 @@ typedef struct
     //! Length of the data in bytes.
     int len;
 } msg_hdr_t;
+
 /**
 @brief A message.
 **/
@@ -83,6 +86,7 @@ If \b _data is NULL, does not populate \b _msg member \b data.
 @note Inherits errors from msg_gen_hdr().
 **/
 int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data);
+void msg_t_del (msg_t** _msg);
 /**
 @brief Generates a msg_hdr_t.
 @return Upon success, returns a message header with relevant data.
@@ -103,3 +107,6 @@ populates it with \b _data, and sets \b _msg member \b hdr member \b len.
 @end
 **/
 int msg_set_data (msg_t* _msg, char* _data);
+void* msg_to_bin (msg_t* _msg);
+msg_t* msg_from_bin (void* _bmsg);
+int msg_to_bin_len (msg_t* _msg);

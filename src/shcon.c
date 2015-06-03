@@ -23,6 +23,7 @@ shcon_t* shcon_t_new (void)
     ret->ipc = NULL;
     ret->shm = NULL;
     ret->sem = NULL;
+    ret->locked = 0;
     // if (tmp < 0)
     // {
     //     ret = tmp;

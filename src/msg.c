@@ -87,6 +87,32 @@ int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data)
     return ret;
 }
 
+void msg_t_del (msg_t** _msg)
+{
+    // int tmp = 0;
+    // int ret = 0;
+
+    if (_msg == NULL || (*_msg) == NULL)
+    {
+        return;
+    }
+
+    if ((*_msg)->data != NULL)
+    {
+        free ((*_msg)->data);
+    }
+
+    free (*_msg);
+
+    *_msg = NULL;
+
+    // if (tmp < 0)
+    // {
+    //     ret = NULL;
+    // }
+    // return ret;
+}
+
 msg_hdr_t msg_gen_hdr (void)
 {
     // int tmp = 0;
@@ -131,5 +157,92 @@ int msg_set_data (msg_t* _msg, char* _data)
     // {
     //     ret = tmp;
     // }
+    return ret;
+}
+
+void* msg_to_bin (msg_t* _msg)
+{
+    int tmp = 0;
+    void* ret = NULL;
+    int _len = 0;
+    int _offset = 0;
+
+    if (_msg == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+        ret = NULL;
+        return ret;
+    }
+
+    tmp = _len = msg_to_bin_len (_msg);
+    if (tmp < 0)
+    {
+        ret = NULL;
+        return ret;
+    }
+
+    ret = malloc (_len);
+    if (ret == NULL)
+    {
+        ERR_PRINT (_EALLOC);
+        return ret;
+    }
+
+    memcpy (ret + _offset, &(_msg->type), sizeof (_msg->type));
+    _offset += sizeof (_msg->type);
+    memcpy (ret + _offset, &(_msg->hdr), sizeof (_msg->hdr));
+    _offset += sizeof (_msg->hdr);
+    memcpy (ret + _offset, _msg->data, _msg->hdr.len);
+    return ret;
+}
+
+msg_t* msg_from_bin (void* _bmsg)
+{
+    // int tmp = 0;
+    msg_t* ret = msg_t_new ();
+    int _len = 0;
+    int _offset = 0;
+
+    if (ret == NULL)
+    {
+        return ret;
+    }
+
+    if (_bmsg == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+        ret = NULL;
+        return ret;
+    }
+
+    _len =  sizeof (_bmsg);
+    _len -= sizeof (ret->type);
+    _len -= sizeof (ret->hdr);
+    if (_len > 1)
+    {
+        ret->data = malloc (_len);
+    }
+
+    memcpy (&(ret->type), _bmsg + _offset, sizeof (ret->type));
+    _offset += sizeof (ret->type);
+    memcpy (&(ret->hdr), _bmsg + _offset, sizeof (ret->hdr));
+    _offset += sizeof (ret->hdr);
+    memcpy (ret->data, _bmsg + _offset, _len);
+    return ret;
+}
+
+int msg_to_bin_len (msg_t* _msg)
+{
+    // int tmp = 0;
+    int ret = 0;
+
+    if (_msg == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+        ret = -1;
+        return ret;
+    }
+
+    ret = sizeof (_msg->type) + sizeof (_msg->hdr) + _msg->hdr.len;
     return ret;
 }

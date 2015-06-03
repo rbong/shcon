@@ -206,7 +206,7 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes, int _offset)
         return ret;
     }
 
-    if (_offset < 0)
+    if (_offset < 0 || _bytes < 0 || _offset + _bytes > _shm->size)
     {
         ERR_PRINT (_EBADVAL);
         ret = -1;
@@ -234,7 +234,7 @@ int shm_write (shm_t* _shm, void* _buf, int _bytes, int _offset)
         return ret;
     }
 
-    if (_offset < 0)
+    if (_offset < 0 || _bytes < 0 || _offset + _bytes > _shm->size)
     {
         ERR_PRINT (_EBADVAL);
         ret = -1;

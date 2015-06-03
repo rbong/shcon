@@ -9,7 +9,7 @@
 #include <sem.h>
 
 //! Default value for sem_t \b len.
-int sem_len = 2;
+int sem_len = 3;
 
 sem_t* sem_t_new (void)
 {
@@ -25,7 +25,6 @@ sem_t* sem_t_new (void)
 
     ret->len    = 0;
     ret->id     = 0;
-    ret->locked = 0;
     // if (tmp < 0)
     // {
     //     ret = tmp;

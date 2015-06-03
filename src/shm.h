@@ -124,7 +124,7 @@ int shm_attach_seg (shm_t* _shm, const void* _shmaddr, int _shmflg);
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm member \b seg is NULL.}
 @ent{_ESYSTEM, Error copying memory.}
-@ent{_EBADVAL, \b _offset was out of bounds.}
+@ent{_EBADVAL, \b _offset and/or \b _bytes were out of bounds.}
 @end
 **/
 int shm_read (shm_t* _shm, void* _buf, int _bytes, int _offset);
@@ -132,14 +132,14 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes, int _offset);
 @brief Writes to shared memory.
 @param _shm The shared memory to write to.
 @param _buf The memory to read from.
-@param _bytes The number of bytes to write to.
+@param _bytes The number of bytes to write.
 @param _offset The offset at which to write to the memory.
 @return Upon success, returns 0 and fills shared memory with the buffer.
 <br> Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm member \b seg is NULL.}
 @ent{_ESYSTEM, Error copying memory.}
-@ent{_EBADVAL, \b _offset was out of bounds.}
+@ent{_EBADVAL, \b _offset and/or \bytes was out of bounds.}
 @end
 **/
 int shm_write (shm_t* _shm, void* _buf, int _bytes, int _offset);

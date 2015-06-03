@@ -22,8 +22,6 @@ typedef struct
     int    len;
     //! Semaphore set identifier.
     int    id;
-    //! Specifies whether this process has locked the semaphore.
-    int    locked;
 } sem_t;
 
 //! Type of the optional parameter for \b semctl() as specified by POSIX.
