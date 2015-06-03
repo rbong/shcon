@@ -68,13 +68,19 @@ int shm_t_set
     if (_id == 0 && _key > 0 && _flags >= 0)
     {
         tmp = shm_gen_id ((*_shm), _key, _flags);
-        if (tmp != 0)
-        {
-            ret = tmp;
-        }
         if (tmp < 0)
         {
-            return ret;
+            if (errno == EEXIST || errno == ENOENT)
+            {
+                ret = 1;
+            }
+            else
+            {
+                ERR_SYS (errno);
+                ERR_PRINT (_ESYSTEM);
+                ret = -1;
+                return ret;
+            }
         }
     }
     else if (_id > 0)
@@ -153,16 +159,7 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags)
     tmp = _shm->id = shmget (_key, _shm->size, _flags);
     if (tmp < 0)
     {
-        if (errno == EEXIST)
-        {
-            ret = 1;
-        }
-        else
-        {
-            ERR_SYS (errno);
-            ERR_PRINT (_ESYSTEM);
-            ret = tmp;
-        }
+        ret = tmp;
     }
     return ret;
 }
@@ -191,11 +188,6 @@ int shm_attach_seg (shm_t* _shm, const void* _shmaddr, int _shmflg)
 
 int shm_read (shm_t* _shm, void* _buf, int _bytes, int _offset)
 {
-    // todo- urgent- overhaul this, APPEND MESSAGES TO THE _shm
-    // todo- urgent- make an init message on all shm, check for it and init semaphore/shm by clearing everything and setting the semaphore if it is not present
-    // todo- urgent- make a version indicator on all init messages, have it set by makefile
-    // todo- urgent- make msgs void, not char
-
     // int tmp = 0;
     int ret = 0;
 

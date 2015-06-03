@@ -1,4 +1,3 @@
-rewrite shcon
 create function to recursively create directories
 write test functions
 write test programs
@@ -14,7 +13,7 @@ write styleguide
 create example files
 call scripts with make
 start adding maximums
-do use SEM_UNDO anywhere but with adding connections
+dont use SEM_UNDO anywhere but with adding connections
 test race conditions, read more on semop
 look into the possibility of locking with shm instead of sem
 make sure that _EPTRNULL error entries have and/or
@@ -22,5 +21,7 @@ make sure that capitalization is consistent on error entries
 make new errors!
 rename binary messages to raw
 break up various shcon utils into other utils
-rename gen_id to get_id
+rename gen_id to set_id
 ensure that all t_new declarations are checked at the beginning of funcs
+determine if sem should lock while reading init msg
+lock the semaphore on the same levels, not inside protocol functions

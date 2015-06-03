@@ -58,15 +58,39 @@ int shcon_t_set (shcon_t** _shcon, ipc_t* _ipc, shm_t* _shm, sem_t* _sem)
     {
         (*_shcon)->ipc = _ipc;
     }
+    else
+    {
+        (*_shcon)->ipc = ipc_t_new ();
+        if ((*_shcon)->ipc == NULL)
+        {
+            ret = -1;
+        }
+    }
 
     if (_shm != NULL)
     {
         (*_shcon)->shm = _shm;
     }
+    else
+    {
+        (*_shcon)->shm = shm_t_new ();
+        if ((*_shcon)->shm == NULL)
+        {
+            ret = -1;
+        }
+    }
 
     if (_sem != NULL)
     {
         (*_shcon)->sem = _sem;
+    }
+    else
+    {
+        (*_shcon)->sem = sem_t_new ();
+        if ((*_shcon)->sem == NULL)
+        {
+            ret = -1;
+        }
     }
 
     // if (tmp < 0)

@@ -55,11 +55,12 @@ If \b _seg is NULL and \b _shm member \b id is invalid,
 does not populate \b _shm member \b seg.
 @param _key,flags Are used to set \b _shm \b id.
 @return Upon success, returns 0 and populates \b _shm.
-<br>If the population fails because the shared memory already exists,
-returns 1 without printing and does not set #err_num.
+<br>If the population fails because of recoverable errors from shm_gen_id(),
+returns 1 and passes the blame to the caller.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}
+@ent{_SYSTEM, failure generating \b id.}
 @end
 @note Inherits errors from shm_t_new(), shm_gen_id(), shm_attach_seg().
 **/
@@ -91,9 +92,7 @@ void shm_t_del (shm_t** _shm);
 @param _key The unique key used to generate the correct ID.
 @param _flags The permission flags of the shared memory.
 @return Upon success, returns 0 and sets \b _shm \b id.
-<br>If the generation fails because the shared memory already exists,
-returns 1 without printing and does not set #err_num.
-<br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
+<br>Upon failure, returns -1 and passes the blame to the caller.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}
 @ent{_ESYSTEM, Failure in shared memory operations.}

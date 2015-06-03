@@ -1,11 +1,11 @@
-/** @file shcon_util.c
+/** @file shcon_protocol.c
 @author Roger Bongers
 @date June 2 2015
-@brief See shcon_util.h.
-@see shcon_util.h
+@brief See shcon_protocol.h.
+@see shcon_protocol.h
 **/
 
-#include <shcon_util.h>
+#include <shcon_protocol.h>
 
 msg_t shcon_msg_init = { MSG_INIT, { MM_HDR_VER, 0, 0 }, NULL };
 
@@ -24,7 +24,19 @@ int shcon_create_sem_id (shcon_t* _shcon)
 
     _flags = _shcon->ipc->flags | IPC_CREAT | IPC_EXCL;
     tmp = sem_gen_id (_shcon->sem, _shcon->ipc->key, _flags);
-    ret = tmp;
+    if (tmp < 0)
+    {
+        if (errno == EEXIST)
+        {
+            ret = 1;
+        }
+        else
+        {
+            ERR_SYS (errno);
+            ERR_PRINT (_ESYSTEM);
+            ret = -1;
+        }
+    }
     return ret;
 }
 
@@ -43,12 +55,20 @@ int shcon_attach_sem_id (shcon_t* _shcon)
 
     _flags = _shcon->ipc->flags & ~IPC_CREAT & ~IPC_EXCL;
     tmp = sem_gen_id (_shcon->sem, _shcon->ipc->key, _flags);
-    if (tmp == 1)
+    if (tmp < 0)
     {
-        ERR_SYS (errno);
-        ERR_PRINT (_ESYSTEM);
+        ret = tmp;
+        if (errno == ENOENT)
+        {
+            ret = 1;
+        }
+        else
+        {
+            ERR_SYS (errno);
+            ERR_PRINT (_ESYSTEM);
+            ret = -1;
+        }
     }
-    ret = tmp;
     return ret;
 }
 
@@ -102,7 +122,19 @@ int shcon_create_shm_id (shcon_t* _shcon)
 
     _flags = _shcon->ipc->flags | IPC_CREAT | IPC_EXCL;
     tmp = shm_gen_id (_shcon->shm, _shcon->ipc->key, _flags);
-    ret = tmp;
+    if (tmp < 0)
+    {
+        if (errno == EEXIST)
+        {
+            ret = 1;
+        }
+        else
+        {
+            ERR_SYS (errno);
+            ERR_PRINT (_ESYSTEM);
+            ret = -1;
+        }
+    }
     return ret;
 }
 
@@ -121,12 +153,19 @@ int shcon_attach_shm_id (shcon_t* _shcon)
 
     _flags = _shcon->ipc->flags & ~IPC_CREAT & ~IPC_EXCL;
     tmp = shm_gen_id (_shcon->shm, _shcon->ipc->key, _flags);
-    if (tmp == 1)
+    if (tmp < 0)
     {
-        ERR_SYS (errno);
-        ERR_PRINT (_ESYSTEM);
+        if (errno == ENOENT)
+        {
+            ret = 1;
+        }
+        else
+        {
+            ERR_SYS (errno);
+            ERR_PRINT (_ESYSTEM);
+            ret = -1;
+        }
     }
-    ret = tmp;
     return ret;
 }
 
@@ -136,6 +175,27 @@ int shcon_init_shm (shcon_t* _shcon)
     int ret = 0;
 
     tmp = shcon_send_shm_msg (_shcon, &shcon_msg_init);
+    if (tmp < 0)
+    {
+        ret = tmp;
+    }
+    return ret;
+}
+
+int shcon_kill_shm (shcon_t* _shcon)
+{
+    int tmp = 0;
+    int ret = 0;
+    msg_t _msg_kill = { MSG_KILL, { MM_HDR_VER, 0, 0 }, NULL };
+
+    if (_shcon == NULL || _shcon->shm == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+        ret = -1;
+        return ret;
+    }
+
+    tmp = shcon_send_shm_msg (_shcon, &_msg_kill);
     if (tmp < 0)
     {
         ret = tmp;
@@ -167,7 +227,7 @@ int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg)
 
     if (_msg->type != MSG_INIT)
     {
-        tmp = shcon_sem_lock (_shcon);
+        tmp = shcon_lock_sem (_shcon);
         if (tmp < 0)
         {
             free (_bmsg);
@@ -178,23 +238,57 @@ int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg)
     }
 
     tmp = shm_write (_shcon->shm, _bmsg, sizeof (_bmsg), _offset);
+    free (_bmsg);
     if (tmp < 0)
     {
-        free (_bmsg);
         ret = tmp;
-        return ret;
     }
-
     if (_msg->type != MSG_INIT)
     {
-        tmp = shcon_sem_unlock (_shcon);
+        tmp = shcon_unlock_sem (_shcon);
         if (tmp < 0)
         {
             ret = tmp;
             return ret;
         }
     }
+    return ret;
+}
 
+int shcon_check_shm_init (shcon_t* _shcon)
+{
+    int tmp = 0;
+    int ret = 0;
+    msg_t* _msg;
+
+    // todo- make check_ver function
+    tmp = shcon_lock_sem (_shcon);
+    if (tmp < 0)
+    {
+        ret = tmp;
+        return ret;
+    }
+
+    _msg = shcon_recv_shm_msg (_shcon, 1);
+    tmp = shcon_unlock_sem (_shcon);
+    if (tmp < 0)
+    {
+        ret = tmp;
+        return ret;
+    }
+    if (_msg == NULL)
+    {
+        ret = -1;
+        return ret;
+    }
+
+    msg_t_del (&_msg);
+    if (_msg->hdr.ver != MM_HDR_VER)
+    {
+        // todo- new error
+        ERR_PRINT (_EBADVAL);
+        ret = -1;
+    }
     return ret;
 }
 
@@ -250,7 +344,7 @@ msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init)
 
 // todo- make sure you add this to protocol
 // todo- define behaviour for marking as read after failures
-int shcon_sem_mark (shcon_t* _shcon)
+int shcon_mark_sem (shcon_t* _shcon)
 {
     int tmp = 0;
     int ret = 0;
@@ -271,7 +365,7 @@ int shcon_sem_mark (shcon_t* _shcon)
     return ret;
 }
 
-int shcon_sem_lock (shcon_t* _shcon)
+int shcon_lock_sem (shcon_t* _shcon)
 {
     int tmp = 0;
     int ret = 0;
@@ -302,7 +396,7 @@ int shcon_sem_lock (shcon_t* _shcon)
     return ret;
 }
 
-int shcon_sem_unlock (shcon_t* _shcon)
+int shcon_unlock_sem (shcon_t* _shcon)
 {
     int tmp = 0;
     int ret = 0;
@@ -333,7 +427,7 @@ int shcon_sem_unlock (shcon_t* _shcon)
     return ret;
 }
 
-int shcon_sem_add_con (shcon_t* _shcon)
+int shcon_add_sem_con (shcon_t* _shcon)
 {
     int tmp = 0;
     int ret = 0;
@@ -347,6 +441,122 @@ int shcon_sem_add_con (shcon_t* _shcon)
     }
 
     tmp = sem_op (_shcon->sem, _add_buf, 1);
+    if (tmp < 0)
+    {
+        ret = tmp;
+    }
+    return ret;
+}
+
+// todo- break this up
+int shcon_init (shcon_t* _shcon)
+{
+    int tmp = 0;
+    int ret = 0;
+    int _attach;
+
+    if (_shcon == NULL || _shcon->sem == NULL
+            || _shcon->shm == NULL || _shcon->ipc == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+        ret = -1;
+        return ret;
+    }
+
+    // Explicitly create a new sem id
+    tmp = _attach = shcon_create_sem_id (_shcon);
+    if (tmp < 0)
+    {
+        ret = tmp;
+        return ret;
+    }
+    // sem id already exists. Attach to new shm and sem
+    if (_attach == 1)
+    {
+        tmp = shcon_attach_sem_id (_shcon);
+        if (tmp != 0)
+        {
+            ret = -1;
+            return ret;
+        }
+
+        tmp = shcon_attach_shm_id (_shcon);
+        if (tmp < 0)
+        {
+            ret= - 1;
+            return ret;
+        }
+        // sem exists but shm does not. Initiate attachment procedure
+        if (tmp == 1)
+        {
+            _attach = 0;
+        }
+        else
+        {
+            // Make sure the shm is the correct version
+            tmp = shcon_check_shm_init (_shcon);
+            // todo- recover if there are no connections
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+        }
+    }
+    // sem id did not previously exist and we are now attached
+    // Create new shm
+    if (_attach == 0)
+    {
+        tmp = shcon_create_shm_id (_shcon);
+        if (tmp < 0)
+        {
+            ret = tmp;
+            return ret;
+        }
+        // sem is new but shm is not. Attempt to kill connections
+        if (tmp == 1)
+        {
+            tmp = shcon_attach_shm_id (_shcon);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+            if (tmp > 0)
+            {
+                // todo- new error
+                ERR_SYS (errno);
+                ERR_PRINT (_ESYSTEM);
+                ret = -1;
+                return ret;
+            }
+
+            // todo- check for an init message in case this is not a mm shm
+            tmp = shcon_kill_shm (_shcon);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+        }
+
+        // Set values of semaphore
+        tmp = shcon_init_sem (_shcon);
+        if (tmp < 0)
+        {
+            ret = tmp;
+            return ret;
+        }
+
+        tmp = shcon_unlock_sem (_shcon);
+        if (tmp < 0)
+        {
+            ret = tmp;
+            return ret;
+        }
+    }
+
+    tmp = shcon_add_sem_con (_shcon);
     if (tmp < 0)
     {
         ret = tmp;

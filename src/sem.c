@@ -67,11 +67,25 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
     if (_id == 0 && _key > 0 && _flags >= 0)
     {
         tmp = sem_gen_id ((*_sem), _key, _flags);
+        if (tmp < 0)
+        {
+            if (errno == EEXIST || errno == ENOENT)
+            {
+                ret = 1;
+            }
+            else
+            {
+                ERR_SYS (errno);
+                ERR_PRINT (_ESYSTEM);
+                ret = -1;
+            }
+        }
     }
     else if (_id > 0)
     {
         (*_sem)->id = _id;
     }
+
     if (tmp != 0)
     {
         ret = tmp;
@@ -111,20 +125,10 @@ int sem_gen_id (sem_t* _sem, key_t _key, int _flags)
         return ret;
     }
 
-    // create new semaphore if it doesn't exist
     tmp = _sem->id = semget (_key, _sem->len, _flags);
     if (tmp < 0)
     {
-        if (errno == EEXIST)
-        {
-            ret = 1;
-        }
-        else
-        {
-            ERR_SYS (errno);
-            ERR_PRINT (_ESYSTEM);
-            ret = tmp;
-        }
+        ret = tmp;
     }
     return ret;
 }

@@ -50,17 +50,17 @@ shcon_t* shcon_t_new (void);
 @brief Populates a shcon_t.
 @param _shcon The shared connection to populate.
 @param _ipc If \b _ipc is not NULL, populates \b _shcon with the ipc_t address.
-If \b _ipc is NULL, does not populate \b _shcon member \b ipc.
+If \b _ipc is NULL, populates _shcon member \b ipc with ipc_t_new().
 @param _shm If \b _shm is not NULL, populates \b _shcon with the shm address.
-If \b _shm is NULL, does not populate \b _shcon member \b shm.
+If \b _shm is NULL, populates _shcon member \b shm with shm_t_new().
 @param _sem If \b _sem is not NULL, populates \b _shcon with the sem_t address.
-If \b _sem is NULL, does not populate \b _shcon member \b sem.
+If \b _sem is NULL, populates _shcon member \b sem with sem_t_new().
 @return Upon success, returns 0 and populates \b _shcon.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}
 @end
-@note Inherits errors from sem_t_new(), sem_gen_id().
+@note Inherits errors from ipc_t_new(), shm_t_new(), sem_t_new().
 **/
 int shcon_t_set (shcon_t** _shcon, ipc_t* _ipc, shm_t* _shm, sem_t* _sem);
 /**
