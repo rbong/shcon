@@ -11,15 +11,17 @@
 #include <err.h>
 #include <msg.h>
 
+
 /* ------------------------- START OF GUARD BLOCK ------------------------- */
-#ifndef SHCON_H
-#define SHCON_H
+#ifndef MM_SHCON
+#define MM_SHCON
 enum _SHCON_SEM_SET
 {
     SEMSET_LOCK = 0,
     SEMSET_CON  = 1,
     SEMSET_READ = 2,
 };
+
 /**
 @brief A shared connection.
 **/
@@ -34,6 +36,8 @@ typedef struct
     //! Specifies whether this process has locked the connection.
     int locked;
 } shcon_t;
+
+extern msg_t shcon_msg_init;
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
 
@@ -71,3 +75,13 @@ Does nothing if \b _shcon or \b *_shcon is NULL.
 @return Sets \b *_shcon to NULL after freeing data.
 **/
 void shcon_t_del (shcon_t** _shcon);
+int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg);
+msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init);
+// todo- make sure you add this to protocol
+// todo- define behaviour for marking as read after failures
+int shcon_mark_sem (shcon_t* _shcon);
+int shcon_lock_sem (shcon_t* _shcon);
+int shcon_unlock_sem (shcon_t* _shcon);
+int shcon_add_sem_con (shcon_t* _shcon);
+// todo- break this up
+int shcon_connect (shcon_t* _shcon);
