@@ -1,0 +1,72 @@
+/**
+@brief The protocol for connecting to a shared connection.
+**/
+digraph shcon_connect_protocol
+{
+    node [shape=box,fontname="Sans-Serif",fontsize=9];
+    edge [fontname="Sans-Serif",fontsize=9];
+
+    shcon_connect [label="new shared connection",URL="\ref shcon_connect",
+                  group="create"];
+
+    sem_create [label="new semaphore",URL="\ref shcon_create_sem_shm",
+               group="create"];
+
+    shm_create [label="new shared memory",URL="\ref shcon_create_sem_shm",
+               group="create"];
+
+    shm_kill [label="kill and recreate shared memory",
+             URL="\ref shcon_create_kill_shm"];
+
+    sem_init [label="semaphore lock=0 con=0 read=0",URL="\ref shcon_init_sem",
+             group="create"];
+
+    shm_init [label="send init message and unlock",URL="\ref shcon_init_shm",
+             group="create"];
+
+    sem_attach [label="attach to semaphore",URL="\ref shcon_attach_sem_shm",
+               group="attach"];
+
+    shm_attach [label="attach to shared memory",
+               URL="\ref shcon_attach_sem_shm",group="attach"];
+
+    quit [color="red",fontcolor=red];
+
+    shm_check [label="check shared memory version",
+              URL="\ref shcon_check_shm_ver",group="attach"];
+
+    sem_con [label="semaphore con+=1",URL="\ref shcon_add_sem_con",
+            group="attach"];
+
+    msg_loop [label="message loop", group="attach"];
+
+    shcon_connect -> sem_create;
+
+    sem_create -> shm_create [color="blue",
+               fontcolor=blue,label="same\nfunction"];
+
+    shm_create -> shm_kill [color=red,fontcolor=red,label="exists"];
+
+    shm_create -> sem_init;
+
+    sem_init -> shm_init;
+
+    shm_kill -> sem_init;
+
+    shm_init -> sem_con;
+
+    sem_create -> sem_attach [color=red,fontcolor=red,label="exists"];
+
+    sem_attach -> shm_attach [color="blue",fontcolor=blue,
+               label="same\nfunction"];
+
+    shm_attach -> shm_create [color=red,fontcolor=red,label="exists"];
+
+    shm_attach -> shm_check;
+
+    shm_check -> quit [color=red,fontcolor=red,label="wrong\nversion"];
+
+    shm_check -> sem_con;
+
+    sem_con -> msg_loop;
+}
