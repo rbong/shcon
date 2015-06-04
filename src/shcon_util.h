@@ -75,7 +75,7 @@ int shcon_attach_shm_id (shcon_t* _shcon);
 @param _shcon The shared connection with the shm_t to send the message over.
 @return Upon success, returns 0.
 <br>Upon failure, returns -1 and possibly passes the blame to the caller.
-@beg {Errors}
+@beg{Errors}
 @ent{_EPTRNULL, \b _shcon and/or \b _shcon->shm are NULL.}
 @ent{_ESUCCESS, blame will not be passed to the caller.}
 @end
@@ -88,7 +88,7 @@ int shcon_init_shm (shcon_t* _shcon);
 @param _shcon The shared connection with the shm_t to send the message over.
 @return Upon success, returns 0.
 <br>Upon failure, returns -1 and possibly passes the blame to the caller.
-@beg {Errors}
+@beg{Errors}
 @ent{_EPTRNULL, \b _shcon and/or \b _shcon->shm are NULL.}
 @ent{_ESUCCESS, blame will not be passed to the caller.}
 @end

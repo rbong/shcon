@@ -31,3 +31,4 @@ add underscores to all the shcon_util functions
 set "read" to 0 after sending a new message!
 define behaviour for marking as read after failures
 in docs, only refer to types when talking about return values
+make protocol into a doc
