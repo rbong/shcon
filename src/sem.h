@@ -62,7 +62,8 @@ returns 1 and passes the blame to the caller.
 @ent{_EPTRNULL, \b _sem is NULL.}
 @ent{_SYSTEM, failure generating \b id.}
 @end
-@note Inherits errors from sem_t_new(), sem_gen_id().
+@note Inherits errors from sem_t_new(), sem_gen_id(). Inherits blame from
+sem_gen_id().
 **/
 int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags);
 /**
@@ -81,7 +82,7 @@ void sem_t_del (sem_t** _sem);
 @return Upon success, returns 0 and sets \b _sem \b id.
 <br>If the generation fails because the semaphore already exists,
 returns 1 without printing and does not set err_num.
-<br>Upon failure, returns -1 and passes the blame to the caller.
+<br>Upon failure, returns -1, sets #err_num and passes the blame to the caller.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}
 @ent{_ESYSTEM, Failure in semaphore operations.}

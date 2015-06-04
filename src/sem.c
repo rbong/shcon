@@ -75,8 +75,11 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
             }
             else
             {
-                ERR_SYS (errno);
-                ERR_PRINT (_ESYSTEM);
+                if (errno != 0)
+                {
+                    ERR_SYS (errno);
+                }
+                ERR_PRINT (err_num);
                 ret = -1;
             }
         }
@@ -120,7 +123,7 @@ int sem_gen_id (sem_t* _sem, key_t _key, int _flags)
 
     if (_sem == NULL)
     {
-        ERR_PRINT (_EPTRNULL);
+        err_num = _EPTRNULL;
         ret = -1;
         return ret;
     }
@@ -128,6 +131,7 @@ int sem_gen_id (sem_t* _sem, key_t _key, int _flags)
     tmp = _sem->id = semget (_key, _sem->len, _flags);
     if (tmp < 0)
     {
+        err_num = _ESYSTEM;
         ret = tmp;
     }
     return ret;

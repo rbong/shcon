@@ -76,8 +76,11 @@ int shm_t_set
             }
             else
             {
-                ERR_SYS (errno);
-                ERR_PRINT (_ESYSTEM);
+                if (errno != 0)
+                {
+                    ERR_SYS (errno);
+                }
+                ERR_PRINT (err_num);
                 ret = -1;
                 return ret;
             }
@@ -151,7 +154,7 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags)
 
     if (_shm == NULL)
     {
-        ERR_PRINT (_EPTRNULL);
+        err_num = _EPTRNULL;
         ret = -1;
         return ret;
     }
@@ -159,6 +162,7 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags)
     tmp = _shm->id = shmget (_key, _shm->size, _flags);
     if (tmp < 0)
     {
+        err_num = _ESYSTEM;
         ret = tmp;
     }
     return ret;

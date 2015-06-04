@@ -86,6 +86,13 @@ If \b _data is NULL, does not populate \b _msg member \b data.
 @note Inherits errors from msg_gen_hdr().
 **/
 int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data);
+/**
+@brief Deletes a msg_t.
+@details Assumes that \b _msg has been properly created by msg_t_new().
+Does nothing if \b _msg or \b *_msg is NULL.
+@param _msg The struct to free.
+@return Sets \b *_msg to NULL after freeing data.
+**/
 void msg_t_del (msg_t** _msg);
 /**
 @brief Generates a msg_hdr_t.
@@ -100,13 +107,44 @@ msg_hdr_t msg_gen_hdr (void);
 @param _data The data to populate the message with.
 @return Upon success, allocates space for \b _msg member \b data,
 populates it with \b _data, and sets \b _msg member \b hdr member \b len.
-<br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
+<br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _msg and/or \b _data are NULL.}
 @ent{_EALLOC, could not allocate space for the data.}
 @end
 **/
 int msg_set_data (msg_t* _msg, char* _data);
+/**
+@brief Converts a msg_t into one chunk of data.
+@param _msg The message to convert.
+@return Upon success, returns the newly allocated memory with the raw message.
+<br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
+@beg{Errors}
+@ent{_EPTRNULL, \b _msg is NULL.}
+@ent{_EALLOC, could not allocate space for the raw message.}
+@end
+@note Inherits errors from msg_to_bin_len().
+**/
 void* msg_to_bin (msg_t* _msg);
+/**
+@brief Converts a chunk of data into a msg_t.
+@param _bmsg The message to convert.
+@return Upon success, returns the newly allocated memory with the message.
+<br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
+@beg{Errors}
+@ent{_EPTRNULL, \b _bmsg is NULL.}
+@ent{_EALLOC, could not allocate space for msg_t member \b data.}
+@end
+@note Inherits errors from msg_t_new().
+**/
 msg_t* msg_from_bin (void* _bmsg);
+/**
+@brief Calculates the total size of a message including data.
+@param _msg The message.
+@return Upon success, returns the raw message size.
+<br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
+@beg{Errors}
+@ent{_EPTRNULL, \b _msg is NULL.}
+@end
+**/
 int msg_to_bin_len (msg_t* _msg);

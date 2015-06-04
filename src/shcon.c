@@ -221,27 +221,26 @@ msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init)
     tmp = shm_read (_shcon->shm, &(ret->type), sizeof (ret->type), _offset);
     if (tmp < 0)
     {
-        ret = NULL;
+        msg_t_del (&ret);
         return ret;
     }
     _offset += sizeof (ret->type);
     tmp = shm_read (_shcon->shm, &(ret->hdr), sizeof (ret->hdr), _offset);
     if (tmp < 0)
     {
-        ret = NULL;
+        msg_t_del (&ret);
         return ret;
     }
     _offset += sizeof (ret->hdr);
     tmp = shm_read (_shcon->shm, ret->data, ret->hdr.len, _offset);
     if (tmp < 0)
     {
-        ret = NULL;
+        msg_t_del (&ret);
     }
     return ret;
 }
 
 // todo- make sure you add this to protocol
-// todo- define behaviour for marking as read after failures
 int shcon_mark_sem (shcon_t* _shcon)
 {
     int tmp = 0;
@@ -360,15 +359,42 @@ int shcon_connect (shcon_t* _shcon)
     }
 
     tmp =  shcon_create_sem_shm (_shcon);
-    if (tmp < 0)
+    if (tmp < 0 && errno != EEXIST)
     {
+        if (err_num != _ESUCCESS)
+        {
+            if (errno != 0)
+            {
+                ERR_SYS (errno);
+            }
+            ERR_PRINT (err_num);
+        }
         ret = tmp;
         return ret;
     }
-    if (tmp == 1)
+    if (tmp < 0)
     {
         tmp = shcon_attach_sem_shm (_shcon);
+        if (tmp < 0 && errno == ENOENT)
+        {
+            tmp = shcon_create_sem_shm (_shcon);
+        }
+        if (tmp < 0)
+        {
+            if (err_num != _ESUCCESS)
+            {
+                if (errno != 0)
+                {
+                    ERR_SYS (errno);
+                }
+                ERR_PRINT (err_num);
+            }
+            ret = tmp;
+            return ret;
+        }
     }
+
+    // todo- attach to segment
 
     tmp = shcon_add_sem_con (_shcon);
     if (tmp < 0)

@@ -25,3 +25,9 @@ rename gen_id to set_id
 ensure that all t_new declarations are checked at the beginning of funcs
 determine if sem should lock while reading init msg
 lock the semaphore on the same levels, not inside protocol functions
+add more errors... including overwriting existing values, especially in shcon_util. one example- will overwrite semaphore IDs. especially prominent but by far not the only case.
+make an _ENOBLAME error
+add underscores to all the shcon_util functions
+set "read" to 0 after sending a new message!
+define behaviour for marking as read after failures
+in docs, only refer to types when talking about return values

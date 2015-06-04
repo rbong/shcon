@@ -221,6 +221,13 @@ msg_t* msg_from_bin (void* _bmsg)
     if (_len > 1)
     {
         ret->data = malloc (_len);
+        if (ret->data == NULL)
+        {
+            ERR_SYS (errno);
+            ERR_PRINT (_EALLOC);
+            msg_t_del (ret);
+            return ret;
+        }
     }
 
     memcpy (&(ret->type), _bmsg + _offset, sizeof (ret->type));
