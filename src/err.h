@@ -7,7 +7,6 @@
 <br>New error codes should be entered in #err_table along with their messages.
 <br>To print error codes defined by #err_table, use the ERR_PRINT() macro.
 To print error codes defined by the system, use the ERR_SYS() macro.
-@see test_err.h
 **/
 
 #include <stdio.h>

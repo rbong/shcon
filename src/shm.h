@@ -44,23 +44,23 @@ shm_t* shm_t_new (void);
 @param _shm The struct to populate.
 @param _size If \b _size is 0, populates \b _shm with #shm_size.
 If \b _size is 1 or more, populates \b _shm with \b _size.
-If \b _size is less than 0, does not populate \b _shm member \b size.
-@param _id If \b _id is 0 and \b _key  and \b flags are valid,
-generates a shared memory ID for \b _shm member \b id.
-If \b _id is less than 0, does not populate \b _shm member \b id.
+If \b _size is less than 0, does not populate \b _shm shm_t#size.
+@param _id If \b _id is 0 and \b _key  and \b _flags are valid,
+generates a shared memory ID for \b _shm shm_t#id.
+If \b _id is less than 0, does not populate \b _shm shm_t#id.
 @param _seg If \b _seg is not NULL, populates \b _shm with the address.
-If \b _seg is NULL and \b _shm member \b id is valid,
-\b _shm member \b seg is attached to the memory indicated by \b id.
-If \b _seg is NULL and \b _shm member \b id is invalid,
-does not populate \b _shm member \b seg.
-@param _key,flags Are used to set \b _shm \b id.
+If \b _seg is NULL and \b _shm shm_t#id is valid,
+\b _shm shm_t#seg is attached to the memory indicated by \b _shm shm_t#id.
+If \b _seg is NULL and \b _shm shm_t#id is invalid,
+does not populate \b _shm shm_t#seg.
+@param _key,flags Are used to set \b _shm shm_t#id.
 @return Upon success, returns 0 and populates \b _shm.
 <br>If the population fails because of recoverable errors from shm_gen_id(),
 returns 1 and passes the blame to the caller.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}
-@ent{_SYSTEM, failure generating \b id.}
+@ent{_SYSTEM, failure generating \b _shm shm_t#id.}
 @end
 @note Inherits errors from shm_t_new(), shm_gen_id(), shm_attach_seg().
 Inherits blame from shm_gen_id().
@@ -68,10 +68,10 @@ Inherits blame from shm_gen_id().
 int shm_t_set
   (shm_t** _shm, size_t _size, int _id, void* _seg, key_t key, int _flags);
 /**
-@brief Populates a shm_t with information to generate an \b id.
+@brief Generate a shm_t#id with a key and populate a shm_t with it.
 @param _shm The struct to populate.
-@param _key,flags Are used to set \b _shm \b id.
-@return Upon success, returns 0 and populates \b _shm.
+@param _key,flags Used to set \b _shm shm_t#id.
+@return Upon success, returns 0 and populates \b _shm shm_t#id.
 <br>If the population fails because of recoverable errors from shm_gen_id(),
 returns 1 and passes the blame to the caller.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
@@ -88,11 +88,11 @@ Does nothing if \b _shm or \b *_shm is NULL.
 **/
 void shm_t_del (shm_t** _shm);
 /**
-@brief Generates a shm_t \b id.
+@brief Generates a shm_t shm_t#id.
 @param _shm The shm_t to generate the ID with.
 @param _key The unique key used to generate the correct ID.
 @param _flags The permission flags of the shared memory.
-@return Upon success, returns 0 and sets \b _shm \b id.
+@return Upon success, returns 0 and sets \b _shm shm_t#id.
 <br>Upon failure, returns -1, sets #err_num and passes the blame to the caller.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}
@@ -104,7 +104,7 @@ int shm_gen_id (shm_t* _shm, key_t _key, int _flags);
 @brief Attaches to a shared memory segment.
 @param _shm The shared memory to retrieve the correct segment with.
 @param _shmaddr,_shmflg Parameters to pass to system function \b shmat().
-@return Upon success, returns 0 and sets \b _shm \b seg.
+@return Upon success, returns 0 and sets \b _shm shm_t#seg.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shm is NULL.}
@@ -118,11 +118,11 @@ int shm_attach_seg (shm_t* _shm, const void* _shmaddr, int _shmflg);
 @param _buf The memory to write to.
 @param _bytes The number of bytes to read.
 @param _offset The offset at which to read from the memory.
-@return Upon success, returns 0 and fills \b buf with the specified bytes.
+@return Upon success, returns 0 and fills \b _buf with the specified bytes.
 <br> Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @details
 @beg{Errors}
-@ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm member \b seg is NULL.}
+@ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm shm_t#seg is NULL.}
 @ent{_ESYSTEM, Error copying memory.}
 @ent{_EBADVAL, \b _offset and/or \b _bytes were out of bounds.}
 @end
@@ -137,7 +137,7 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes, int _offset);
 @return Upon success, returns 0 and fills shared memory with the buffer.
 <br> Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm member \b seg is NULL.}
+@ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm shm_t#seg is NULL.}
 @ent{_ESYSTEM, Error copying memory.}
 @ent{_EBADVAL, \b _offset and/or \bytes was out of bounds.}
 @end

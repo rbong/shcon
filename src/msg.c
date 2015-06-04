@@ -7,6 +7,7 @@
 
 #include <msg.h>
 
+//! Default value for msg_t#type.
 long msg_type = MSG_NORM;
 
 msg_t* msg_t_new (void)

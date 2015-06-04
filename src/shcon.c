@@ -351,13 +351,6 @@ int shcon_connect (shcon_t* _shcon)
     int tmp = 0;
     int ret = 0;
 
-    if (_shcon == NULL || _shcon->sem == NULL || _shcon->shm == NULL)
-    {
-        ERR_PRINT (_EPTRNULL);
-        ret = -1;
-        return ret;
-    }
-
     tmp =  shcon_create_sem_shm (_shcon);
     if (tmp < 0 && errno != EEXIST)
     {

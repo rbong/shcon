@@ -7,7 +7,7 @@
 
 #include <shm.h>
 
-//! Default value for shm_t \b size.
+//! Default value for shm_t#size.
 int shm_size = 1028;
 
 shm_t* shm_t_new (void)

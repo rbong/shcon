@@ -8,7 +8,7 @@
 // todo- decide if _add should be a global variable
 #include <sem.h>
 
-//! Default value for sem_t \b len.
+//! Default value for sem_t#len.
 int sem_len = 3;
 
 sem_t* sem_t_new (void)

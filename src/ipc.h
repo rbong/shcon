@@ -19,7 +19,6 @@
 @brief The permission flags for IPC.
 @details IPC_CREAT and IPC_EXCL are often used as IPC flags, but here they are
 disabled by many functions that use an ipc_t and re-enabled when necessary.
-@see ipc_t
 **/
 enum IPC_FLAGS {
     IPC_USR_R = 0400,
@@ -32,7 +31,6 @@ enum IPC_FLAGS {
 
 /**
 @brief Common IPC data.
-@see shm_t sem_t
 **/
 typedef struct
 {
@@ -76,15 +74,15 @@ ipc_t* ipc_t_new (void);
 /**
 @brief Populates an ipc_t.
 @param _ipc The struct to populate.
-@param _flags If \b _flags is 0, populates _ipc with #ipc_flags.
-If \b _flags is 1 or more, populates _ipc with \b _flags.
-If \b _flags is less than 0, does not populate \b _ipc member \b flags.
+@param _flags If \b _flags is 0, populates \b _ipc with #ipc_flags.
+If \b _flags is 1 or more, populates \b _ipc with \b _flags.
+If \b _flags is less than 0, does not populate \b _ipc ipc_t#flags.
 @param _path If \b _path is not NULL, populates \b _ipc with the address.
-If \b _path is NULL, does not populate \b _ipc member \b path.
-@param _key If \b _key is 0 and \b _ipc \b path and \b proj_id are valid,
-generates a new key to populates \b _ipc.
+If \b _path is NULL, does not populate \b _ipc ipc_t#path.
+@param _key If \b _key is 0 and \b _ipc \b path and \b _ipc ipc_t#proj_id are
+valid, generates a new key to populate \b _ipc.
 If \b _key is 1 or more, populates \b _ipc with \b _key.
-If \b _key is less than 0, does not populate \b _ipc member \b key.
+If \b _key is less than 0, does not populate \b _ipc ipc_t#key.
 @return Upon success, returns 0 and populates \b _ipc.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
@@ -96,7 +94,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, char* _path, key_t _key);
 /**
 @brief Populates an ipc_t given path information.
 @param _ipc The struct to populate.
-@param _path The string to populate ipc_t member \b path with.
+@param _path The string to populate ipc_t ipc_t#path with.
 @return Upon success, returns 0 and populates \b _ipc.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
@@ -114,22 +112,6 @@ Does nothing if \b _ipc or \b *_ipc is NULL.
 @return Sets \b *_ipc to NULL after freeing data.
 **/
 void ipc_t_del (ipc_t** _ipc);
-/**
-@brief Generate a valid path.
-@description Ensures the path exists with file_touch().
-Allocates space for the path name.
-@param _root The name of the root directory. If it is NULL, #ipc_root is used.
-@param _sub The name of the file.
-@return Upon success, returns the path name.
-<br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
-@beg{Errors}
-@ent{_EPTRNULL, \b _sub is NULL.}
-@ent{_ESTRNULL, \b _sub begins with a '\0' character.}
-@ent{_EALLOC, Unable to allocate memory for the path.}
-@end
-@note Inherits errors from str_cat_len(), str_cat(), file_touch().
-**/
-char* ipc_gen_path (char* _root, char* _sub);
 /**
 @brief Generates keys with \b ftok()
 @param _path The name of the file to generate the key from.

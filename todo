@@ -32,3 +32,6 @@ set "read" to 0 after sending a new message!
 define behaviour for marking as read after failures
 in docs, only refer to types when talking about return values
 make protocol into a doc
+if there are no connections on a shm with a bad version, delete it
+look into adding connections BEFORE unlocking semaphore
+find a place to put stray protocol information.

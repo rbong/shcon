@@ -48,19 +48,19 @@ sem_t* sem_t_new (void);
 @param _sem The semaphore to populate.
 @param _len If \b _len is 0, populates \b _sem with #sem_len.
 If \b _len is 1 or more, populates \b _sem with \b _len.
-If \b _len is less than 0, does not populate \b _sem member \b len.
-@param _id If \b _id is 0 and \b _key  and \b flags are valid,
-generates a semaphore ID for \b _sem member \b id.
+If \b _len is less than 0, does not populate \b _sem sem_t#len.
+@param _id If \b _id is 0 and \b _key  and \b _flags are valid,
+generates a semaphore ID for \b _sem sem_t#id.
 If \b _id is 1 or more, populates _sem with \b _id.
-If \b _id is less than 0, does not populate \b _sem member \b id.
-@param _key,flags Are used to set \b _sem \b id.
+If \b _id is less than 0, does not populate \b _sem sem_t#id.
+@param _key,flags Are used to set \b _sem sem_t#id.
 @return Upon success, returns 0 and populates \b _sem.
 <br>If the population fails because of recoverable errors from sem_gen_id(),
 returns 1 and passes the blame to the caller.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
 @ent{_EPTRNULL, \b _sem is NULL.}
-@ent{_SYSTEM, failure generating \b id.}
+@ent{_SYSTEM, failure generating sem_t#id.}
 @end
 @note Inherits errors from sem_t_new(), sem_gen_id(). Inherits blame from
 sem_gen_id().
@@ -75,11 +75,11 @@ Does nothing if \b _sem or \b *_sem is NULL.
 **/
 void sem_t_del (sem_t** _sem);
 /**
-@brief Generates a sem_t \b id.
+@brief Generates a sem_t sem_t#id.
 @param _sem The sem_t to generate the ID for.
 @param _key The unique key used to generate the correct ID.
 @param _flags The permission flags of the semaphore.
-@return Upon success, returns 0 and sets \b _sem \b id.
+@return Upon success, returns 0 and sets \b _sem sem_t#id.
 <br>If the generation fails because the semaphore already exists,
 returns 1 without printing and does not set err_num.
 <br>Upon failure, returns -1, sets #err_num and passes the blame to the caller.

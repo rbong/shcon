@@ -7,9 +7,9 @@
 
 #include <ipc.h>
 
-//! Default value for ipc_t \b flags.
+//! Default value for ipc_t#flags.
 int   ipc_flags   = IPC_USR_R | IPC_USR_W | IPC_GRP_R | IPC_GRP_W;
-//! Default value for ipc_t \b proj_id.
+//! Default value for ipc_t#proj_id.
 int   ipc_proj_id = 'M';
 
 key_t (*ipc_gen_key) (char*, int) = ipc_gen_key_ftok;
