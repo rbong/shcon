@@ -1,0 +1,14 @@
+8
+node [shape=box,fontname="Sans-Serif",fontsize=9];
+edge [fontname="Sans-Serif",fontsize=9];
+node0 [label="lock shared semaphore"];
+node1 [label="read shared message"];
+node2 [label="unlock shared semaphore"];
+node3 [label="local message loop"];
+node4 [label="lock shared semaphore"];
+node5 [label="write shared message"];
+node6 [label="unlock shared semaphore"];
+node7 [label="wait"];
+
+node3 -> node7 [color=grey,fontcolor=grey,label="no new massages"]
+inputscale=72;

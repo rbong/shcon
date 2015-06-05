@@ -7,29 +7,17 @@ digraph shcon_connect_protocol
     edge [fontname="Sans-Serif",fontsize=9];
 
     shcon_connect [label="new shared connection",URL="\ref shcon_connect"];
-
     sem_create [label="new semaphore",URL="\ref shcon_create_sem_shm",group="con"];
-               
     shm_create [label="new shared memory",URL="\ref shcon_create_sem_shm",group="con"];
-
     shm_kill [label="recreate",URL="\ref shcon_create_kill_shm"];
-
     sem_init [label="semaphore lock=0 con=0 read=0",URL="\ref shcon_init_sem",group="con"];
-
     shm_init [label="send init message and unlock",URL="\ref shcon_init_shm",group="con"];
-
     sem_attach [label="attach to semaphore",URL="\ref shcon_attach_sem_shm"];
-
     shm_attach [label="attach to shared memory",URL="\ref shcon_attach_sem_shm"];
-
     quit [color="red",fontcolor=red];
-
     shm_check [label="check shared memory version",URL="\ref shcon_check_shm_ver"];
-
     sem_con [label="semaphore con+=1",URL="\ref shcon_add_sem_con"];
-
     msg_loop [label="message loop"];
-
     dummy [style=invis]
 
     shcon_connect -> sem_create;
@@ -62,8 +50,5 @@ digraph shcon_connect_protocol
 
     shm_init -> sem_con
 
-    shm_check -> sem_con
-
-    sem_con -> msg_loop
-
+    shm_check -> sem_con -> msg_loop
 }

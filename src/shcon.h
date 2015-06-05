@@ -8,6 +8,8 @@ Fatal errors are not included.
 Click the boxes to view the corresponding function.
 @dotfile shcon_connect.dot
 @see shm.h sem.h ipc.h msg.h
+@section shcon_msg_protocol Message loop
+@dotfile shcon_msg_loop.dot
 **/
 
 #include <ipc.h>
