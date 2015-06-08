@@ -1,14 +1,19 @@
 8
 node [shape=box,fontname="Sans-Serif",fontsize=9];
 edge [fontname="Sans-Serif",fontsize=9];
-node0 [label="lock shared semaphore"];
-node1 [label="read shared message"];
-node2 [label="unlock shared semaphore"];
-node3 [label="local message loop"];
-node4 [label="lock shared semaphore"];
-node5 [label="write shared message"];
-node6 [label="unlock shared semaphore"];
+node0 [label="lock"];
+node1 [label="read message"];
+node2 [label="increment segment (start)"];
+node2 -> node3 [color=grey,fontcolor=grey,label="end of  \nsegment  "];
+node3 [label="reset segment"];
+node4 [label="local loop"];
+node5 [label="write message"];
+node6 [label="unlock"];
 node7 [label="wait"];
 
-node3 -> node7 [color=grey,fontcolor=grey,label="no new massages"]
+nodek [label="end the thread",color=red,fontcolor=red];
+node1 -> node6 [color=grey,fontcolor=grey,label="no new\nmessages"];
+node2 -> node4;
+node4 -> nodek [color=red, fontcolor=red,label="kill  \nmessage  "];
+node4 -> node6 [color=grey,fontcolor=grey,label="no new\nmessages"]
 inputscale=72;

@@ -1,14 +1,15 @@
 #!/bin/bash
 # loopgen.sh- generates a plain graphviz loop then hardcodes it and adds to it
-# input file format -
-#   num of nodes
+# input file format-
+#   x num of nodes
 #   prefixes for the generated file (format information, labels)
 #   (blank)
 #   postfixes for the final file (extra connections, inputscale)
-# output - graph with nodes a to (a + num)
+# output - graph with node0 to nodex
 cd $(dirname ${BASH_SOURCE[0]})
 loop()
 {
+    # grab the file text
     file=$(<$1)
     # trim filename to function name
     fun=${1##*/}
@@ -29,33 +30,41 @@ loop()
     file=$(tail -n +2 <<< "$file")
     # add all lines up to the first blank line
     gen="$gen
-        $(printf "$file" | awk '!p;/^$/{p=1}')"
+        $(printf "$file" | awk '!p;/^$/{p=1}')
+    "
     # remove all lines before the first blank line
     file=$(printf "$file" | awk '/^$/{p=1}p')
     # begin producing character-based nodes
-    i=1
-    gen="$gen
-        node0 "
+    i=0
     while [ $i -lt $num ]; do
-        # awk command gets character from number
-        gen="$gen -> node$i"
+        # loop to the next node, or if we are on the last node, end the loop
+        if [ $i -eq $(expr $num - 1) ]; then
+            j=0
+        else
+            j=$(expr $i + 1)
+        fi
+        edge="node$i -> node$j"
+    # if the edge already exists, do not create it
+        grep -q "$edge" <<< "$gen"
+        if [ $? -eq 1 ]; then
+            gen="$gen
+    $edge;"
+        fi
         let i=i+1
     done
-    #finish the loop
-    gen="$gen -> node0;
+    gen="$gen
     }"
     # generate, replace circo layout reference, make positions absolute
-    gen=$(printf "$gen" | circo |
+    gen=$(printf "$gen" | dot |
     sed -e 's/layout=circo/layout=neato/' -e 's/\(pos=".*\)"/\1!"/g')
     # remove trailing brace
     gen=$(printf "$gen" | head -n -1)
-
-    post="/* generated with loopgen.sh */
+    fin="/* generated with loopgen.sh */
         $gen
         $file
     }"
 
-    printf "$post" > ../../doxy/generated/$fun.dot
+    printf "$fin" > ../../doxy/generated/$fun.dot
     exit 0
 }
 
