@@ -1,0 +1,26 @@
+11
+node [shape=box,fontname="Sans-Serif",fontsize=9];
+edge [fontname="Sans-Serif",fontsize=9];
+node0 [label="wait"];
+node1 [label="lock"];
+node2 [label="read message from shared"];
+node3 [label="mark as read"];
+node4 [label="write message to anonymous"];
+node5 [label="check message timeout"];
+node6 [label="compare read vs. connected"]
+node7 [label="read message from anonymous (created start)"];
+node8 [label="write message to shared"];
+node8 -> node9 [style=invis];
+node9 [label="push anonymous message back"];
+node10 [label="unlock (attached start)"];
+nodek [label="return, unlock and quit",color=red,fontcolor=red3];
+
+node2 -> node5 [label="no new message",color=grey90,fontcolor=grey40];
+node4 -> nodek [label="shared kill message",color=red,fontcolor=red3];
+node5 -> node7 [label="shared message timeout",color=grey90,fontcolor=grey40];
+node7 -> node9 [label="no new messages",color=grey90,fontcolor=grey40];
+node7 -> node10 [label="unread threads\nand no timeout",color=grey90,fontcolor=grey40];
+node7 -> nodek [label="anonymous quit message",color=red,fontcolor=red3];
+node8 -> nodek [label="shared kill message",color=red,fontcolor=red3];
+node8 -> node10;
+inputscale=72;

@@ -1,0 +1,57 @@
+/**
+@brief The protocol for connecting to a shared connection.
+**/
+digraph shcon_connect_protocol
+{
+    node [shape=box,fontname="Sans-Serif",fontsize=9];
+    edge [fontname="Sans-Serif",fontsize=9];
+
+    shcon_connect [label="new shared connection",URL="\ref shcon_connect",group="new"];
+    sem_create [label="new semaphore",URL="\ref shcon_create_sem_shm",group="new"];
+    shm_create [label="new shared memory",URL="\ref shcon_create_sem_shm",group="new"];
+    shm_exist_attach [label="attach to shared memory",URL="\ref shcon_create_kill_shm",group=kill];
+    sem_init [label="set sem",URL="\ref shcon_init_sem",group="new"];
+    shm_init [label="send init message",URL="\ref shcon_init_shm",group="new"];
+    sem_attach [label="attach to semaphore",URL="\ref shcon_attach_sem_shm",group="old"];
+    shm_attach [label="attach to shared memory",URL="\ref shcon_attach_sem_shm",group="old"];
+    quit [label="unlock and quit",color="red",fontcolor=red3];
+    ver_check [label="check header version",URL="\ref shcon_check_shm_ver",group="old"];
+    lock [label="lock semaphore",URL="",group="old"];
+    sem_con [label="semaphore con+=1",URL="\ref shcon_add_sem_con"];
+    msg_loop [label="message loop"];
+    dummy [style=invis];
+
+    shcon_connect -> sem_create;
+    // ranking
+    shcon_connect -> sem_attach [style=invis];
+
+    subgraph cluster1
+    {
+        color=white
+        sem_create -> sem_init -> shm_create -> shm_init;
+    }
+    shm_create -> shm_exist_attach [color=red,fontcolor=red3,label="exists"];
+    shm_exist_attach -> shm_init;
+
+    subgraph cluster2
+    {
+        color=white
+        sem_attach -> shm_attach -> lock -> ver_check;
+        // align nodes properly
+        // lock -> dummy -> -> sem_con [style=invis];
+    }
+
+
+    sem_create -> sem_attach
+        [color=red,fontcolor=red3,label="exists",constraint=false];
+
+    shm_attach -> sem_init
+        [color=red,fontcolor=red3,label="no shm",constraint=false];
+
+    ver_check -> quit
+        [color=red,fontcolor=red3,label="wrong version"];
+
+    shm_init -> sem_con
+
+    ver_check -> sem_con -> msg_loop
+}

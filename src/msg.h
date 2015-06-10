@@ -27,6 +27,10 @@ enum _MSG_TYPE
     MSG_NORM = 2L,
     //! A message to disconnect, where only \b type is guaranteed.
     MSG_KILL = 3L,
+    //! A message to quit the thread.
+    MSG_QUIT = 4L,
+    //! An empty message, not to be parsed.
+    MSG_EMPT = 5L,
 };
 
 /**
@@ -38,6 +42,8 @@ typedef struct
     long ver;
     //! Date of message creation.
     long date;
+    //! Number of seconds to keep message in the outgoing queue.
+    long timeout;
     //! Length of the data in bytes.
     int len;
 } msg_hdr_t;
@@ -97,6 +103,7 @@ void msg_t_del (msg_t** _msg);
 /**
 @brief Generates a msg_hdr_t.
 @return Upon success, returns a message header with relevant data.
+Sets default timeout #msg_hdr_timeout.
 <br>Upon failure, returns a msg_hdr_t with msg_hdr_t#ver set to 0.
 @note Inherets errors from get_sec().
 **/
@@ -123,9 +130,9 @@ int msg_set_data (msg_t* _msg, char* _data);
 @ent{_EPTRNULL, \b _msg is NULL.}
 @ent{_EALLOC, could not allocate space for the raw message.}
 @end
-@note Inherits errors from msg_to_bin_len().
+@note Inherits errors from msg_to_raw_len().
 **/
-void* msg_to_bin (msg_t* _msg);
+void* msg_to_raw (msg_t* _msg);
 /**
 @brief Converts a chunk of data into a msg_t.
 @param _bmsg The message to convert.
@@ -137,7 +144,7 @@ void* msg_to_bin (msg_t* _msg);
 @end
 @note Inherits errors from msg_t_new().
 **/
-msg_t* msg_from_bin (void* _bmsg);
+msg_t* msg_from_raw (void* _bmsg);
 /**
 @brief Calculates the total size of a message including data.
 @param _msg The message.
@@ -147,4 +154,4 @@ msg_t* msg_from_bin (void* _bmsg);
 @ent{_EPTRNULL, \b _msg is NULL.}
 @end
 **/
-int msg_to_bin_len (msg_t* _msg);
+int msg_to_raw_len (msg_t* _msg);

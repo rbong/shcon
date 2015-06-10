@@ -9,6 +9,8 @@
 
 //! Default value for msg_t#type.
 long msg_type = MSG_NORM;
+//! Default value for msg_hdr_t#timeout.
+long msg_hdr_timeout = 3;
 
 msg_t* msg_t_new (void)
 {
@@ -121,6 +123,7 @@ msg_hdr_t msg_gen_hdr (void)
 
     ret.ver = MM_HDR_VER;
     ret.date = get_sec ();
+    ret.timeout = msg_hdr_timeout;
     if (ret.date < 0)
     {
         ret.ver = 0;
@@ -161,7 +164,7 @@ int msg_set_data (msg_t* _msg, char* _data)
     return ret;
 }
 
-void* msg_to_bin (msg_t* _msg)
+void* msg_to_raw (msg_t* _msg)
 {
     int tmp = 0;
     void* ret = NULL;
@@ -175,7 +178,7 @@ void* msg_to_bin (msg_t* _msg)
         return ret;
     }
 
-    tmp = _len = msg_to_bin_len (_msg);
+    tmp = _len = msg_to_raw_len (_msg);
     if (tmp < 0)
     {
         ret = NULL;
@@ -197,7 +200,7 @@ void* msg_to_bin (msg_t* _msg)
     return ret;
 }
 
-msg_t* msg_from_bin (void* _bmsg)
+msg_t* msg_from_raw (void* _bmsg)
 {
     // int tmp = 0;
     msg_t* ret = msg_t_new ();
@@ -239,7 +242,7 @@ msg_t* msg_from_bin (void* _bmsg)
     return ret;
 }
 
-int msg_to_bin_len (msg_t* _msg)
+int msg_to_raw_len (msg_t* _msg)
 {
     // int tmp = 0;
     int ret = 0;

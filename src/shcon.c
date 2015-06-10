@@ -6,9 +6,9 @@
 **/
 
 #include <shcon.h>
-#include <shcon_util.h>
+#include <shcon_intern.c>
 
-msg_t shcon_msg_init = { MSG_INIT, { MM_HDR_VER, 0, 0 }, NULL };
+msg_t shcon_msg_init = { MSG_INIT, { MM_HDR_VER, 0, 0, 0 }, NULL };
 
 shcon_t* shcon_t_new (void)
 {
@@ -145,15 +145,14 @@ int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg)
     int _offset = 0;
     void* _bmsg = NULL;
 
-    if (_shcon == NULL || _shcon->sem == NULL ||
-            _shcon->shm == NULL || _msg == NULL)
+    if (_shcon == NULL || _shcon->shm == NULL || _msg == NULL)
     {
         ERR_PRINT (_EPTRNULL);
         ret = -1;
         return ret;
     }
 
-    _bmsg = msg_to_bin (_msg);
+    _bmsg = msg_to_raw (_msg);
     if (_bmsg == NULL)
     {
         ret = -1;
@@ -162,13 +161,6 @@ int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg)
 
     if (_msg->type != MSG_INIT)
     {
-        tmp = shcon_lock_sem (_shcon);
-        if (tmp < 0)
-        {
-            free (_bmsg);
-            ret = tmp;
-            return ret;
-        }
         _offset = sizeof (shcon_msg_init);
     }
 
@@ -177,15 +169,6 @@ int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg)
     if (tmp < 0)
     {
         ret = tmp;
-    }
-    if (_msg->type != MSG_INIT)
-    {
-        tmp = shcon_unlock_sem (_shcon);
-        if (tmp < 0)
-        {
-            ret = tmp;
-            return ret;
-        }
     }
     return ret;
 }
@@ -210,7 +193,7 @@ msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init)
 
     if (!_init)
     {
-        tmp = msg_to_bin_len (&shcon_msg_init);
+        tmp = msg_to_raw_len (&shcon_msg_init);
         if (tmp < 0)
         {
             ret = NULL;
@@ -240,8 +223,7 @@ msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init)
     return ret;
 }
 
-// todo- make sure you add this to protocol
-int shcon_mark_sem (shcon_t* _shcon)
+int shcon_mark_sem_read (shcon_t* _shcon)
 {
     int tmp = 0;
     int ret = 0;
@@ -345,13 +327,27 @@ int shcon_add_sem_con (shcon_t* _shcon)
     return ret;
 }
 
-// todo- break this up
 int shcon_connect (shcon_t* _shcon)
 {
     int tmp = 0;
     int ret = 0;
 
-    tmp =  shcon_create_sem_shm (_shcon);
+    if (_shcon == NULL || _shcon->shm == NULL)
+    {
+        ERR_PRINT (_EPTRNULL);
+        ret = -1;
+        return ret;
+    }
+    // we need to check shm id later to see if it is created
+    if (_shcon->shm->id != 0)
+    {
+        ERR_PRINT (_EBADVAL);
+        ret = -1;
+        return ret;
+    }
+
+    errno = 0;
+    tmp =  _shcon_create_sem (_shcon);
     if (tmp < 0 && errno != EEXIST)
     {
         if (err_num != _ESUCCESS)
@@ -365,13 +361,15 @@ int shcon_connect (shcon_t* _shcon)
         ret = tmp;
         return ret;
     }
+    // if the semaphore exists, attach to semaphore and shared memory
     if (tmp < 0)
     {
-        tmp = shcon_attach_sem_shm (_shcon);
-        if (tmp < 0 && errno == ENOENT)
-        {
-            tmp = shcon_create_sem_shm (_shcon);
-        }
+        // return 0 if the shared memory is attached
+        ret = 0;
+
+        errno = 0;
+        tmp = _shcon_attach_sem (_shcon);
+        // we have gotten a failure trying to connect and attach to semaphore
         if (tmp < 0)
         {
             if (err_num != _ESUCCESS)
@@ -385,14 +383,247 @@ int shcon_connect (shcon_t* _shcon)
             ret = tmp;
             return ret;
         }
+        errno = 0;
+        tmp = _shcon_attach_shm (_shcon);
+        // semaphore exists and shared memory does not
+        if (tmp < 0 && errno != ENOENT)
+        {
+            if (err_num != _ESUCCESS)
+            {
+                if (errno != 0)
+                {
+                    ERR_SYS (errno);
+                }
+                ERR_PRINT (err_num);
+            }
+            ret = tmp;
+            return ret;
+        }
+        // attachment to sem and shm was successful, check header version
+        else if (tmp >= 0)
+        {
+            tmp = shcon_lock_sem (_shcon);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+
+            tmp = _shcon_check_shm_ver (_shcon);
+            if (tmp < 0)
+            {
+                shcon_unlock_sem (_shcon);
+                ret = tmp;
+                return ret;
+            }
+        }
     }
 
-    // todo- attach to segment
+    // shared memory or semaphore is new
+    if (_shcon->shm->id == 0)
+    {
+        // return 1 if the shared memory is new
+        ret = 1;
 
+        // send init message to transmit metadata
+        tmp = _shcon_init_sem (_shcon);
+        if (tmp < 0)
+        {
+            ret = tmp;
+            return ret;
+        }
+
+        errno = 0;
+        tmp = _shcon_create_shm (_shcon);
+        if (tmp < 0 && errno != EEXIST)
+        {
+            if (err_num != _ESUCCESS)
+            {
+                if (errno != 0)
+                {
+                    ERR_SYS (errno);
+                }
+                ERR_PRINT (err_num);
+            }
+            shcon_unlock_sem (_shcon);
+            ret = tmp;
+            return ret;
+        }
+        // semaphore is new and shared memory is not. attach
+        if (tmp < 0)
+        {
+            errno = 0;
+            tmp = _shcon_attach_shm (_shcon);
+            if (tmp < 0)
+            {
+                if (err_num != _ESUCCESS)
+                {
+                    if (errno != 0)
+                    {
+                        ERR_SYS (errno);
+                    }
+                    ERR_PRINT (err_num);
+                }
+                shcon_unlock_sem (_shcon);
+                ret = tmp;
+                return ret;
+            }
+        }
+
+        tmp = _shcon_init_shm (_shcon);
+        if (tmp < 0)
+        {
+            shcon_unlock_sem (_shcon);
+            ret = tmp;
+            return ret;
+        }
+    }
+
+    // mark the connection in the smaphore
     tmp = shcon_add_sem_con (_shcon);
     if (tmp < 0)
     {
+        shcon_unlock_sem (_shcon);
         ret = tmp;
     }
+    return ret;
+}
+
+int shcon_msg_loop
+  (shcon_t* _shcon, int _attach, void* _con, int (*_f) (void*, msg_t*, int))
+{
+    int tmp = 0;
+    int ret = 0;
+    int _unread = 0;
+    int _timeout = 0;
+    msg_t* _msg = NULL;
+
+    while (1)
+    {
+        _unread = 0;
+        // forces writing the message if we are not attaching
+        _timeout = 1;
+        if (_attach)
+        {
+            tmp = shcon_unlock_sem (_shcon);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+
+            tmp = shcon_wait (_shcon);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+
+            tmp = shcon_lock_sem (_shcon);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+
+            tmp = shcon_recv_shm_msg (_shcon, &_msg, 0);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+
+            // message is new
+            if (tmp > 0)
+            {
+                tmp = shcon_mark_sem_read (_shcon);
+                if (tmp < 0)
+                {
+                    ret = tmp;
+                    return ret;
+                }
+
+                tmp = _f (_con, &_msg, ANON_SEND);
+                if (tmp < 0)
+                {
+                    ret = tmp;
+                    return ret;
+                }
+
+                if (_msg->type = MSG_KILL)
+                {
+                    ret = 0;
+                    return ret;
+                }
+            }
+
+            tmp = _timeout = shcon_timeout_msg (_shcon, _msg);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+
+            if (!_timeout)
+            {
+                tmp = _unread = shcon_unread_sem (_shcon);
+                if (tmp < 0)
+                {
+                    ret = tmp;
+                    return ret;
+                }
+            }
+
+            msg_t_del (&_msg);
+        }
+
+        tmp = _f (_con, &_msg, ANON_RECV);
+        if (tmp < 0)
+        {
+            ret = tmp;
+            return ret;
+        }
+
+        // message is new
+        if (tmp > 0)
+        {
+            if (_msg->type = MSG_QUIT)
+            {
+                ret = 0;
+                return ret;
+            }
+
+            if (_timeout || !_unread)
+            {
+                tmp = shcon_send_shm_msg (_shcon, _msg);
+                if (tmp < 0)
+                {
+                    ret = tmp;
+                    return ret;
+                }
+
+                if (_msg->type = MSG_KILL)
+                {
+                    ret = 0;
+                    return ret;
+                }
+            }
+        }
+        else
+        {
+            tmp = _f (_con, &_msg, ANON_PUSH);
+            if (tmp < 0)
+            {
+                ret = tmp;
+                return ret;
+            }
+        }
+
+        msg_t_del (&_msg);
+        // start at the beginning of the loop from now on
+        _attach = 1;
+    }
+
+    ret = -1;
     return ret;
 }

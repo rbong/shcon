@@ -1,37 +1,72 @@
-create function to recursively create directories
+MISC
+! make get sec fail if the date is less than last time
+find a good place to put stray file documentation
+make sure you commented scripts
+remove all the explicit references to uses in err documentation and convert them to @see
+write styleguide
+make new errors!
+rename gen_id to set_id
+make sure that capitalization is consistent on error entries
+ensure that all t_new declarations are checked at the beginning of funcs
+add underscores to all the shcon_util functions
+make an _ENOBLAME error
+in docs, only refer to types when talking about return values
+figure out if resetting read semaphore manually with SEM_UNDOs pending is safe
+make recv and send check if the thread is locked (but do not lock it)
+
+WEDNESDAY
+finish msg loop protocol
+! change recv to match the msg_loop usge (indicate if message is new)
+start test functions
+3 misc
+THURSDAY
 write test functions
 write test programs
-store temporary err_num value when recoverable so it is not overwritten
+3 misc
+FRIDAY
+document protocol functions
+remember to unlock when returning from message loop!!
+redocument wrong functions
+3 misc
+
+MONDAY
+start test functions
+2 misc
+TUESDAY
+finish test functions
+start debug
+2 misc
+WEDNESDAY
+debug
+2 misc
+THURSDAY
+debug
+2 misc
+FRIDAY
+document
+2 misc
+
+NOT READY
+kill messages should be overwritten by new threads
+add provisions to still connect to a shm with the wrong version if there are no connections and it was made by mm
+create user interface
+create function to recursively create directories
 alter makefile to produce files from .in
 look up how to check for and catch memcpy errors.
 make str_cat and msg_to_bin behave the same way
-find a good place to put stray file documentation
-make sure you commented scripts
 make sure you commented test files
-remove all the explicit references to uses in err documentation and convert them to @see
-write styleguide
 create example files
-call scripts with make
 start adding maximums
-dont use SEM_UNDO anywhere but with adding connections
+add multiple makefiles
+call scripts with make
 test race conditions, read more on semop
 look into the possibility of locking with shm instead of sem
 make sure that _EPTRNULL error entries have and/or
-make sure that capitalization is consistent on error entries
-make new errors!
-rename binary messages to raw
-break up various shcon utils into other utils
-rename gen_id to set_id
-ensure that all t_new declarations are checked at the beginning of funcs
 determine if sem should lock while reading init msg
 lock the semaphore on the same levels, not inside protocol functions
-add more errors... including overwriting existing values, especially in shcon_util. one example- will overwrite semaphore IDs. especially prominent but by far not the only case.
-make an _ENOBLAME error
-add underscores to all the shcon_util functions
+add more error checking... including overwriting existing values, especially in shcon_util. one example- will overwrite semaphore IDs. especially prominent but by far not the only case.
 set "read" to 0 after sending a new message!
-define behaviour for marking as read after failures
-in docs, only refer to types when talking about return values
 make protocol into a doc
-if there are no connections on a shm with a bad version, delete it
-look into adding connections BEFORE unlocking semaphore
-find a place to put stray protocol information.
+add hash to msg_t
+make it so that resolved blame is not handled by overwriting err_num
+make a function to backup errors if ex. we need to unlock or free.

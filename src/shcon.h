@@ -5,10 +5,12 @@
 @section shcon_connect_protocol Connection protocol
 The following is an illustration of the connection protocol.
 Fatal errors are not included.
-Click the boxes to view the corresponding function.
+Click the boxes to view the corresponding functions and protocols.
 @dotfile shcon_connect.dot
 @see shm.h sem.h ipc.h msg.h
 @section shcon_msg_protocol Message loop
+Fatal errors are not included.
+Click the boxes to view the corresponding functions and protocols.
 @dotfile shcon_msg_loop.dot
 **/
 
@@ -24,8 +26,11 @@ Click the boxes to view the corresponding function.
 #define MM_SHCON
 enum _SHCON_SEM_SET
 {
+    //! The semaphore set to indicate locking.
     SEMSET_LOCK = 0,
+    //! The semaphore set to indicate connections. Automatically decrements.
     SEMSET_CON  = 1,
+    //! The semaphore set to indicate unique readings of the message.
     SEMSET_READ = 2,
 };
 
@@ -84,30 +89,29 @@ Does nothing if \b _shcon or \b *_shcon is NULL.
 void shcon_t_del (shcon_t** _shcon);
 /**
 @brief Sends a message to shared memory.
-@details If the message is not an init message,
-locks the thread until the shared connection is available.
+@details Assumes the thread has been locked.
 @param _shcon The shared connection with the shared memory.
 @param _msg The message to send.
 @return Upon success, returns 0.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#shm  are NULL}
+@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#shm are NULL}
 @end
-@note Inherits errors from msg_to_bin(), shcon_lock_sem(), shm_write(),
+@note Inherits errors from msg_to_raw(), shcon_lock_sem(), shm_write(),
 shcon_unlock_sem().
 **/
 int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg);
 /**
 @brief Gets a message from shared memory.
-@details Locks the thread until the shared connection is available.
+@details Assumes the thread has been locked.
 @param _shcon The shared connection with the shared memory.
 @param _init Indicates to read the header message instead of post-header.
 @return Upon success, returns a newly allocated message.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shcon and/or \b l_shcon shcon_t#shm  are NULL}
+@ent{_EPTRNULL, \b _shcon and/or \b l_shcon shcon_t#shm are NULL}
 @end
-@note Inherits errors from msg_t_new(), msg_to_bin_len(), shm_read().
+@note Inherits errors from msg_t_new(), msg_to_raw_len(), shm_read().
 **/
 msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init);
 /**
@@ -117,11 +121,11 @@ msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init);
 @return Upon success, returns 0.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#shm  are NULL}
+@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#shm are NULL}
 @end
 @note Inherits errors from sem_op().
 **/
-int shcon_mark_sem (shcon_t* _shcon);
+int shcon_mark_sem_read (shcon_t* _shcon);
 /**
 @brief Locks a semapohre.
 @details Locks the thread until the shared connection is available.
@@ -130,7 +134,7 @@ int shcon_mark_sem (shcon_t* _shcon);
 <br>If the shared connection was already locked by the thread, returns 1.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem  are NULL}
+@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem are NULL}
 @end
 @note Inherits errors from sem_op().
 **/
@@ -142,7 +146,7 @@ int shcon_lock_sem (shcon_t* _shcon);
 <br>If the shared connection was not locked by the thread, returns 1.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem  are NULL}
+@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem are NULL}
 @end
 @note Inherits errors from sem_op().
 **/
@@ -154,25 +158,41 @@ int shcon_unlock_sem (shcon_t* _shcon);
 @return Upon success, returns 0.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem  are NULL}
+@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem are NULL}
 @end
 @note Inherits errors from sem_op().
 **/
 int shcon_add_sem_con (shcon_t* _shcon);
 /**
 @brief Starts a shared connection.
-@details Assumes that \b _shcon shcon_t#sem and shcon_t#shm are set, but not
-their sem_t#id and shm_t#id. Also assumes that the shcon_t#ipc is fully set.
-The function will attempt to create a new semaphore and new shared memory.
-If the semaphore and shared memory exist, it connects to them instead.
-If one exist and the other does not, it initalizes one and recreates the other.
+@details This function follows the protocol in @ref shcon_connect_protocol.
+Assumes that \b _shcon shcon_t#sem and shcon_t#shm are set, but not
+their sem_t#id shm_t#id and shm_t#seg. Also assumes that the shcon_t#ipc is
+fully set. The function will attempt to create or connect to a new semaphore
+and shared memory segment.
+If the semaphore is new and the shared memory is not, it assumes that the
+previously attached threads were aware of the malformation and have
+disconnected.
+The function keeps the semaphore locked to perform any desired operations
+before allowing other threads to write to the shared memory.
 @param _shcon The shared connection to start.
-@return Upon success, returns 0 and sets \b _shcon  shcon_t#sem and shcon_t#shm
-sem_t#id and shm_t#id.
-<br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
-@note Resolves blame from shcon_create_sem_shm(), shcon_attach_sem_shm().
-Inherits errors from shcon_create_sem_shm(), shcon_attach_sem_shm(),
-shcon_add_sem_con().
+@return Upon success, returns 0 if the shared memory was attached to or 1 if it
+was created.
+Sets \b _shcon shcon_t#sem sem_t#id and shcon_t#shm shm_t#id and shm_t#seg,
+locks the shcon_t#sem, and adds to its #SEMSET_READ.
+<br>Upon failure, returns -1, prints errors if necessary, sets #err_num, and
+attempts to unlock \b _shcon shcon_t#sem.
+@beg{Errors}
+@ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem are NULL}
+@ent{_EBADVAL, \b _shcon shcon_t#shm shm_t#id is already set.}
+@end
+@note Resolves blame from _shcon_create_sem(), _shcon_attach_sem(),
+_shcon_create_shm(), shcon_attach_shm().
+Inherits errors from _shcon_create_sem(), _shcon_attach_sem(), shcon_lock_sem(),
+shcon_unlock_sem(), _shcon_init_sem(), shcon_add_sem_con(), shcon_attach_shm(),
+_shcon_create_shm(), _shcon_create_shm(), shcon_check_shm_ver().
 @see @ref shcon_connect_protocol
 **/
 int shcon_connect (shcon_t* _shcon);
+int shcon_msg_loop
+  (shcon_t* _shcon, int _attach, void* _con, int (*_f) (void*, msg_t*, int));

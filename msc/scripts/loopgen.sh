@@ -64,12 +64,12 @@ loop()
         $file
     }"
 
-    printf "$fin" > ../../doxy/generated/$fun.dot
+    printf "$fin" > ../../doxy/graphs/generated/$fun.dot
     exit 0
 }
 
 ret=0
-for i in ../graph/loop/*; do
+for i in ../../doxy/graphs/input/*; do
     loop $i
     tmp=$?
     if [ $tmp -ne 0 ]; then export ret=$tmp; fi
