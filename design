@@ -1,0 +1,11 @@
+        ,------,                      ,--------------------,                          .=============================.
+        |master| <-> global queue <-> |shared memory master| ===>> subscriptions ==>> ||shared memory communicators|| ==>> sent messages
+        '------'                      '--------------------'                          '============================='
+           ^                                              /\                            ||
+           |                                              '======= recieved messages <<=='
+           |
+           |                          ,---------------------,                         .===========================.
+           '-------> local queue <--> |program memory master| ==>> conditions =====>> ||break condition listeners|| ====>> memory manipulations
+                                      '---------------------'                         '==========================='        (deletes listeners)
+                                                          /\                            ||
+                                                          '======= memory retrievals <<=='
