@@ -40,6 +40,7 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
     if (_sem == NULL)
     {
         ERR_PRINT (_EPTRNULL);
+        err_num = _ENOBLAME;
         ret = -1;
         return ret;
     }
@@ -49,6 +50,8 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
         (*_sem) = sem_t_new ();
         if ((*_sem) == NULL)
         {
+            ERR_FROM ();
+            err_num = _ENOBLAME;
             ret = -1;
             return ret;
         }
@@ -71,7 +74,8 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
         {
             if (errno == EEXIST || errno == ENOENT)
             {
-                ret = 1;
+                ret = tmp;
+                return ret;
             }
             else
             {
@@ -80,6 +84,7 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
                     ERR_SYS (errno);
                 }
                 ERR_PRINT (err_num);
+                err_num = _ENOBLAME;
                 ret = -1;
             }
         }
@@ -89,7 +94,16 @@ int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags)
         (*_sem)->id = _id;
     }
 
-    if (tmp != 0)
+    return ret;
+}
+
+int sem_t_from_id (sem_t** _sem, key_t _key, int _flags)
+{
+    int tmp = 0;
+    int ret = 0;
+
+    tmp = sem_t_set (_sem, 0, 0, _key, _flags);
+    if (tmp < 0)
     {
         ret = tmp;
     }
@@ -150,10 +164,10 @@ int sem_ctl (sem_t* _sem, int _sem_num, int _cmd, union sem_un _sem_un)
     }
 
     tmp = semctl (_sem->id, _sem_num, _cmd, _sem_un);
+        ret = tmp;
     if (tmp < 0)
     {
         ERR_PRINT (_ESYSTEM);
-        ret = tmp;
     }
     return ret;
 }
@@ -173,6 +187,8 @@ int sem_op (sem_t* _sem, struct sembuf _sem_ops, size_t _num_sem_ops)
     tmp = semop (_sem->id, &_sem_ops, _num_sem_ops);
     if (tmp < 0)
     {
+        ERR_SYS (errno);
+        ERR_PRINT (_ESYSTEM);
         ret = tmp;
     }
     return ret;

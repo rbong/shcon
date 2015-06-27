@@ -1,72 +1,25 @@
-MISC
-! make get sec fail if the date is less than last time
-find a good place to put stray file documentation
-make sure you commented scripts
-remove all the explicit references to uses in err documentation and convert them to @see
-write styleguide
-make new errors!
-rename gen_id to set_id
-make sure that capitalization is consistent on error entries
-ensure that all t_new declarations are checked at the beginning of funcs
-add underscores to all the shcon_util functions
-make an _ENOBLAME error
-in docs, only refer to types when talking about return values
-figure out if resetting read semaphore manually with SEM_UNDOs pending is safe
-make recv and send check if the thread is locked (but do not lock it)
-
-WEDNESDAY
-finish msg loop protocol
-! change recv to match the msg_loop usge (indicate if message is new)
-start test functions
-3 misc
-THURSDAY
-write test functions
-write test programs
-3 misc
-FRIDAY
-document protocol functions
-remember to unlock when returning from message loop!!
-redocument wrong functions
-3 misc
-
-MONDAY
-start test functions
-2 misc
-TUESDAY
-finish test functions
-start debug
-2 misc
-WEDNESDAY
-debug
-2 misc
-THURSDAY
-debug
-2 misc
-FRIDAY
-document
-2 misc
-
-NOT READY
+! implement a new protocol with a double loop framework, one for reading and one for writing. This will make threads attempt to lock as soon as they recieve messages and therefore correct the queue.
+make get sec get millisec
+make option framework
 kill messages should be overwritten by new threads
 add provisions to still connect to a shm with the wrong version if there are no connections and it was made by mm
-create user interface
 create function to recursively create directories
 alter makefile to produce files from .in
-look up how to check for and catch memcpy errors.
-make str_cat and msg_to_bin behave the same way
-make sure you commented test files
+check for and catch memcpy errors
 create example files
-start adding maximums
+add maximums
 add multiple makefiles
 call scripts with make
-test race conditions, read more on semop
-look into the possibility of locking with shm instead of sem
-make sure that _EPTRNULL error entries have and/or
 determine if sem should lock while reading init msg
-lock the semaphore on the same levels, not inside protocol functions
 add more error checking... including overwriting existing values, especially in shcon_util. one example- will overwrite semaphore IDs. especially prominent but by far not the only case.
-set "read" to 0 after sending a new message!
-make protocol into a doc
 add hash to msg_t
 make it so that resolved blame is not handled by overwriting err_num
-make a function to backup errors if ex. we need to unlock or free.
+refer to system documentation in local documentation
+modify locking to reset if there are no connections and it is locked, or if a locking thread is dead
+change msg date to msg time
+make messages have a member to indicate the time from when they're sent as well as when they're created so that timeout is correct
+write styleguide
+make new errors codes
+find a good place to put stray file documentation
+make sure you commented scripts
+figure out if resetting read semaphore manually with SEM_UNDOs pending is safe

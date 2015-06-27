@@ -5,11 +5,16 @@
 @brief File processing.
 **/
 
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
+#ifndef MM_FILE
+#define MM_FILE
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
 
 #include <err.h>
+#endif
+/* -------------------------- END OF GUARD BLOCK -------------------------- */
 
 /**
 @brief Create an empty file if it does not exist.

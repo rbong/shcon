@@ -2,7 +2,7 @@
 CC     = gcc
 # FLAG VARIABLES
 INC    = -I./src -I./include
-DEF    = -D MM_HDR_VER=1
+DEF    = -D MM_HDR_VER=3
 CFLAGS = -Wall -g $(INC) $(DEF)
 # FILE VARIABLES
 DEPS   = $(wildcard src/*.c)

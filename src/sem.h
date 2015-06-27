@@ -5,24 +5,24 @@
 @see shcon.h sem_add_con()
 **/
 
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
+#ifndef MM_SEM
+#define MM_SEM
 #include <stdlib.h>
 #include <sys/sem.h>
 
 #include <err.h>
 
-/* ------------------------- START OF GUARD BLOCK ------------------------- */
-#ifndef MM_SEM
-#define MM_SEM
 /**
 @brief A set of semaphores.
 **/
-typedef struct
+struct sem_t
 {
     //! The number of semaphores in the set.
     int    len;
     //! Semaphore set identifier.
     int    id;
-} sem_t;
+};
 
 //! Type of the optional parameter for \b semctl() as specified by POSIX.
 union sem_un
@@ -34,12 +34,14 @@ union sem_un
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
 
+typedef struct sem_t sem_t;
+
 /**
 @brief Create a new sem_t.
 @return Upon success, returns the address of a sem_t with empty members.
 <br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EALLOC, could not allocate space for the sem_t.}
+@ent{_EALLOC, Could not allocate space for the sem_t.}
 @end
 **/
 sem_t* sem_t_new (void);
@@ -59,13 +61,23 @@ If \b _id is less than 0, does not populate \b _sem sem_t#id.
 returns 1 and passes the blame to the caller.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _sem is NULL.}
-@ent{_SYSTEM, failure generating sem_t#id.}
+@ent{_ENOBLAME, Blame is resolved.}
 @end
 @note Inherits errors from sem_t_new(), sem_gen_id(). Inherits blame from
 sem_gen_id().
 **/
 int sem_t_set (sem_t** _sem, int _len, int _id, key_t _key, int _flags);
+/**
+@brief Generate a sem_t#id with a key and popualate a sem_t with it.
+@param _sem The struct to populate.
+@param _key,flags Used to set \b _sem sem_t#id.
+@return Upon success, returns 0 and populates \b _sem sem_t#id.
+<br>If the population fails because of recoverable errors from sem_gen_id(),
+returns 1 and passes the blame to the caller.
+<br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
+@note Inherits errors from sem_t_set(). Inherits blame from sem_gen_id().
+**/
+int sem_t_from_id (sem_t** _sem, key_t _key, int _flags);
 /**
 @brief Deletes a sem_t.
 @details Assumes that \b _sem has been properly created by sem_t_new().

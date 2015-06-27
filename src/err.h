@@ -9,12 +9,6 @@
 To print error codes defined by the system, use the ERR_SYS() macro.
 **/
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <errno.h>
-#include <error.h>
-#include <string.h>
-
 /**
 @brief An error location.
 **/
@@ -33,10 +27,17 @@ The location printed by _err_pr() will be where the macro is called.
 @param n Refers to the system error message to print.
 **/
 #define ERR_SYS(n) (_err_pr (stderr, _ERR_LOC, "%s.", strerror (n)))
+#define ERR_FROM() (_err_from (stderr, _ERR_LOC))
 
 /* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef MM_ERR
 #define MM_ERR
+#include <stdio.h>
+#include <stdarg.h>
+#include <errno.h>
+#include <error.h>
+#include <string.h>
+
 /**
 @brief Contains error location.
 **/
@@ -54,13 +55,13 @@ typedef struct
 @brief Contains error information.
 @details Used by #err_table to provide an index of error messages.
 **/
-typedef struct
+struct err_info_t
 {
     //! The error number.
     int code;
     //! The error message.
     char* msg;
-} err_info_t;
+};
 
 /**
 @brief Assigns numbers to error codes.
@@ -105,15 +106,17 @@ _ESUCCESS should always be the first value.  _EUNKNOWN should never be erased.
 
 /**
 @brief The last error that occured.
-@detailsThis is only set by ERR_PRINT() and err_reset().
 **/
-extern int       err_num;
+extern int err_num;
 /**
 @brief The maximum error number that is defined.
 **/
 extern const int ERR_MAX;
+extern int err_verbose;
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
+
+typedef struct err_info_t err_info_t;
 
 /**
 @brief Prints location and error.
@@ -136,3 +139,9 @@ char* _err_get_msg (int _code);
 @brief Sets program and system error variables to their default values.
 **/
 void err_reset (void);
+/**
+@brief Prints returning error location.
+@param _fp The file stream to print to.
+@param _loc The error location.
+**/
+void _err_from (FILE* _fp, err_loc_t _loc);

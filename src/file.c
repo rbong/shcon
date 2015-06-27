@@ -31,6 +31,7 @@ int file_touch (char* _file_name)
     tmp = file_exists (_file_name);
     if (tmp != 0)
     {
+        ERR_FROM ();
         ret = tmp;
         return ret;
     }

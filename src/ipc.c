@@ -55,6 +55,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, char* _path, key_t _key)
         (*_ipc) = ipc_t_new ();
         if ((*_ipc) == NULL)
         {
+            ERR_FROM ();
             ret = -1;
             return ret;
         }
@@ -81,6 +82,7 @@ int ipc_t_set (ipc_t** _ipc, int _flags, char* _path, key_t _key)
         tmp = (*_ipc)->key = ipc_gen_key ((*_ipc)->path, (*_ipc)->proj_id);
         if (tmp < 0)
         {
+            ERR_FROM ();
             ret = tmp;
         }
     }
@@ -106,6 +108,7 @@ int ipc_t_from_path (ipc_t** _ipc, char* _path)
     tmp = ipc_t_set (_ipc, 0, _path, 0);
     if (tmp < 0)
     {
+        ERR_FROM ();
         ret = tmp;
     }
     return ret;

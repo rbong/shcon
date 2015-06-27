@@ -51,6 +51,7 @@ int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data)
         (*_msg) = msg_t_new ();
         if ((*_msg) == NULL)
         {
+            ERR_FROM ();
             ret = -1;
             return ret;
         }
@@ -70,6 +71,7 @@ int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data)
         (*_msg)->hdr = msg_gen_hdr ();
         if ((*_msg)->hdr.ver == 0)
         {
+            ERR_FROM ();
             ret = -1;
             return ret;
         }
@@ -85,6 +87,7 @@ int msg_t_set (msg_t** _msg, long _type, msg_hdr_t _hdr, char* _data)
     }
     if (tmp < 0)
     {
+        ERR_FROM ();
         ret = tmp;
     }
     return ret;
@@ -126,6 +129,7 @@ msg_hdr_t msg_gen_hdr (void)
     ret.timeout = msg_hdr_timeout;
     if (ret.date < 0)
     {
+        ERR_FROM ();
         ret.ver = 0;
     }
     ret.len = 0;
@@ -181,6 +185,7 @@ void* msg_to_raw (msg_t* _msg)
     tmp = _len = msg_to_raw_len (_msg);
     if (tmp < 0)
     {
+        ERR_FROM ();
         ret = NULL;
         return ret;
     }
@@ -209,6 +214,7 @@ msg_t* msg_from_raw (void* _bmsg)
 
     if (ret == NULL)
     {
+        ERR_FROM ();
         return ret;
     }
 
@@ -229,7 +235,7 @@ msg_t* msg_from_raw (void* _bmsg)
         {
             ERR_SYS (errno);
             ERR_PRINT (_EALLOC);
-            msg_t_del (ret);
+            msg_t_del (&ret);
             return ret;
         }
     }
@@ -255,5 +261,10 @@ int msg_to_raw_len (msg_t* _msg)
     }
 
     ret = sizeof (_msg->type) + sizeof (_msg->hdr) + _msg->hdr.len;
+    if (ret < 0)
+    {
+        ERR_PRINT (_EBADVAL);
+        ret = -1;
+    }
     return ret;
 }

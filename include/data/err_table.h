@@ -1,5 +1,6 @@
 { _ESUCCESS,     "Success."                                           },
 { _EUNKNOWN,     "Unknown error."                                     },
+{ _ENOBLAME,     "Error does not need to be printed."                 },
 { _EPTRNULL,     "Pointer is NULL."                                   },
 { _EPTROVERFLOW, "Pointer can not hold resut."                        },
 { _ESTREMPTY,    "String is empty"                                    },
@@ -10,3 +11,5 @@
 { _EFCLOSE,      "File closing failed."                               },
 { _EACCESS,      "Accessng file failed."                              },
 { _EALLOC,       "Memory allocation failed."                          },
+{ _ENOFLAG,      "Value is not a valid flag."                         },
+{ _EBADTIME,     "Last checked time was in the future."               },

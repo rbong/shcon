@@ -4,6 +4,9 @@
 @brief Shared memory operations.
 **/
 
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
+#ifndef MM_SHM
+#define MM_SHM
 #include <stdlib.h>
 #include <sys/shm.h>
 
@@ -12,13 +15,10 @@
 #include <file.h>
 #include <msg.h>
 
-/* ------------------------- START OF GUARD BLOCK ------------------------- */
-#ifndef MM_SHM
-#define MM_SHM
 /**
 @brief Shared memory.
 **/
-typedef struct
+struct shm_t
 {
     //! The size in bytes.
     size_t size;
@@ -26,9 +26,11 @@ typedef struct
     int    id;
     //! The memory segment.
     void*  seg;
-} shm_t;
+};
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
+
+typedef struct shm_t shm_t;
 
 /**
 @brief Create a new shm_t.
@@ -122,7 +124,7 @@ int shm_attach_seg (shm_t* _shm, const void* _shmaddr, int _shmflg);
 <br> Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @details
 @beg{Errors}
-@ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm shm_t#seg is NULL.}
+@ent{_EPTRNULL, \b _shm\, \b _buf\, and/or \b _shm shm_t#seg are NULL.}
 @ent{_ESYSTEM, Error copying memory.}
 @ent{_EBADVAL, \b _offset and/or \b _bytes were out of bounds.}
 @end
@@ -137,7 +139,7 @@ int shm_read (shm_t* _shm, void* _buf, int _bytes, int _offset);
 @return Upon success, returns 0 and fills shared memory with the buffer.
 <br> Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _shm\, \b _buf\, or \b _shm shm_t#seg is NULL.}
+@ent{_EPTRNULL, \b _shm\, \b _buf\, and/or \b _shm shm_t#seg are NULL.}
 @ent{_ESYSTEM, Error copying memory.}
 @ent{_EBADVAL, \b _offset and/or \bytes was out of bounds.}
 @end

@@ -20,7 +20,6 @@ Click the boxes to view the corresponding functions and protocols.
 #include <err.h>
 #include <msg.h>
 
-
 /* ------------------------- START OF GUARD BLOCK ------------------------- */
 #ifndef MM_SHCON
 #define MM_SHCON
@@ -37,7 +36,7 @@ enum _SHCON_SEM_SET
 /**
 @brief A shared connection.
 **/
-typedef struct
+struct shcon_t
 {
     //! Common IPC data.
     ipc_t* ipc;
@@ -47,18 +46,34 @@ typedef struct
     sem_t* sem;
     //! Specifies whether this process has locked the connection.
     int locked;
-} shcon_t;
+    //! The time of the previous message recieved.
+    int prev_time;
+};
 
 extern msg_t shcon_msg_init;
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
+
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
+#ifndef MM_ANON_MSG
+#define MM_ANON_MSG
+enum _ANON_FLAG
+{
+    ANON_SEND = 0,
+    ANON_RECV = 1,
+    ANON_PUSH = 2,
+};
+#endif
+/* -------------------------- END OF GUARD BLOCK -------------------------- */
+
+typedef struct shcon_t shcon_t;
 
 /**
 @brief Create a new shcon_t.
 @return Upon success, returns an address of a shcon_t with empty members.
 <br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EALLOC, could not allocate space for the shcon_t.}
+@ent{_EALLOC, Could not allocate space for the shcon_t.}
 @end
 **/
 shcon_t* shcon_t_new (void);
@@ -79,6 +94,7 @@ If \b _sem is NULL, populates _shcon shcon_t#sem with sem_t_new().
 @note Inherits errors from ipc_t_new(), shm_t_new(), sem_t_new().
 **/
 int shcon_t_set (shcon_t** _shcon, ipc_t* _ipc, shm_t* _shm, sem_t* _sem);
+int shcon_t_from_path (shcon_t** _shcon, char* _path);
 /**
 @brief Deletes a shcon_t.
 @details Assumes that \b _shcon has been properly created by shcon_t_new().
@@ -101,7 +117,9 @@ void shcon_t_del (shcon_t** _shcon);
 shcon_unlock_sem().
 **/
 int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg);
+int shcon_send_empty_shm_msg (shcon_t* _shcon);
 /**
+REWRITE!!
 @brief Gets a message from shared memory.
 @details Assumes the thread has been locked.
 @param _shcon The shared connection with the shared memory.
@@ -113,7 +131,7 @@ int shcon_send_shm_msg (shcon_t* _shcon, msg_t* _msg);
 @end
 @note Inherits errors from msg_t_new(), msg_to_raw_len(), shm_read().
 **/
-msg_t* shcon_recv_shm_msg (shcon_t* _shcon, int _init);
+int shcon_recv_shm_msg (shcon_t* _shcon, msg_t** _msg, int _init);
 /**
 @brief Marks the current message as read on a semaphore.
 @details The action will be undone when the thread disconnects.
@@ -163,6 +181,8 @@ int shcon_unlock_sem (shcon_t* _shcon);
 @note Inherits errors from sem_op().
 **/
 int shcon_add_sem_con (shcon_t* _shcon);
+int shcon_get_sem_con (shcon_t* _shcon);
+int shcon_get_sem_read (shcon_t* _shcon);
 /**
 @brief Starts a shared connection.
 @details This function follows the protocol in @ref shcon_connect_protocol.
@@ -195,4 +215,4 @@ _shcon_create_shm(), _shcon_create_shm(), shcon_check_shm_ver().
 **/
 int shcon_connect (shcon_t* _shcon);
 int shcon_msg_loop
-  (shcon_t* _shcon, int _attach, void* _con, int (*_f) (void*, msg_t*, int));
+  (shcon_t* _shcon, int _create, void* _con, int (*_f) (void*, msg_t**, int));

@@ -5,6 +5,9 @@
 @see sem.h shm.h
 **/
 
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
+#ifndef MM_IPC
+#define MM_IPC
 #include <stdlib.h>
 #include <sys/ipc.h>
 
@@ -12,9 +15,6 @@
 #include <str.h>
 #include <file.h>
 
-/* ------------------------- START OF GUARD BLOCK ------------------------- */
-#ifndef MM_IPC
-#define MM_IPC
 /**
 @brief The permission flags for IPC.
 @details IPC_CREAT and IPC_EXCL are often used as IPC flags, but here they are
@@ -32,7 +32,7 @@ enum IPC_FLAGS {
 /**
 @brief Common IPC data.
 **/
-typedef struct
+struct ipc_t
 {
     //! The permission flags.
     int flags;
@@ -42,7 +42,7 @@ typedef struct
     char* path;
     //! A common key among processes.
     key_t key;
-} ipc_t;
+};
 
 /**
 @brief The function to use to generate keys.
@@ -61,13 +61,14 @@ extern key_t (*ipc_gen_key) (char* _path, int _proj_id);
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
 
+typedef struct ipc_t ipc_t;
 
 /**
 @brief Create a new ipc_t.
 @return Upon success, returns an address of an ipc_t with empty members.
 <br>Upon failure, returns NULL, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EALLOC, could not allocate space for the ipc_t.}
+@ent{_EALLOC, Could not allocate space for the ipc_t.}
 @end
 **/
 ipc_t* ipc_t_new (void);
@@ -119,7 +120,7 @@ void ipc_t_del (ipc_t** _ipc);
 @return Upon success, returns the key.
 <br>Upon failure, returns -1, prints errors if necessary, and sets #err_num.
 @beg{Errors}
-@ent{_EPTRNULL, \b _path was NULL.}
+@ent{_EPTRNULL, \b _path is NULL.}
 @ent{_ESTREMPTY, \b _path begins with a '\0' character.}
 @ent{_ESYSTEM, Error producing the key with \b ftok().}
 @end

@@ -19,6 +19,7 @@ const err_info_t err_table [] =
 
 int       err_num = _ESUCCESS;
 const int ERR_MAX = sizeof (err_table) / sizeof (err_info_t) - 1;
+int err_verbose = 1;
 
 void _err_pr (FILE* _fp, err_loc_t _loc, char* _fmt, ...)
 {
@@ -86,4 +87,33 @@ void err_reset (void)
     //     ret = tmp;
     // }
     return;
+}
+
+void _err_from (FILE* _fp, err_loc_t _loc)
+{
+    // int tmp = 0;
+    // int ret = 0;
+
+    if (err_verbose)
+    {
+        fprintf (_fp, "from mm:");
+        if (_loc.file != NULL)
+        {
+            fprintf (_fp, "%s:", _loc.file);
+        }
+        if (_loc.func != NULL)
+        {
+            fprintf (_fp, "%s():", _loc.func);
+        }
+        if (_loc.line > 0)
+        {
+            fprintf (_fp, "%d\n", _loc.line);
+        }
+    }
+
+    // if (tmp < 0)
+    // {
+    //     ret = tmp;
+    // }
+    // return ret;
 }

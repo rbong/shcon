@@ -4,15 +4,15 @@
 @brief Message processing.
 **/
 
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
+#ifndef MSG_MM
+#define MSG_MM
 #include <stdlib.h>
 #include <sys/msg.h>
 
 #include <err.h>
 #include <util.h>
 
-/* ------------------------- START OF GUARD BLOCK ------------------------- */
-#ifndef MSG_MM
-#define MSG_MM
 enum _MSG_CONST
 {
     //! Maximum size of message. System limit.
@@ -36,7 +36,7 @@ enum _MSG_TYPE
 /**
 @brief Message metadata.
 **/
-typedef struct
+struct msg_hdr_t
 {
     //! Iteration of the program that created the message.
     long ver;
@@ -46,12 +46,12 @@ typedef struct
     long timeout;
     //! Length of the data in bytes.
     int len;
-} msg_hdr_t;
+};
 
 /**
 @brief A message.
 **/
-typedef struct
+struct msg_t
 {
     //! Type of message.
     long type;
@@ -59,9 +59,12 @@ typedef struct
     msg_hdr_t hdr;
     //! Message information.
     char* data;
-} msg_t;
+};
 #endif
 /* -------------------------- END OF GUARD BLOCK -------------------------- */
+
+typedef struct msg_hdr_t msg_hdr_t;
+typedef struct msg_t msg_t;
 
 /**
 @brief Create a new msg_t.

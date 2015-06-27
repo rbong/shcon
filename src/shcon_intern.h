@@ -4,7 +4,17 @@
 @brief Shared connection internals.
 **/
 
-/** @fn _shcon_create_sem()
+/* ------------------------- START OF GUARD BLOCK ------------------------- */
+#ifndef MM_SHCON_INTERN
+#define MM_SHCON_INTERN
+#include <time.h>
+
+#include <shcon.h>
+#include <util.h>
+#include <sem.h>
+#endif
+/* -------------------------- END OF GUARD BLOCK -------------------------- */
+/**
 @brief Create a new semaphore.
 @details Assumes \b _shcon shcon_t#ipc ipc_t#key and ipc_t#flags have been set
 and that \b _shcon shcon_t#sem is set except for its sem_t#id.
@@ -18,7 +28,8 @@ sem_t#id for.
 @end
 @note Inherits errors and blame from sem_gen_id().
 **/
-/** @fn _shcon_attach_sem()
+int _shcon_create_sem (shcon_t* _shcon);
+/**
 @brief Attaches to an existing semaphore.
 @details Assumes \b _shcon shcon_t#ipc ipc_t#key and ipc_t#flags have been set
 and that \b _shcon shcon_t#sem is set except for its sem_t#id.
@@ -32,18 +43,20 @@ sem_t#id for.
 @end
 @note Inherits errors and blame from sem_gen_id().
 **/
-/** @fn _shcon_init_sem()
+int _shcon_attach_sem (shcon_t* _shcon);
+/** CHANGES
 @brief Sets pertinent values for a new semaphore in the system.
 @param _shcon The shared connection with the sem_t to set values for.
 @return Upon success, returns 0.
 <br>Upon failure, returns -1 and possibly passes the blame to the caller.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#sem are NULL.}
-@ent{_ESUCCESS, blame will not be passed to the caller.}
+@ent{_ENOBLAME, Blame will not be passed to the caller.}
 @end
 @note Inherits errors from sem_ctl().
 **/
-/** @fn _shcon_create_shm()
+int _shcon_init_sem (shcon_t* _shcon);
+/**
 @brief Create new shared memory.
 @details Assumes \b _shcon shcon_t#ipc ipc_t#key and ipc_t#flags have been set
 and that \b _shcon shcon_t#shm is set except for its shm_t#id and shm_t#seg.
@@ -55,12 +68,13 @@ shm_t#seg.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shcon\, \b _shcon shcon_t#ipc and/or
 \b _shcon shcon_t#shm are NULL.}
-@ent{_ESUCCESS, blame will not be passed to the caller.}
+@ent{_ENOBLAME, Blame will not be passed to the caller.}
 @end
 @note Inherits blame from shm_gen_id().
 Inherits errors from shm_gen_id(), shm_attach_seg().
 **/
-/** @fn _shcon_attach_shm()
+int _shcon_create_shm (shcon_t* _shcon);
+/**
 @brief Attaches to existing shared memory.
 @details Assumes \b _shcon shcon_t#ipc ipc_t#key and ipc_t#flags have been set
 and that \b _shcon shcon_t#shm is set except for its shm_t#id and shm_t#seg.
@@ -76,7 +90,8 @@ shm_t#seg.
 @note Inherits blame from shm_gen_id().
 Inherits errors from shm_gen_id(), shm_attach_seg().
 **/
-/** @fn _shcon_init_shm()
+int _shcon_attach_shm (shcon_t* _shcon);
+/**
 @brief Sends an init message over shared memory.
 @details Assumes that program is in the init phase and does not need to lock.
 @param _shcon The shared connection with the shm_t to send the message over.
@@ -84,11 +99,12 @@ Inherits errors from shm_gen_id(), shm_attach_seg().
 <br>Upon failure, returns -1 and possibly passes the blame to the caller.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shcon and/or \b _shcon shcon_t#shm are NULL.}
-@ent{_ESUCCESS, blame will not be passed to the caller.}
+@ent{_ENOBLAME, Blame will not be passed to the caller.}
 @end
 @note Inherits errors from shcon_send_shm_msg.
 **/
-/** @fn _shcon_check_shm_ver()
+int _shcon_init_shm (shcon_t* _shcon);
+/**
 @brief Checks that the shared connection has the correct version.
 @details Assumes that shcon_t#shm shcon_t#shm is set and has an init message.
 Does not lock the thread.
@@ -98,9 +114,15 @@ Does not lock the thread.
 returns -1 and possibly passes the blame to the caller.
 @beg{Errors}
 @ent{_EPTRNULL, \b _shcon was NULL.}
-@ent{_ESUCCESS, blame will not be passed to the caller.}
+@ent{_ENOBLAME, Blame will not be passed to the caller.}
 @end
 @note Inherits errors from shcon_recv_shm_msg(),
 shcon_unloc_sem()
 @end
 **/
+int _shcon_check_shm_ver (shcon_t* _shcon);
+int _shcon_wait (int _ms);
+int _shcon_timed_out_msg (msg_t* _msg);
+int _shcon_has_unread_sem (shcon_t* _shcon);
+int _shcon_check_prev_time (shcon_t* _shcon, msg_t* _msg);
+int _shcon_set_prev_time (shcon_t* _shcon, msg_t* _msg);

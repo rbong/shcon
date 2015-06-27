@@ -8,7 +8,7 @@
 #include <shm.h>
 
 //! Default value for shm_t#size.
-int shm_size = 1028;
+int shm_size = 8192;
 
 shm_t* shm_t_new (void)
 {
@@ -41,6 +41,7 @@ int shm_t_set
     if (_shm == NULL)
     {
         ERR_PRINT (_EPTRNULL);
+        err_num = _ENOBLAME;
         ret = -1;
         return ret;
     }
@@ -50,6 +51,7 @@ int shm_t_set
         (*_shm) = shm_t_new ();
         if ((*_shm) == NULL)
         {
+            ERR_FROM ();
             ret = -1;
             return ret;
         }
@@ -72,7 +74,8 @@ int shm_t_set
         {
             if (errno == EEXIST || errno == ENOENT)
             {
-                ret = 1;
+                ret = tmp;
+                return ret;
             }
             else
             {
@@ -81,6 +84,7 @@ int shm_t_set
                     ERR_SYS (errno);
                 }
                 ERR_PRINT (err_num);
+                err_num = _ENOBLAME;
                 ret = -1;
                 return ret;
             }
@@ -100,6 +104,8 @@ int shm_t_set
         tmp = shm_attach_seg (*_shm, NULL, 0);
         if (tmp < 0)
         {
+            err_num = _ENOBLAME;
+            ERR_FROM ();
             ret = tmp;
             return ret;
         }
@@ -118,7 +124,7 @@ int shm_t_from_id (shm_t** _shm, key_t _key, int _flags)
     int ret = 0;
 
     tmp = shm_t_set (_shm, 0, 0, NULL, _key, _flags);
-    if (tmp != 0)
+    if (tmp < 0)
     {
         ret = tmp;
     }
@@ -181,7 +187,7 @@ int shm_attach_seg (shm_t* _shm, const void* _shmaddr, int _shmflg)
     }
 
     _shm->seg = shmat (_shm->id, _shmaddr, _shmflg);
-    if (_shm->seg < 0)
+    if (_shm->seg == NULL)
     {
         ERR_SYS (errno);
         ERR_PRINT (_ESYSTEM);
@@ -238,7 +244,7 @@ int shm_write (shm_t* _shm, void* _buf, int _bytes, int _offset)
     }
 
     memcpy (_shm->seg + _offset, _buf, _bytes);
-    if (_shm->seg == NULL)
+    if (_shm->seg + _offset == NULL)
     {
         ERR_PRINT (_ESYSTEM);
         ret = -1;
